@@ -1,8 +1,9 @@
 # GRC - Governance Engine
 
 [![Python Version](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
-[![Version](https://img.shields.io/badge/version-0.0.4-green.svg)]()
 [![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![PyPI version](https://badge.fury.io/py/py-governance-engine.svg)](https://pypi.org/project/py-governance-engine/)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/py-governance-engine)](https://pypi.org/project/py-governance-engine/)
 
 [//]: # ([![License]&#40;https://img.shields.io/badge/license-Proprietary-red.svg&#41;]&#40;&#41;)
 

@@ -1,6 +1,6 @@
 [project]
 name = "py-governance-engine"
-version = "0.0.7"
+version = "0.0.8"
 description = "Governance Engine by zeb labs"
 readme = "README.md"
 requires-python = ">=3.14"
