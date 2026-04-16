@@ -1,9 +1,14 @@
 [project]
-name = "grc"
-version = "0.0.6"
+name = "py-governance-engine"
+version = "0.0.7"
 description = "Governance Engine by zeb labs"
 readme = "README.md"
 requires-python = ">=3.14"
+license = "MIT"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+]
 authors = [{ name = "Samrat Damodaran", email = "samrat.damodaran@zeb.co" }]
 maintainers = [{ name = "Samrat Damodaran", email = "samrat.damodaran@zeb.co" }]
 keywords = ["governance", "llm", "quota", "policy", "telemetry", "observability"]
@@ -22,7 +27,9 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://zeb-ai@dev.azure.com/zeb-ai/ai-zeb-innovation/_git/zeb-labs-engine-001-governance"
+Homepage = "https://github.com/zeb-ai/py-governance-engine"
+Repository = "https://github.com/zeb-ai/py-governance-engine"
+
 
 # DEV dependency only for running example codes and precommit
 [dependency-groups]
@@ -34,6 +41,8 @@ dev = [
     "strands-agents-tools>=0.2.22",
     "pre-commit>=4.5.1",
     "pyinstaller>=6.19.0",
+    "build>=1.4.3",
+    "twine>=6.2.0",
 ]
 
 # install when instrumentation needed for whole project/application
