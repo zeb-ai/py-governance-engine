@@ -1,0 +1,65 @@
+[project]
+name = "grc"
+version = "0.0.6"
+description = "Governance Engine by zeb labs"
+readme = "README.md"
+requires-python = ">=3.14"
+authors = [{ name = "Samrat Damodaran", email = "samrat.damodaran@zeb.co" }]
+maintainers = [{ name = "Samrat Damodaran", email = "samrat.damodaran@zeb.co" }]
+keywords = ["governance", "llm", "quota", "policy", "telemetry", "observability"]
+dependencies = [
+    "httpx>=0.28.1",
+    "mitmproxy>=12.2.1",
+    "opentelemetry-api>=1.39.1",
+    "opentelemetry-exporter-otlp-proto-http>=1.39.1",
+    "opentelemetry-instrumentation>=0.60b1",
+    "opentelemetry-instrumentation-httpx>=0.60b1",
+    "opentelemetry-instrumentation-threading>=0.60b1",
+    "opentelemetry-sdk>=1.39.1",
+    "pydantic>=2.12.5",
+    "rich>=14.3.3",
+    "tenacity>=9.1.4",
+]
+
+[project.urls]
+Repository = "https://zeb-ai@dev.azure.com/zeb-ai/ai-zeb-innovation/_git/zeb-labs-engine-001-governance"
+
+# DEV dependency only for running example codes and precommit
+[dependency-groups]
+dev = [
+    "ruff>=0.15.6",
+    "boto3>=1.42.70",
+    "pydantic-ai>=1.70.0",
+    "strands-agents>=1.30.0",
+    "strands-agents-tools>=0.2.22",
+    "pre-commit>=4.5.1",
+    "pyinstaller>=6.19.0",
+]
+
+# install when instrumentation needed for whole project/application
+auto-instrument = [
+    "opentelemetry-instrumentation-fastapi>=0.49b0,<0.61b0",
+    "opentelemetry-instrumentation-flask>=0.49b0,<0.61b0",
+    "opentelemetry-instrumentation-starlette>=0.49b0,<0.61b0",
+
+    "opentelemetry-instrumentation-requests>=0.49b0,<0.61b0",
+    "opentelemetry-instrumentation-aiohttp-client>=0.49b0,<0.61b0",
+    "opentelemetry-instrumentation-urllib3>=0.49b0,<0.61b0",
+
+    "opentelemetry-instrumentation-psycopg2>=0.49b0,<0.61b0",
+    "opentelemetry-instrumentation-psycopg>=0.49b0,<0.61b0",
+    "opentelemetry-instrumentation-sqlalchemy>=0.49b0,<0.61b0",
+    "opentelemetry-instrumentation-redis>=0.49b0,<0.61b0",
+    "opentelemetry-instrumentation-pymongo>=0.49b0,<0.61b0",
+
+    "opentelemetry-instrumentation-botocore>=0.49b0,<0.61b0",
+    "opentelemetry-instrumentation-boto3sqs>=0.49b0,<0.61b0",
+
+    "opentelemetry-instrumentation-celery>=0.49b0,<0.61b0",
+
+    "opentelemetry-instrumentation-logging>=0.49b0,<0.61b0",
+    "opentelemetry-instrumentation-system-metrics>=0.49b0,<0.61b0",
+]
+
+[project.scripts]
+grc-proxy = "grc.proxy.main:main"

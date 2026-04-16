@@ -1,0 +1,19 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.claude
+.idea/
+
+.env
+.DS_Store
+playground/
+
+#dev pipeline
+azure-pipelines.yml
