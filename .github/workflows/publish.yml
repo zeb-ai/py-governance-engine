@@ -1,0 +1,29 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - "v*"          # triggers on tags like v0.0.7, v1.0.0
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi        # optional: adds approval gate in GitHub
+    permissions:
+      id-token: write        # needed for trusted publishing (no token needed!)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Build package
+        run: uv build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        # Uses PyPI Trusted Publishing - no API token secret needed!
