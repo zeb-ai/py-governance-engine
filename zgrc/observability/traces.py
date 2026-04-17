@@ -29,7 +29,7 @@ class Traces(BaseTelemetry):
             BatchSpanProcessor(exporter, max_export_batch_size=512)
         )
         trace.set_tracer_provider(self._tracer_provider)
-        self._tracer = trace.get_tracer("grc")
+        self._tracer = trace.get_tracer("zgrc")
 
     def send(self):
         pass

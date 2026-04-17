@@ -1,4 +1,4 @@
-.PHONY: help setup build clean lint fix up-proxy grpc-proxy-build grpc-proxy-build-linux grpc-proxy-build-windows grpc-proxy-checksums grpc-proxy-release
+.PHONY: help setup build clean lint fix up-proxy grpc-proxy-build
 
 help:
 	@clear 2>/dev/null || true
@@ -11,11 +11,7 @@ help:
 	@echo "  make clean                    - Clean build artifacts, cache files, and Python bytecode"
 	@echo
 	@echo "Executable builds:"
-	@echo "  make grpc-proxy-build         - Build grc-proxy for current platform only"
-	@echo "  make grpc-proxy-build-linux   - Build grc-proxy for Linux (run on Linux)"
-	@echo "  make grpc-proxy-build-windows - Build grc-proxy for Windows (run on Windows)"
-	@echo "  make grpc-proxy-checksums     - Generate SHA256 checksums for built binaries"
-	@echo "  make grpc-proxy-release       - Build + checksums (ready for distribution)"
+	@echo "  make grpc-proxy-build         - Build z-grc-proxy for current platform only"
 	@echo
 
 setup:
@@ -62,32 +58,7 @@ up-proxy:
 	uv run grc/proxy/main.py --api-key $(GRC_API_KEY)
 
 grpc-proxy-build:
-	@echo "Building grc-proxy for current platform ($(shell uname -s)-$(shell uname -m))..."
-	uv run pyinstaller grc-proxy.spec
+	@echo "Building z-grc-proxy for current platform ($(shell uname -s)-$(shell uname -m))..."
+	uv run pyinstaller z-grc-proxy.spec
 	@echo
-	@echo "Binary created at: dist/grc-proxy"
-
-grpc-proxy-build-linux:
-	@echo "Building grc-proxy for Linux..."
-	uv run pyinstaller grc-proxy.spec
-	@mv dist/grc-proxy dist/grc-proxy-linux-x86_64
-	@echo "Binary created at: dist/grc-proxy-linux-x86_64"
-
-grpc-proxy-build-windows:
-	@echo "Building grc-proxy for Windows..."
-	uv run pyinstaller grc-proxy.spec
-	@move dist\grc-proxy.exe dist\grc-proxy-windows-x86_64.exe
-	@echo "Binary created at: dist/grc-proxy-windows-x86_64.exe"
-
-grpc-proxy-checksums:
-	@echo "Generating checksums..."
-	@cd dist && shasum -a 256 grc-proxy-* > checksums.txt
-	@echo "Checksums saved to: dist/checksums.txt"
-	@cat dist/checksums.txt
-
-grpc-proxy-release: clean grpc-proxy-build grpc-proxy-checksums
-	@echo
-	@echo "Release build complete! Ready for distribution:"
-	@ls -lh dist/grc-proxy-*
-	@echo
-	@echo "NOTE: This builds for current platform only ($(shell uname -s)-$(shell uname -m))."
+	@echo "Binary created at: dist/z-grc-proxy"

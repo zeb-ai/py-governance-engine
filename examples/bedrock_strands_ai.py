@@ -1,9 +1,9 @@
 import os
-import grc
+import zgrc
 
 api_key = os.getenv("API_KEY")
 
-grc.init(api_key)
+zgrc.init(api_key)
 
 
 from strands import Agent  # noqa: E402

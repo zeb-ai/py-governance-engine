@@ -198,7 +198,7 @@ class AutoInstrumentation:
         try:
             spec = importlib.util.find_spec(package_name)
             return spec is not None
-        except ImportError, ModuleNotFoundError, ValueError:
+        except (ImportError, ModuleNotFoundError, ValueError):
             return False
 
     @staticmethod
@@ -226,4 +226,4 @@ class AutoInstrumentation:
         console.print(f"  [green]uv add {all_packages}[/green]")
 
         console.print("\n[bold]Or install complete bundle:[/bold]")
-        console.print("  [green]uv add grc[auto-instrument][/green]\n")
+        console.print("  [green]uv add zgrc[auto-instrument][/green]\n")

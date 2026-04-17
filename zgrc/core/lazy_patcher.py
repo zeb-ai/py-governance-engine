@@ -2,7 +2,7 @@ import functools
 import logging
 from typing import Any, Callable
 
-from grc.providers import Providers
+from zgrc.providers import Providers
 
 logger = logging.getLogger(__name__)
 

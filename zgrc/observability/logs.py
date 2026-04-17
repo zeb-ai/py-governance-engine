@@ -56,7 +56,7 @@ class Logs(BaseTelemetry):
             BatchLogRecordProcessor(exporter=exporter)
         )
         set_logger_provider(self._logger_provider)
-        self._otel_logger = self._logger_provider.get_logger("grc.llm")
+        self._otel_logger = self._logger_provider.get_logger("zgrc.llm")
 
     def attach_logging_handler(self):
         """Attach OpenTelemetry logging handler to capture Python application logs automatically."""

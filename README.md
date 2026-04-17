@@ -1,9 +1,9 @@
-# GRC - Governance Engine
+# Z-GRC - Z Governance, Risk, Control Engine
 
 [![Python Version](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
 [![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![PyPI version](https://badge.fury.io/py/py-governance-engine.svg)](https://pypi.org/project/py-governance-engine/)
-[![PyPI Downloads](https://img.shields.io/pypi/dm/py-governance-engine)](https://pypi.org/project/py-governance-engine/)
+[![PyPI version](https://badge.fury.io/py/z-grc.svg)](https://pypi.org/project/z-grc/)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/z-grc)](https://pypi.org/project/z-grc/)
 
 [//]: # ([![License]&#40;https://img.shields.io/badge/license-Proprietary-red.svg&#41;]&#40;&#41;)
 
@@ -12,24 +12,24 @@ Enterprise-grade governance engine for Large Language Model applications. Provid
 ## Installation
 
 ```bash
-uv add py-governance-engine
+uv add z-grc
 ```
 
 Or with auto-instrumentation:
 
 ```bash
-uv add py-governance-engine[auto-instrument]
+uv add z-grc[auto-instrument]
 ```
 
 ## Quick Start
 
 ```python
-import grc
+import zgrc
 import boto3
 import json
 
 # Initialize GRC
-grc.init(api_key="your-grc-api-key")
+zgrc.init(api_key="your-zgrc-api-key")
 
 # Use your LLM SDK normally - GRC handles everything
 client = boto3.client("bedrock-runtime", region_name="us-east-1")
@@ -43,7 +43,7 @@ response = client.invoke_model(
     })
 )
 
-# GRC automatically:
+# Z-GRC automatically:
 # - Validates quota before requests
 # - Tracks token usage
 # - Enforces policies
@@ -53,7 +53,7 @@ response = client.invoke_model(
 ## Features
 
 ### Zero-Code Integration
-Drop-in solution requiring only `grc.init()`. Works with existing code without modifications.
+Drop-in solution requiring only `zgrc.init()`. Works with existing code without modifications.
 
 ### Auto-Discovery
 Automatically detects and intercepts installed LLM SDKs:
@@ -66,7 +66,7 @@ Automatically detects and intercepts installed LLM SDKs:
 Real-time quota validation and token limit enforcement. Blocks requests when quota is exceeded.
 
 ```python
-from grc.utils import QuotaExceededException
+from zgrc.utils import QuotaExceededException
 
 try:
     response = client.invoke_model(...)
@@ -78,8 +78,8 @@ except QuotaExceededException as e:
 Optional automatic instrumentation for HTTP clients, web frameworks, databases, and more:
 
 ```python
-grc.init(
-    api_key="your-grc-api-key",
+zgrc.init(
+    api_key="your-zgrc-api-key",
     auto_instrument=True,
     app_name="my-app",
     environment="production"
@@ -123,12 +123,12 @@ for event in response["stream"]:
 ## Configuration
 
 ```python
-grc.init(
-    api_key: str,                  # Your GRC API key (required)
+zgrc.init(
+    api_key: str,                  # Your Z-GRC API key (required)
     auto_instrument: bool = False, # Enable auto-instrumentation
     app_name: str = None,          # Application name for telemetry
     environment: str = None,       # Environment (dev/staging/prod)
-    log_level: int = logging.ERROR # GRC internal log level
+    log_level: int = logging.ERROR # Z-GRC internal log level
 )
 ```
 
@@ -140,21 +140,21 @@ Build standalone executables with PyInstaller:
 ```bash
 ./build.sh
 ```
-Output: `dist/grc-proxy-macos-arm64` or `dist/grc-proxy-linux-x86_64`
+Output: `dist/z-grc-proxy-macos-arm64` or `dist/z-grc-proxy-linux-x86_64`
 
 ### Windows
 ```bash
 build.bat
 ```
-Output: `dist/grc-proxy-windows-x64.exe`
+Output: `dist/z-grc-proxy-windows-x64.exe`
 
 ### Test Executable
 ```bash
 # macOS/Linux
-./dist/grc-proxy-macos-arm64 --api-key=grc_xxx
+./dist/z-grc-proxy-macos-arm64 --api-key=zgrc_xxx
 
 # Windows
-dist\grc-proxy-windows-x64.exe --api-key=grc_xxx
+dist\z-grc-proxy-windows-x64.exe --api-key=zgrc_xxx
 ```
 
 **Note:** Certificates auto-generate in `~/.mitmproxy/` on first run. Users must set `HTTPS_PROXY` and `NODE_EXTRA_CA_CERTS` environment variables.
@@ -163,10 +163,10 @@ dist\grc-proxy-windows-x64.exe --api-key=grc_xxx
 
 ### macOS / Linux
 ```bash
-curl -fsSL https://raw.githubusercontent.com/zeb-ai/py-governance-engine/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/zeb-ai/z-grc/main/install.sh | bash
 ```
 
 ### Windows (PowerShell)
 ```powershell
-irm https://raw.githubusercontent.com/zeb-ai/py-governance-engine/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/zeb-ai/z-grc/main/install.ps1 | iex
 ```

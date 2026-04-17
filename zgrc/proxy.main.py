@@ -1,7 +1,7 @@
 """
 GRC Proxy - Standalone HTTP proxy for LLM request interception (Claude Code).
 
-This is a SEPARATE distribution mode from the SDK package (grc.init()).
+This is a SEPARATE distribution mode from the SDK package (zgrc.init()).
 It runs as a standalone proxy server using mitmproxy to intercept HTTP/HTTPS
 traffic and enforce GRC policies on LLM requests without requiring code changes.
 
@@ -10,10 +10,10 @@ traffic and enforce GRC policies on LLM requests without requiring code changes.
 DISTRIBUTION:
     - Built with PyInstaller into standalone executables
     - No Python installation required for end users
-    - Runs independently of the grc Python package
+    - Runs independently of the zgrc Python package
 
 USAGE:
-    As executable: grc-proxy --api-key=grc_xxx [--port 8080] [--verbose]
+    As executable: zgrc-proxy --api-key=grc_xxx [--port 8080] [--verbose]
 
 ARCHITECTURE:
     - mitmproxy handles HTTPS interception and certificate management
@@ -39,9 +39,9 @@ import logging
 from mitmproxy import options
 from mitmproxy.tools import dump
 
-from grc.proxy import ProxyAddon
-from grc.auth import AuthToken
-from grc.context import auth_ctx
+from zgrc.proxy import ProxyAddon
+from zgrc.auth import AuthToken
+from zgrc.context import auth_ctx
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ logger = logging.getLogger(__name__)
 async def main():
 
     parser = argparse.ArgumentParser(
-        prog="grc-proxy",
+        prog="zgrc-proxy",
         description="GRC Proxy Server - For Claude Code",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )

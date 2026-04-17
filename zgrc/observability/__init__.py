@@ -23,7 +23,7 @@ def create_app_resource(
     if environment:
         app_attributes["deployment.environment"] = environment
 
-    app_attributes["telemetry.sdk.name"] = "grc-auto-instrument"
+    app_attributes["telemetry.sdk.name"] = "zgrc-auto-instrument"
     app_attributes["telemetry.sdk.language"] = "python"
 
     app_resource = Resource.create(app_attributes)

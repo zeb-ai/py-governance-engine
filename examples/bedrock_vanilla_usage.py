@@ -5,7 +5,7 @@ from typing import Dict, List
 import boto3
 from dotenv import load_dotenv
 
-import grc
+import zgrc
 import logging
 
 # Load environment variables from .env file
@@ -90,7 +90,7 @@ class BedrockChatREPL:
 
 if __name__ == "__main__":
     # MAIN
-    grc.init(
+    zgrc.init(
         api_key=os.getenv("API_KEY"),
         auto_instrument=True,
         app_name="bedrock-chat-demo",
@@ -105,4 +105,4 @@ if __name__ == "__main__":
         repl.run()
 
     finally:
-        grc.teardown()
+        zgrc.teardown()

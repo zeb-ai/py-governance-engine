@@ -2,10 +2,10 @@
 set -euo pipefail
 
 # Governance Engine Proxy - Unix Installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/zeb-ai/py-governance-engine/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/zeb-ai/z-grc/main/install.sh | bash
 
-REPO="zeb-ai/py-governance-engine"
-BINARY_NAME="governance-engine-proxy"
+REPO="zeb-ai/z-grc"
+BINARY_NAME="z-grc-proxy"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 
 # Colors

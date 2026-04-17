@@ -1,6 +1,6 @@
-from grc.core import interceptor_registry
+from zgrc.core import interceptor_registry
 from .interceptor import BedrockInterceptor
-from grc.providers import Providers
+from zgrc.providers import Providers
 
 interceptor_registry.register(
     provider=Providers.BEDROCK,

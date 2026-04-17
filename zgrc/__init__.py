@@ -60,8 +60,8 @@ class GRC:
     @staticmethod
     def teardown() -> None:
         """Disable all active interceptors and clear context variables to clean up GRC state."""
-        from grc.core import auto_manager
-        from grc.context import auth_ctx, quota_ctx
+        from zgrc.core import auto_manager
+        from zgrc.context import auth_ctx, quota_ctx
 
         auto_manager.disable_all()
 
@@ -71,7 +71,7 @@ class GRC:
     @staticmethod
     def _config_grc_logger(level: int) -> logging.Logger:
         """Configure GRC's internal logger with specified level and formatting."""
-        grc_logger = logging.getLogger("grc")
+        grc_logger = logging.getLogger("zgrc")
 
         if not grc_logger.handlers:
             handler = logging.StreamHandler()
@@ -92,8 +92,8 @@ class GRC:
         Detects which provider packages are installed and dynamically
         imports their interceptor modules to register them with the interceptor registry.
         """
-        from grc.core.scanner import Scanner
-        from grc.providers import Providers
+        from zgrc.core.scanner import Scanner
+        from zgrc.providers import Providers
 
         installed_providers = Scanner.get_installed_providers()
         logger.info(f"Discovered providers: {installed_providers}")
@@ -102,7 +102,7 @@ class GRC:
             logger.debug(f"Attempting to register: {provider}")
             try:
                 if provider == Providers.BEDROCK:
-                    import grc.interceptors.bedrock  # noqa: F401
+                    import zgrc.interceptors.bedrock  # noqa: F401
 
                     logger.debug(f"Successfully registered {provider} interceptor")
                 elif provider == Providers.ANTHROPIC:  # TODO: Not implemented yet
