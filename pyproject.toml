@@ -12,8 +12,21 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Monitoring",
 ]
-authors = [{ name = "Samrat Damodaran", email = "samrat.damodaran@zeb.co" }]
-maintainers = [{ name = "Samrat Damodaran", email = "samrat.damodaran@zeb.co" }]
+authors = [
+    { name = "Samrat Damodaran", email = "samrat.damodaran@zeb.co" },
+    { name = "Shriyokesh Thangavel", email = "shriyokesh.thangavel@zeb.co" },
+    { name = "Sid V", email = "sid@zeb.co" },
+    { name = "Madhavsrikrishna Sriram", email = "madhavsrikrishna.sriram@zeb.co" },
+    { name = "Noor Shekumohamed", email = "noor.shekumohamed@zeb.co" },
+    { name = "Arunachalam Gunasekaran", email = "Arun.Gunasekaran@zeb.co" }
+]
+maintainers = [
+    { name = "Samrat Damodaran", email = "samrat.damodaran@zeb.co" },
+    { name = "Shriyokesh Thangavel", email = "shriyokesh.thangavel@zeb.co" },
+    { name = "Sid V", email = "sid@zeb.co" },
+    { name = "Madhavsrikrishna Sriram", email = "madhavsrikrishna.sriram@zeb.co" },
+    { name = "Noor Shekumohamed", email = "noor.shekumohamed@zeb.co" },
+    { name = "Arunachalam Gunasekaran", email = "Arun.Gunasekaran@zeb.co" },]
 keywords = ["governance", "llm", "quota", "policy", "telemetry", "observability"]
 dependencies = [
     "httpx>=0.28.1",
