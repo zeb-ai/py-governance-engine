@@ -1,24 +1,20 @@
 name: Build and Release Executables
-
 on:
   push:
     tags:
-      - "v*"   # triggers when publish.yml creates the tag
-
+      - "v*"
 jobs:
   build:
     strategy:
       matrix:
         include:
           - os: macos-latest
-            artifact_name: grc-proxy-macos-arm64
+            artifact_name: governance-engine-proxy-macos-arm64
           - os: ubuntu-latest
-            artifact_name: grc-proxy-linux-x86_64
+            artifact_name: governance-engine-proxy-linux-x86_64
           - os: windows-latest
-            artifact_name: grc-proxy-windows-x64.exe
-
+            artifact_name: governance-engine-proxy-windows-x64.exe
     runs-on: ${{ matrix.os }}
-
     steps:
       - uses: actions/checkout@v4
 
@@ -36,11 +32,11 @@ jobs:
 
       - name: Rename output (Linux/macOS)
         if: runner.os != 'Windows'
-        run: mv dist/grc-proxy dist/${{ matrix.artifact_name }}
+        run: mv dist/governance-engine-proxy dist/${{ matrix.artifact_name }}
 
       - name: Rename output (Windows)
         if: runner.os == 'Windows'
-        run: mv dist/grc-proxy.exe dist/${{ matrix.artifact_name }}
+        run: mv dist/governance-engine-proxy.exe dist/${{ matrix.artifact_name }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -53,7 +49,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -64,4 +59,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/**/*
-          generate_release_notes: true  # auto-generates changelog from commits
+          generate_release_notes: true
