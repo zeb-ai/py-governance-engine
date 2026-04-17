@@ -12,13 +12,13 @@ Enterprise-grade governance engine for Large Language Model applications. Provid
 ## Installation
 
 ```bash
-uv add grc
+uv add py-governance-engine
 ```
 
 Or with auto-instrumentation:
 
 ```bash
-uv add grc[auto-instrument]
+uv add py-governance-engine[auto-instrument]
 ```
 
 ## Quick Start
