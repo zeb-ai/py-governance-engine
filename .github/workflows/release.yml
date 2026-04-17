@@ -32,7 +32,7 @@ jobs:
         run: uv sync --all-groups --all-extras
 
       - name: Build executable
-        run: uv run pyinstaller grc-proxy.spec
+        run: uv run pyinstaller governance-engine-proxy.spec
 
       - name: Rename output (Linux/macOS)
         if: runner.os != 'Windows'

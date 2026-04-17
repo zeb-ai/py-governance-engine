@@ -48,7 +48,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='grc-proxy',
+    name='governance-engine-proxy',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
