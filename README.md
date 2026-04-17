@@ -158,3 +158,15 @@ dist\grc-proxy-windows-x64.exe --api-key=grc_xxx
 ```
 
 **Note:** Certificates auto-generate in `~/.mitmproxy/` on first run. Users must set `HTTPS_PROXY` and `NODE_EXTRA_CA_CERTS` environment variables.
+
+## Installing Executor
+
+### macOS / Linux
+```bash
+curl -fsSL https://raw.githubusercontent.com/zeb-ai/py-governance-engine/main/install.sh | bash
+```
+
+### Windows (PowerShell)
+```powershell
+irm https://raw.githubusercontent.com/zeb-ai/py-governance-engine/main/install.ps1 | iex
+```
