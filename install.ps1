@@ -1,11 +1,11 @@
 # Governance Engine Proxy - Windows Installer
-# Usage: irm https://raw.githubusercontent.com/zeb-ai/py-governance-engine/main/install.ps1 | iex
+# Usage: irm https://raw.githubusercontent.com/zeb-ai/z-grc/main/install.ps1 | iex
 
 $ErrorActionPreference = "Stop"
 
-$Repo = "zeb-ai/py-governance-engine"
-$BinaryName = "governance-engine-proxy"
-$AssetName = "governance-engine-proxy-windows-x64.exe"
+$Repo = "zeb-ai/z-grc"
+$BinaryName = "z-grc-proxy"
+$AssetName = "z-grc-proxy-windows-x64.exe"
 $InstallDir = "$env:LOCALAPPDATA\Programs\GovernanceEngine"
 
 function Write-Info($msg) { Write-Host "==> $msg" -ForegroundColor Green }

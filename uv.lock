@@ -2644,101 +2644,6 @@ wheels = [
 ]
 
 [[package]]
-name = "py-governance-engine"
-version = "0.0.12"
-source = { virtual = "." }
-dependencies = [
-    { name = "httpx" },
-    { name = "mitmproxy" },
-    { name = "opentelemetry-api" },
-    { name = "opentelemetry-exporter-otlp-proto-http" },
-    { name = "opentelemetry-instrumentation" },
-    { name = "opentelemetry-instrumentation-httpx" },
-    { name = "opentelemetry-instrumentation-threading" },
-    { name = "opentelemetry-sdk" },
-    { name = "pydantic" },
-    { name = "rich" },
-    { name = "tenacity" },
-]
-
-[package.dev-dependencies]
-auto-instrument = [
-    { name = "opentelemetry-instrumentation-aiohttp-client" },
-    { name = "opentelemetry-instrumentation-boto3sqs" },
-    { name = "opentelemetry-instrumentation-botocore" },
-    { name = "opentelemetry-instrumentation-celery" },
-    { name = "opentelemetry-instrumentation-fastapi" },
-    { name = "opentelemetry-instrumentation-flask" },
-    { name = "opentelemetry-instrumentation-logging" },
-    { name = "opentelemetry-instrumentation-psycopg" },
-    { name = "opentelemetry-instrumentation-psycopg2" },
-    { name = "opentelemetry-instrumentation-pymongo" },
-    { name = "opentelemetry-instrumentation-redis" },
-    { name = "opentelemetry-instrumentation-requests" },
-    { name = "opentelemetry-instrumentation-sqlalchemy" },
-    { name = "opentelemetry-instrumentation-starlette" },
-    { name = "opentelemetry-instrumentation-system-metrics" },
-    { name = "opentelemetry-instrumentation-urllib3" },
-]
-dev = [
-    { name = "boto3" },
-    { name = "build" },
-    { name = "pre-commit" },
-    { name = "pydantic-ai" },
-    { name = "pyinstaller" },
-    { name = "ruff" },
-    { name = "strands-agents" },
-    { name = "strands-agents-tools" },
-    { name = "twine" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "mitmproxy", specifier = ">=12.2.1" },
-    { name = "opentelemetry-api", specifier = ">=1.39.1" },
-    { name = "opentelemetry-exporter-otlp-proto-http", specifier = ">=1.39.1" },
-    { name = "opentelemetry-instrumentation", specifier = ">=0.60b1" },
-    { name = "opentelemetry-instrumentation-httpx", specifier = ">=0.60b1" },
-    { name = "opentelemetry-instrumentation-threading", specifier = ">=0.60b1" },
-    { name = "opentelemetry-sdk", specifier = ">=1.39.1" },
-    { name = "pydantic", specifier = ">=2.12.5" },
-    { name = "rich", specifier = ">=14.3.3" },
-    { name = "tenacity", specifier = ">=9.1.4" },
-]
-
-[package.metadata.requires-dev]
-auto-instrument = [
-    { name = "opentelemetry-instrumentation-aiohttp-client", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-boto3sqs", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-botocore", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-celery", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-fastapi", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-flask", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-logging", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-psycopg", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-psycopg2", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-pymongo", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-redis", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-requests", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-sqlalchemy", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-starlette", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-system-metrics", specifier = ">=0.49b0,<0.61b0" },
-    { name = "opentelemetry-instrumentation-urllib3", specifier = ">=0.49b0,<0.61b0" },
-]
-dev = [
-    { name = "boto3", specifier = ">=1.42.70" },
-    { name = "build", specifier = ">=1.4.3" },
-    { name = "pre-commit", specifier = ">=4.5.1" },
-    { name = "pydantic-ai", specifier = ">=1.70.0" },
-    { name = "pyinstaller", specifier = ">=6.19.0" },
-    { name = "ruff", specifier = ">=0.15.6" },
-    { name = "strands-agents", specifier = ">=1.30.0" },
-    { name = "strands-agents-tools", specifier = ">=0.2.22" },
-    { name = "twine", specifier = ">=6.2.0" },
-]
-
-[[package]]
 name = "py-key-value-aio"
 version = "0.4.4"
 source = { registry = "https://pypi.org/simple" }
@@ -4279,6 +4184,101 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/e1/19/3774d162f6732d1cfb0b47b4140a942a35ca82bb19b6db1f80e9e7bdc8f8/yarl-1.23.0-cp314-cp314t-win_amd64.whl", hash = "sha256:4503053d296bc6e4cbd1fad61cf3b6e33b939886c4f249ba7c78b602214fabe2", size = 97610, upload-time = "2026-03-01T22:07:45.773Z" },
     { url = "https://files.pythonhosted.org/packages/51/47/3fa2286c3cb162c71cdb34c4224d5745a1ceceb391b2bd9b19b668a8d724/yarl-1.23.0-cp314-cp314t-win_arm64.whl", hash = "sha256:44bb7bef4ea409384e3f8bc36c063d77ea1b8d4a5b2706956c0d6695f07dcc25", size = 86041, upload-time = "2026-03-01T22:07:49.026Z" },
     { url = "https://files.pythonhosted.org/packages/69/68/c8739671f5699c7dc470580a4f821ef37c32c4cb0b047ce223a7f115757f/yarl-1.23.0-py3-none-any.whl", hash = "sha256:a2df6afe50dea8ae15fa34c9f824a3ee958d785fd5d089063d960bae1daa0a3f", size = 48288, upload-time = "2026-03-01T22:07:51.388Z" },
+]
+
+[[package]]
+name = "z-grc"
+version = "0.0.13"
+source = { virtual = "." }
+dependencies = [
+    { name = "httpx" },
+    { name = "mitmproxy" },
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-exporter-otlp-proto-http" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-instrumentation-httpx" },
+    { name = "opentelemetry-instrumentation-threading" },
+    { name = "opentelemetry-sdk" },
+    { name = "pydantic" },
+    { name = "rich" },
+    { name = "tenacity" },
+]
+
+[package.dev-dependencies]
+auto-instrument = [
+    { name = "opentelemetry-instrumentation-aiohttp-client" },
+    { name = "opentelemetry-instrumentation-boto3sqs" },
+    { name = "opentelemetry-instrumentation-botocore" },
+    { name = "opentelemetry-instrumentation-celery" },
+    { name = "opentelemetry-instrumentation-fastapi" },
+    { name = "opentelemetry-instrumentation-flask" },
+    { name = "opentelemetry-instrumentation-logging" },
+    { name = "opentelemetry-instrumentation-psycopg" },
+    { name = "opentelemetry-instrumentation-psycopg2" },
+    { name = "opentelemetry-instrumentation-pymongo" },
+    { name = "opentelemetry-instrumentation-redis" },
+    { name = "opentelemetry-instrumentation-requests" },
+    { name = "opentelemetry-instrumentation-sqlalchemy" },
+    { name = "opentelemetry-instrumentation-starlette" },
+    { name = "opentelemetry-instrumentation-system-metrics" },
+    { name = "opentelemetry-instrumentation-urllib3" },
+]
+dev = [
+    { name = "boto3" },
+    { name = "build" },
+    { name = "pre-commit" },
+    { name = "pydantic-ai" },
+    { name = "pyinstaller" },
+    { name = "ruff" },
+    { name = "strands-agents" },
+    { name = "strands-agents-tools" },
+    { name = "twine" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "mitmproxy", specifier = ">=12.2.1" },
+    { name = "opentelemetry-api", specifier = ">=1.39.1" },
+    { name = "opentelemetry-exporter-otlp-proto-http", specifier = ">=1.39.1" },
+    { name = "opentelemetry-instrumentation", specifier = ">=0.60b1" },
+    { name = "opentelemetry-instrumentation-httpx", specifier = ">=0.60b1" },
+    { name = "opentelemetry-instrumentation-threading", specifier = ">=0.60b1" },
+    { name = "opentelemetry-sdk", specifier = ">=1.39.1" },
+    { name = "pydantic", specifier = ">=2.12.5" },
+    { name = "rich", specifier = ">=14.3.3" },
+    { name = "tenacity", specifier = ">=9.1.4" },
+]
+
+[package.metadata.requires-dev]
+auto-instrument = [
+    { name = "opentelemetry-instrumentation-aiohttp-client", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-boto3sqs", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-botocore", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-celery", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-fastapi", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-flask", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-logging", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-psycopg", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-psycopg2", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-pymongo", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-redis", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-requests", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-sqlalchemy", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-starlette", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-system-metrics", specifier = ">=0.49b0,<0.61b0" },
+    { name = "opentelemetry-instrumentation-urllib3", specifier = ">=0.49b0,<0.61b0" },
+]
+dev = [
+    { name = "boto3", specifier = ">=1.42.70" },
+    { name = "build", specifier = ">=1.4.3" },
+    { name = "pre-commit", specifier = ">=4.5.1" },
+    { name = "pydantic-ai", specifier = ">=1.70.0" },
+    { name = "pyinstaller", specifier = ">=6.19.0" },
+    { name = "ruff", specifier = ">=0.15.6" },
+    { name = "strands-agents", specifier = ">=1.30.0" },
+    { name = "strands-agents-tools", specifier = ">=0.2.22" },
+    { name = "twine", specifier = ">=6.2.0" },
 ]
 
 [[package]]

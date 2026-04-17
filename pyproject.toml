@@ -1,6 +1,6 @@
 [project]
-name = "py-governance-engine"
-version = "0.0.12"
+name = "z-grc"
+version = "0.0.13"
 description = "Governance Engine by zeb labs"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -43,8 +43,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/zeb-ai/py-governance-engine"
-Repository = "https://github.com/zeb-ai/py-governance-engine"
+Homepage = "https://github.com/zeb-ai/z-grc"
+Repository = "https://github.com/zeb-ai/z-grc"
 
 
 # DEV dependency only for running example codes and precommit

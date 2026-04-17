@@ -1,9 +1,9 @@
 import os
-import grc
+import zgrc
 
 api_key = os.getenv("API_KEY")
 
-grc.init(api_key)
+zgrc.init(api_key)
 # Now import pydantic-ai AFTER hooks are installed
 from pydantic_ai import Agent  # noqa: E402
 from pydantic_ai.models.bedrock import BedrockConverseModel  # noqa: E402

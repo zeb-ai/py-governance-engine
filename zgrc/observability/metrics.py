@@ -25,7 +25,7 @@ class Metrics(BaseTelemetry):
         reader = PeriodicExportingMetricReader(exporter, export_interval_millis=60000)
         _meter_provider = MeterProvider(resource=self.resource, metric_readers=[reader])
         metrics.set_meter_provider(_meter_provider)
-        self._meter = metrics.get_meter("grc")
+        self._meter = metrics.get_meter("zgrc")
 
         self._counters = {
             "total_token": self._meter.create_counter(
@@ -40,7 +40,7 @@ class Metrics(BaseTelemetry):
                 name="output_token", description="Output tokens consumed", unit="tokens"
             ),
             "requests": self._meter.create_counter(
-                "grc.llm.requests", description="Total LLM requests", unit="1"
+                "zgrc.llm.requests", description="Total LLM requests", unit="1"
             ),
         }
 
