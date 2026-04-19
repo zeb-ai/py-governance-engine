@@ -20,8 +20,7 @@ class BaseTelemetry(ABC):
         self.resource: Resource = Resource.create(
             {
                 "user_id": self.ctx.user_id,
-                "policy_id": self.ctx.policy_id,
-                "project_id": self.ctx.project_id,
+                "group_id": self.ctx.group_id,
             }
         )
         self.log_endpoint: str = self.ctx.opentelemetry

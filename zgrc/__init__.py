@@ -43,12 +43,13 @@ class GRC:
         auth_token = AuthToken.decode(api_key)
         auth_ctx.set(auth_token)
 
-        # llm observability instrumentation (with optional auto-instrumentation)
-        instrument(
-            auto_instrument=auto_instrument,
-            app_name=app_name or "",
-            environment=environment or "",
-        )
+        # llm observability instrumentation (only when auto_instrument is enabled)
+        if auto_instrument:
+            instrument(
+                auto_instrument=auto_instrument,
+                app_name=app_name or "",
+                environment=environment or "",
+            )
 
         # registering interceptors to registry
         self._register_interceptors()

@@ -42,7 +42,7 @@ class QuotaClient:
     async def get_quota(self) -> Quota:
         """Fetch current quota status from the GRC API and update the context."""
         params = {
-            "project_id": self.auth_token.project_id,
+            "group_id": self.auth_token.group_id,
             "user_id": self.auth_token.user_id,
         }
 
@@ -60,9 +60,8 @@ class QuotaClient:
     async def post_quota_usage(self, tokens_used: int) -> Quota:
         """Report token consumption to the GRC API and receive updated quota status."""
         body = {
-            "project_id": self.auth_token.project_id,
-            "policy_id": self.auth_token.policy_id,
             "user_id": self.auth_token.user_id,
+            "policy_id": self.auth_token.group_id,  # policy_id is group_id
             "amount": tokens_used,
         }
 
