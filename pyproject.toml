@@ -59,6 +59,10 @@ dev = [
     "pyinstaller>=6.19.0",
     "build>=1.4.3",
     "twine>=6.2.0",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.5.0",
+    "mkdocs-autorefs>=1.2.0",
+    "pymdown-extensions>=10.12",
 ]
 
 # install when instrumentation needed for whole project/application

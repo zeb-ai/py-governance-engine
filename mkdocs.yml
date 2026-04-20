@@ -1,0 +1,62 @@
+site_name: Z-GRC Documentation
+site_description: Need to addd
+site_author: zeb Labs
+site_url: https://zeb-ai.github.io/z-grc/
+
+repo_name: zeb-ai/z-grc
+repo_url: https://github.com/zeb-ai/z-grc
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/zeb-ai/z-grc
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/z-grc/
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - admonition
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - autorefs
+
+nav:
+  - Home: index.md
