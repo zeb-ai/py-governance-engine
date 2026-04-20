@@ -1,4 +1,4 @@
-.PHONY: help setup build clean lint fix up-proxy grpc-proxy-build docs-serve docs-build docs-deploy docs-clean
+.PHONY: help setup build clean lint fix up-proxy grpc-proxy-build docs-serve docs-build
 
 help:
 	@clear 2>/dev/null || true
