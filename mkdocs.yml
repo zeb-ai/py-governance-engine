@@ -1,5 +1,5 @@
 site_name: Z-GRC Documentation
-site_description: <<< Need to addd >>>
+site_description: Need to addd
 site_author: zeb Labs
 site_url: https://zeb-ai.github.io/z-grc/
 
@@ -35,9 +35,6 @@ extra:
       link: https://github.com/zeb-ai/z-grc
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/z-grc/
-
-extra_css:
-  - stylesheets/extra.css
 
 markdown_extensions:
   - pymdownx.highlight:
