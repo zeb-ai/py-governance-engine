@@ -17,3 +17,7 @@ playground/
 
 #dev pipeline
 azure-pipelines.yml
+
+# MkDocs
+site/
+.cache/
