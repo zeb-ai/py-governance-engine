@@ -1,4 +1,4 @@
-.PHONY: help setup build clean lint fix up-proxy grpc-proxy-build
+.PHONY: help setup build clean lint fix up-proxy grpc-proxy-build docs-serve docs-build docs-deploy docs-clean
 
 help:
 	@clear 2>/dev/null || true
@@ -12,6 +12,10 @@ help:
 	@echo
 	@echo "Executable builds:"
 	@echo "  make grpc-proxy-build         - Build z-grc-proxy for current platform only"
+	@echo
+	@echo "Documentation:"
+	@echo "  make docs-serve               - Start local documentation server"
+	@echo "  make docs-build               - Build documentation site"
 	@echo
 
 setup:
@@ -62,3 +66,13 @@ grpc-proxy-build:
 	uv run pyinstaller z-grc-proxy.spec
 	@echo
 	@echo "Binary created at: dist/z-grc-proxy"
+
+docs-serve:
+	@clear 2>/dev/null || true
+	uv run mkdocs serve
+
+docs-build:
+	@clear 2>/dev/null || true
+	@echo "Building documentation site..."
+	uv run mkdocs build
+	@echo "Documentation built in site/ directory"
