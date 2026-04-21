@@ -59,7 +59,7 @@ clean:
 
 # dev
 up-proxy:
-	uv run grc/proxy/main.py --api-key $(GRC_API_KEY)
+	uv run zgrc/proxy.main.py --api-key $(GRC_API_KEY)
 
 grpc-proxy-build:
 	@echo "Building z-grc-proxy for current platform ($(shell uname -s)-$(shell uname -m))..."

@@ -44,9 +44,10 @@ class QuotaClient:
         response: Dict[str, Any] = await self.client.get(
             "/api/quota/user", params=params
         )
+
         quota_status = Quota(
-            used_quota=response.get("used_quota", 0.0),
-            remaining_quota=response.get("remaining_quota", 0.0),
+            used_quota=response.get("used_cost", 0.0),
+            remaining_quota=response.get("remaining_cost", 0.0),
         )
         quota_ctx.set(quota_status)
         return quota_status
@@ -65,8 +66,8 @@ class QuotaClient:
         )
 
         quota_status = Quota(
-            used_quota=response.get("used_quota", 0.0),
-            remaining_quota=response.get("remaining_quota", 0.0),
+            used_quota=response.get("used_cost", 0.0),
+            remaining_quota=response.get("remaining_cost", 0.0),
         )
         quota_ctx.set(quota_status)
         return quota_status

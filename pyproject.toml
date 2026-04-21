@@ -93,4 +93,4 @@ auto-instrument = [
 ]
 
 [project.scripts]
-grc-proxy = "grc.proxy.main:main"
+zgrc-proxy = "zgrc/zgrc.proxy.main:main"
