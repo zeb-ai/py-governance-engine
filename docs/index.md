@@ -1,3 +1,10 @@
+<style>
+  /* Hide the auto-generated "Home" title on this page only */
+  .md-content article > h1:first-of-type {
+    display: none;
+  }
+</style>
+
 <strong style="font-weight: 700; font-size: 2.5em;">Z-GRC Engine</strong>
 
 <strong style="font-weight: 400; font-size: 1.5em;">Governance, Risk, Compliance Engine developed by [zeb Labs](https://zeblab.zeb.co/)</strong>
