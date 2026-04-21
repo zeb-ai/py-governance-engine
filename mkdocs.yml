@@ -1,6 +1,6 @@
 site_name: Z-GRC Documentation
-site_description: Need to addd
-site_author: zeb Labs
+site_description: Governance, Risk & Compliance platform by Zeb Labs
+site_author: Zeb Labs
 site_url: https://zeb-ai.github.io/z-grc/
 
 repo_name: zeb-ai/z-grc
@@ -9,16 +9,24 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
+  logo: assets/icon.svg
+  favicon: assets/icon.svg
+
   palette:
-    scheme: slate
+    - scheme: slate
+      primary: custom
+      accent: custom
+
+  font:
+    text: Inter
+    code: JetBrains Mono
 
   features:
     - navigation.instant
     - navigation.tracking
-    - navigation.tabs
     - navigation.sections
-    - navigation.expand
     - navigation.top
+    - navigation.footer
     - search.suggest
     - search.highlight
     - content.code.copy
@@ -27,6 +35,10 @@ theme:
 
   icon:
     repo: fontawesome/brands/github
+    edit: material/pencil
+
+extra_css:
+  - stylesheets/theme.css
 
 extra:
   generator: false
@@ -35,6 +47,8 @@ extra:
       link: https://github.com/zeb-ai/z-grc
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/z-grc/
+
+copyright: Copyright &copy; 2026 Zeb Labs
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -47,12 +61,16 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.details
+  - pymdownx.keys
   - admonition
   - tables
   - attr_list
   - md_in_html
+  - footnotes
+  - def_list
   - toc:
       permalink: true
+      permalink_title: Copy link to section
 
 plugins:
   - search
@@ -60,3 +78,4 @@ plugins:
 
 nav:
   - Home: index.md
+  - How to Use?: how-to-use.md

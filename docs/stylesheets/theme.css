@@ -1,0 +1,594 @@
+/* ============================================================
+   Z-GRC  ·  Apple Developer Docs inspired dark theme
+   Flat. Near-black. Typography does the work.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ============================================================
+   1. Color tokens  —  near-black, one neutral accent
+   ============================================================ */
+[data-md-color-scheme="slate"] {
+  /* Surfaces  —  three flat steps, that's it */
+  --md-default-bg-color:             #111113;   /* page background */
+  --surface-1:                       #1a1a1d;   /* sidebars, cards, code blocks */
+  --surface-2:                       #222226;   /* hover, inline code */
+  --border:                          #2a2a2f;   /* all borders */
+  --border-strong:                   #3a3a41;
+
+  /* Text  —  four weights of white */
+  --md-default-fg-color:             rgba(255, 255, 255, 0.92);
+  --md-default-fg-color--light:      rgba(255, 255, 255, 0.66);
+  --md-default-fg-color--lighter:    rgba(255, 255, 255, 0.44);
+  --md-default-fg-color--lightest:   rgba(255, 255, 255, 0.12);
+
+  /* Accent  —  Apple system blue, used sparingly */
+  --md-primary-fg-color:             #2997ff;
+  --md-primary-fg-color--light:      #5ab0ff;
+  --md-primary-fg-color--dark:       #0071e3;
+  --md-primary-bg-color:             #ffffff;
+  --md-primary-bg-color--light:      rgba(255, 255, 255, 0.7);
+
+  --md-accent-fg-color:              #2997ff;
+  --md-accent-fg-color--transparent: rgba(41, 151, 255, 0.1);
+  --md-accent-bg-color:              #ffffff;
+
+  /* Code */
+  --md-code-bg-color:                var(--surface-1);
+  --md-code-fg-color:                rgba(255, 255, 255, 0.9);
+
+  /* Typography */
+  --md-text-font:    "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --md-code-font:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* ============================================================
+   2. Base
+   ============================================================ */
+html { font-size: 16px; }
+
+body {
+  background: var(--md-default-bg-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* ============================================================
+   3. Header  —  flat, thin border, no blur
+   ============================================================ */
+.md-header {
+  background: var(--md-default-bg-color);
+  border-bottom: 1px solid var(--border);
+  box-shadow: none;
+  height: 56px;
+}
+
+.md-header__inner { height: 56px; padding: 0 1.25rem; }
+
+.md-header__title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  margin-left: 0.5rem;
+  color: #ffffff !important;
+}
+
+.md-header__button.md-logo { margin: 0 0.5rem 0 0; }
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg { height: 1.6rem; }
+
+/* Header links white */
+.md-header__topic,
+.md-header a {
+  color: #ffffff !important;
+}
+
+/* Tabs — remove the second-row clutter, just an underline */
+.md-tabs {
+  background: var(--md-default-bg-color);
+  border-bottom: 1px solid var(--border);
+  height: 44px;
+}
+.md-tabs__list { height: 44px; }
+.md-tabs__item { height: 44px; padding: 0 0.9rem; }
+
+.md-tabs__link {
+  font-size: 0.82rem;
+  font-weight: 500;
+  opacity: 1;
+  color: var(--md-default-fg-color--light);
+  margin: 0;
+}
+.md-tabs__link:hover { color: var(--md-default-fg-color); opacity: 1; }
+.md-tabs__link--active { color: var(--md-default-fg-color); font-weight: 600; }
+
+/* ============================================================
+   4. Search  —  clean input, no chrome
+   ============================================================ */
+.md-search__form {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  height: 32px;
+  transition: border-color 0.15s ease;
+}
+.md-search__form:hover { border-color: var(--border-strong); }
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form {
+  border-color: var(--md-primary-fg-color);
+  background: var(--surface-1);
+}
+.md-search__input { font-size: 0.82rem; }
+.md-search__input::placeholder { color: var(--md-default-fg-color--lighter); }
+
+.md-search__output {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-top: 6px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+.md-search-result__meta {
+  background: transparent;
+  color: var(--md-default-fg-color--lighter);
+  border-bottom: 1px solid var(--border);
+}
+.md-search-result__article { padding: 0.5rem 1rem; }
+.md-search-result__article:hover { background: var(--surface-2); }
+
+/* ============================================================
+   5. Sidebars  —  flat, thin border, no card
+   ============================================================ */
+.md-sidebar {
+  padding: 1.25rem 0;
+  width: 12.5rem;
+}
+
+.md-sidebar__scrollwrap {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+  margin: 0;
+}
+
+/* Left nav */
+.md-sidebar--primary .md-sidebar__inner {
+  padding: 0 0.75rem 0 1rem;
+}
+
+/* Right TOC */
+.md-sidebar--secondary .md-sidebar__inner {
+  padding: 0 1rem 0 0.75rem;
+  border-left: 1px solid var(--border);
+}
+
+@media screen and (max-width: 76.1875em) {
+  .md-sidebar--primary {
+    background: var(--surface-1);
+    border-right: 1px solid var(--border);
+  }
+}
+
+/* ============================================================
+   6. Nav items  —  Apple sidebar: tight, quiet, single accent
+   ============================================================ */
+.md-nav { font-size: 0.78rem; }
+
+.md-nav__title {
+  color: var(--md-default-fg-color--lighter);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem 0.5rem;
+}
+
+.md-nav__list { padding: 0; }
+.md-nav__item { padding: 0; margin: 0; }
+
+.md-nav__link {
+  color: var(--md-default-fg-color--light);
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+  margin: 1px 0;
+  font-weight: 400;
+  transition: background 0.1s ease, color 0.1s ease;
+  gap: 0.4rem;
+}
+.md-nav__link:hover { background: var(--surface-2); color: var(--md-default-fg-color); }
+
+.md-nav__link--active,
+.md-nav__item--active > .md-nav__link {
+  color: var(--md-primary-fg-color) !important;
+  background: transparent;
+  font-weight: 500;
+}
+
+/* Section label at top of left nav */
+.md-nav--primary > .md-nav__title {
+  background: transparent;
+  box-shadow: none;
+  padding: 0 0.5rem 0.75rem;
+}
+
+/* Right TOC — tighter, no border accents */
+.md-sidebar--secondary .md-nav__title { display: none; }
+.md-sidebar--secondary .md-nav__link {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.76rem;
+}
+.md-sidebar--secondary .md-nav__link--active {
+  color: var(--md-primary-fg-color) !important;
+  background: transparent;
+}
+
+/* ============================================================
+   7. Main content  —  generous measure, Apple spacing
+   ============================================================ */
+.md-main__inner { margin-top: 0; }
+.md-content { padding: 1.5rem 0 4rem; }
+.md-content__inner { margin: 0 1.5rem; max-width: 62rem; padding-top: 1rem; }
+.md-content__inner:before { height: 0; }
+
+.md-typeset {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--md-default-fg-color);
+}
+
+.md-typeset p { margin: 0 0 1rem; }
+
+/* Headings  —  Apple cadence */
+.md-typeset h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: #fff;
+  margin: 0 0 0.5rem;
+}
+.md-typeset h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: #fff;
+  margin: 3rem 0 1rem;
+  padding: 0;
+  border: none;
+}
+.md-typeset h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: #fff;
+  margin: 2rem 0 0.75rem;
+}
+.md-typeset h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 1.5rem 0 0.5rem;
+}
+
+/* Permalink anchors — hidden until hover */
+.md-typeset .headerlink {
+  color: var(--md-default-fg-color--lighter);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.md-typeset h1:hover .headerlink,
+.md-typeset h2:hover .headerlink,
+.md-typeset h3:hover .headerlink,
+.md-typeset h4:hover .headerlink { opacity: 1; }
+
+/* Links */
+.md-typeset a {
+  color: var(--md-primary-fg-color);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.12s ease;
+}
+.md-typeset a:hover { border-bottom-color: var(--md-primary-fg-color); }
+
+/* Lists */
+.md-typeset ul,
+.md-typeset ol { margin: 0 0 1rem 1.25rem; }
+.md-typeset li { margin: 0.25rem 0; }
+.md-typeset li > p { margin-bottom: 0.5rem; }
+
+/* Horizontal rule */
+.md-typeset hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5rem 0;
+}
+
+/* Blockquote */
+.md-typeset blockquote {
+  border-left: 2px solid var(--border-strong);
+  color: var(--md-default-fg-color--light);
+  padding-left: 1rem;
+  margin-left: 0;
+}
+
+/* ============================================================
+   8. Code blocks  —  flat, bordered, no decoration
+   ============================================================ */
+.md-typeset code {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.08em 0.35em;
+  font-size: 0.82em;
+  font-weight: 500;
+  color: var(--md-code-fg-color);
+}
+
+.md-typeset pre > code { padding: 0; border: none; background: transparent; }
+
+.md-typeset .highlight {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 1.25rem 0;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.md-typeset .highlight > pre {
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.md-typeset .highlight > pre > code {
+  padding: 1rem 1.25rem !important;
+  font-family: var(--md-code-font);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  background: transparent !important;
+}
+
+/* line numbers table variant */
+.md-typeset .highlighttable {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.md-typeset .highlighttable .linenos {
+  background: transparent;
+  color: var(--md-default-fg-color--lighter);
+  border-right: 1px solid var(--border);
+  padding: 1rem 0.75rem;
+  user-select: none;
+}
+.md-typeset .highlighttable pre {
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+/* copy button */
+.md-clipboard {
+  color: var(--md-default-fg-color--lighter);
+  top: 0.4rem;
+  right: 0.4rem;
+}
+.md-clipboard:hover { color: var(--md-default-fg-color); }
+
+/* ============================================================
+   9. Admonitions  —  flat, thin left accent only
+   ============================================================ */
+.md-typeset .admonition,
+.md-typeset details {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border-strong);
+  border-radius: 6px;
+  box-shadow: none;
+  font-size: 0.85rem;
+  padding: 0.1rem 0.9rem;
+  margin: 1.25rem 0;
+}
+.md-typeset .admonition > .admonition-title,
+.md-typeset details > summary {
+  background: transparent !important;
+  font-weight: 600;
+  padding: 0.6rem 0 0.6rem 1.7rem;
+  margin: 0 -0.9rem;
+  border: none !important;
+}
+.md-typeset .admonition > .admonition-title::before,
+.md-typeset details > summary::before { left: 0.6rem; top: 0.7rem; }
+
+/* Note */
+.md-typeset .admonition.note,
+.md-typeset details.note { border-left-color: var(--md-primary-fg-color); }
+.md-typeset .admonition.note > .admonition-title::before,
+.md-typeset details.note > summary::before { background-color: var(--md-primary-fg-color); }
+
+/* Warning */
+.md-typeset .admonition.warning,
+.md-typeset details.warning { border-left-color: #ff9f0a; }
+.md-typeset .admonition.warning > .admonition-title::before,
+.md-typeset details.warning > summary::before { background-color: #ff9f0a; }
+
+/* Danger */
+.md-typeset .admonition.danger,
+.md-typeset details.danger { border-left-color: #ff453a; }
+.md-typeset .admonition.danger > .admonition-title::before,
+.md-typeset details.danger > summary::before { background-color: #ff453a; }
+
+/* Tip / success */
+.md-typeset .admonition.tip,
+.md-typeset .admonition.success,
+.md-typeset details.tip,
+.md-typeset details.success { border-left-color: #30d158; }
+.md-typeset .admonition.tip > .admonition-title::before,
+.md-typeset .admonition.success > .admonition-title::before,
+.md-typeset details.tip > summary::before,
+.md-typeset details.success > summary::before { background-color: #30d158; }
+
+/* ============================================================
+   10. Tables
+   ============================================================ */
+.md-typeset table:not([class]) {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: none;
+  font-size: 0.85rem;
+  overflow: hidden;
+}
+.md-typeset table:not([class]) th {
+  background: var(--surface-1);
+  color: var(--md-default-fg-color);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  padding: 0.6rem 0.9rem;
+}
+.md-typeset table:not([class]) td {
+  border-top: 1px solid var(--border);
+  padding: 0.6rem 0.9rem;
+}
+.md-typeset table:not([class]) tr:hover { background: var(--surface-1); }
+
+/* ============================================================
+   11. Tabs (pymdownx.tabbed)
+   ============================================================ */
+.md-typeset .tabbed-set {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 1.25rem 0;
+}
+.md-typeset .tabbed-labels {
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  box-shadow: none;
+}
+.md-typeset .tabbed-labels > label {
+  padding: 0.55rem 0.9rem;
+  margin: 0;
+  border-radius: 0;
+  color: var(--md-default-fg-color--light);
+  font-weight: 500;
+  font-size: 0.82rem;
+  transition: color 0.15s ease, box-shadow 0.15s ease;
+}
+.md-typeset .tabbed-labels > label:hover { color: var(--md-default-fg-color); }
+.md-typeset .tabbed-set > input:checked + label {
+  color: var(--md-primary-fg-color);
+  background: transparent;
+  box-shadow: inset 0 -2px 0 var(--md-primary-fg-color);
+}
+.md-typeset .tabbed-content { padding: 1rem 0 0; }
+
+/* ============================================================
+   12. Buttons
+   ============================================================ */
+.md-typeset .md-button {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  color: var(--md-default-fg-color);
+  font-weight: 500;
+  font-size: 0.85rem;
+  padding: 0.45rem 1rem;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+.md-typeset .md-button:hover {
+  background: var(--surface-1);
+  border-color: var(--md-default-fg-color--light);
+  color: var(--md-default-fg-color);
+}
+.md-typeset .md-button--primary {
+  background: var(--md-primary-fg-color);
+  border-color: var(--md-primary-fg-color);
+  color: #fff;
+}
+.md-typeset .md-button--primary:hover {
+  background: var(--md-primary-fg-color--dark);
+  border-color: var(--md-primary-fg-color--dark);
+  color: #fff;
+}
+
+/* ============================================================
+   13. Footer
+   ============================================================ */
+.md-footer {
+  background: var(--md-default-bg-color);
+  border-top: 1px solid var(--border);
+}
+.md-footer-meta { background: var(--md-default-bg-color); }
+.md-footer__inner { padding: 1rem 1.25rem; }
+.md-footer__title { font-size: 0.8rem; }
+.md-footer__link { opacity: 1; }
+.md-footer__button { color: var(--md-default-fg-color--light); }
+.md-footer-meta__inner { padding: 0.75rem 1.25rem; font-size: 0.78rem; }
+.md-footer-copyright { color: var(--md-default-fg-color--lighter); }
+.md-footer-social__link { color: var(--md-default-fg-color--light); }
+.md-footer-social__link:hover { color: var(--md-default-fg-color); }
+
+/* Back to top */
+.md-top {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  color: var(--md-default-fg-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+.md-top:hover { background: var(--surface-2); color: var(--md-default-fg-color); }
+
+/* ============================================================
+   14. Scrollbar, selection, focus
+   ============================================================ */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: #4a4a52; }
+
+::selection {
+  background: rgba(41, 151, 255, 0.35);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--md-primary-fg-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   15. Misc cleanup
+   ============================================================ */
+/* Remove Material's default content-side rule between nav/content */
+.md-sidebar--primary { box-shadow: none; }
+
+/* Kbd styling */
+.md-typeset kbd {
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  color: var(--md-default-fg-color);
+  font-size: 0.75rem;
+  padding: 0.1em 0.4em;
+  box-shadow: none;
+}
+
+/* Progress bar on instant-nav */
+.md-progress { background: var(--md-primary-fg-color); }
+
+/* ============================================================
+   16. Page title customization
+   ============================================================ */
+/* Page titles are shown by default on all pages */
+/* Individual pages can override this with inline styles if needed */
