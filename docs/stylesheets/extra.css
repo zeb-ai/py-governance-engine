@@ -1,0 +1,106 @@
+:root {
+  --md-primary-fg-color: #222F30;
+  --md-primary-fg-color--light: #2a3b3d;
+  --md-primary-fg-color--dark: #1a2324;
+  --md-accent-fg-color: #CEF79F;
+  --md-accent-fg-color--transparent: rgba(206, 247, 159, 0.1);
+
+  /* Configurable icon dimensions */
+  --header-icon-height: 2.5rem;
+  --header-icon-width: 2rem;
+  --header-height: 2.5rem; /* Should be slightly larger than icon height */
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #222F30;
+  --md-primary-fg-color--light: #2a3b3d;
+  --md-primary-fg-color--dark: #1a2324;
+  --md-accent-fg-color: #CEF79F;
+  --md-accent-fg-color--transparent: rgba(206, 247, 159, 0.1);
+}
+
+/* Configurable header height */
+.md-header {
+  height: var(--header-height);
+}
+
+.md-header__inner {
+  padding: 0 0.6rem;
+  height: var(--header-height);
+}
+
+.md-header__button {
+  margin: 0.1rem;
+  width: 2rem;
+  height: 2rem;
+}
+
+/* .md-logo {
+  height: var(--header-icon-height);
+  padding: 0.35rem 0.2rem 0.35rem 0.4rem;
+  margin: 0;
+  margin-right: 0.9rem; */
+  /* display: flex; */
+  /* align-items: center; */
+/* } */
+
+/* .md-logo img {
+  height: var(--header-icon-height);
+  width: var(--header-icon-width);
+  display: block;
+} */
+
+.md-header__title {
+  font-size: 0.95rem;
+  line-height: var(--header-height);
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  color: #ffffff !important;
+}
+
+/* Make all header text white */
+.md-header__title,
+.md-header__topic,
+.md-header a {
+  color: #ffffff !important;
+}
+
+/* .md-header__button.md-logo {
+  margin: 0;
+  padding: 0.35rem 0.2rem 0.35rem 0.4rem;
+  display: flex;
+  align-items: center;
+} */
+
+/* Better alignment */
+.md-header__inner {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+/* Navigation styling - keep all items visible */
+
+/* Bright green hyperlinks matching header icon */
+a {
+  color: var(--md-accent-fg-color) !important;
+}
+
+a:hover {
+  color: #a8d96e !important;
+  text-decoration: underline;
+}
+
+/* Navigation links */
+.md-nav__link,
+.md-tabs__link {
+  color: var(--md-accent-fg-color) !important;
+}
+
+/* Footer and header links */
+.md-footer__link,
+.md-header__topic {
+  color: var(--md-accent-fg-color) !important;
+}

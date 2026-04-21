@@ -1,4 +1,4 @@
-site_name: Z-GRC Documentation
+site_name: Z-GRC Engine Documentation
 site_description: Need to addd
 site_author: zeb Labs
 site_url: https://zeb-ai.github.io/z-grc/
@@ -9,8 +9,12 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
+  logo: assets/icon.svg
+  favicon: assets/icon.svg
   palette:
     scheme: slate
+    primary: custom
+    accent: lime
 
   features:
     - navigation.instant
@@ -27,6 +31,9 @@ theme:
 
   icon:
     repo: fontawesome/brands/github
+
+extra_css:
+  - stylesheets/extra.css
 
 extra:
   generator: false
@@ -60,3 +67,4 @@ plugins:
 
 nav:
   - Home: index.md
+  - How to Use?: how-to-use.md

@@ -1,11 +1,19 @@
-# Z-GRC - Z Governance, Risk, Control Engine
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=48&duration=1&pause=1000000&color=6366F1&center=true&vCenter=true&multiline=true&repeat=false&width=600&height=120&lines=Z-GRC" alt="Z-GRC">
+</p>
 
-[![Python Version](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
-[![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![PyPI version](https://badge.fury.io/py/z-grc.svg)](https://pypi.org/project/z-grc/)
-[![PyPI Downloads](https://img.shields.io/pypi/dm/z-grc)](https://pypi.org/project/z-grc/)
+<h2 align="center"><strong>Governance, Risk, and Control Engine for LLMs</strong></h2>
+<p align="center">Built by <a href="https://zeb.ai">Zeb Labs</a></p>
 
-[//]: # ([![License]&#40;https://img.shields.io/badge/license-Proprietary-red.svg&#41;]&#40;&#41;)
+<p align="center">
+
+  <a href="https://pypi.org/project/z-grc/"><img src="https://img.shields.io/badge/PyPI-z--grc-FFD700?style=for-the-badge&logo=pypi&logoColor=white" alt="PyPI"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.14+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python Version"></a>
+  <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/badge/Code_Style-Ruff-000000?style=for-the-badge&logo=ruff&logoColor=white" alt="Code Style: Ruff"></a>
+  <a href="https://zeb.ai"><img src="https://img.shields.io/badge/Built_by-Zeb_Labs-blueviolet?style=for-the-badge" alt="Built by Zeb Labs"></a>
+</p>
+
+---
 
 Enterprise-grade governance engine for Large Language Model applications. Provides automatic interception, policy enforcement, quota management, and comprehensive observability across multiple LLM providers with zero code changes.
 
