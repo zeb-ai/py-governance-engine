@@ -11,7 +11,9 @@ from opentelemetry import context, trace
 from ...observability import logs, metrics, traces
 from ...observability.logs import LogsConfig
 from ...providers import Providers
+from ...utils.cost_calculator import CostCalculationInput, calculate_cost
 from ...utils.exceptions import QuotaExceededException
+from ...utils.model_resolver import resolve_model_id_from_url
 from ..base_interceptor import BaseInterceptor
 from ..models import InterceptedCall, RequestData, ResponseData
 from .response_handlers import ResponseHandlerFactory
@@ -99,13 +101,30 @@ class BedrockInterceptor(BaseInterceptor):
             if response_json is None and usage.total_tokens == 0:
                 return response_tuple
 
+            # calculate cost from the tokens
+            resolved_model_id = await resolve_model_id_from_url(request_data.url)
+            if resolved_model_id and usage.total_tokens > 0:
+                cost_input = CostCalculationInput(
+                    model_id=resolved_model_id,
+                    input_tokens=usage.input_tokens,
+                    output_tokens=usage.output_tokens,
+                    cache_read_input_tokens=usage.cache_read_input_tokens,
+                    cache_creation_input_tokens=usage.cache_creation_input_tokens,
+                    provider=Providers.BEDROCK,
+                )
+                total_cost = calculate_cost(cost_input)
+                if total_cost:
+                    usage.total_cost = total_cost
+                    logger.debug(f"Calculated cost: ${total_cost:.6f}")
+
             response_data = ResponseData(
                 body=response_json or {},
                 usage=usage,
             )
 
             if usage.total_tokens > 0:
-                self.post_request_report(usage.total_tokens)
+                cost = usage.total_cost if usage.total_cost is not None else 0.0
+                self.post_request_report(usage.total_tokens, cost)
                 logger.debug(
                     f"Scheduled background report for {usage.total_tokens} tokens"
                 )
@@ -114,13 +133,16 @@ class BedrockInterceptor(BaseInterceptor):
                 InterceptedCall(request=request_data, response=response_data)
             )
 
-            # Add token attributes to span
+            # Add token and cost attributes to span
             if span:
                 span.set_attributes(
                     {
                         "llm.tokens.input": usage.input_tokens,
                         "llm.tokens.output": usage.output_tokens,
                         "llm.tokens.total": usage.total_tokens,
+                        "llm.tokens.cache_read": usage.cache_read_input_tokens,
+                        "llm.tokens.cache_creation": usage.cache_creation_input_tokens,
+                        "llm.cost.total": usage.total_cost,
                     }
                 )
 
@@ -130,9 +152,10 @@ class BedrockInterceptor(BaseInterceptor):
                     input_tokens=usage.input_tokens,
                     output_tokens=usage.output_tokens,
                     attributes={
-                        "model": request_data.model_id,
+                        "model": resolved_model_id or request_data.model_id,
                         "provider": "bedrock",
                         "operation": operation_name,
+                        "cost": usage.total_cost,
                     },
                 )
 
@@ -141,7 +164,7 @@ class BedrockInterceptor(BaseInterceptor):
 
                 log_config = LogsConfig(
                     provider=Providers.BEDROCK,
-                    model_id=request_data.model_id,
+                    model_id=resolved_model_id or request_data.model_id,
                     operation=operation_name,
                     request=request_data.body,
                     response=response_json or {},
@@ -149,6 +172,9 @@ class BedrockInterceptor(BaseInterceptor):
                         "input_tokens": usage.input_tokens,
                         "output_tokens": usage.output_tokens,
                         "total_tokens": usage.total_tokens,
+                        "cache_read_input_tokens": usage.cache_read_input_tokens,
+                        "cache_creation_input_tokens": usage.cache_creation_input_tokens,
+                        "total_cost": usage.total_cost,
                     },
                 )
                 thread = Thread(target=logs.send, args=(log_config,), daemon=False)

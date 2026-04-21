@@ -57,12 +57,13 @@ class QuotaClient:
         quota_ctx.set(quota_status)
         return quota_status
 
-    async def post_quota_usage(self, tokens_used: int) -> Quota:
-        """Report token consumption to the GRC API and receive updated quota status."""
+    async def post_quota_usage(self, tokens_used: int, cost: float) -> Quota:
+        """Report token consumption, cost to the GRC API."""
         body = {
             "user_id": self.auth_token.user_id,
-            "policy_id": self.auth_token.group_id,  # policy_id is group_id
+            "policy_id": self.auth_token.group_id,
             "amount": tokens_used,
+            "cost": cost,
         }
 
         response: Dict[str, Any] = await self.client.post(

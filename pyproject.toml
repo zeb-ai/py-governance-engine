@@ -30,6 +30,7 @@ maintainers = [
 keywords = ["governance", "llm", "quota", "policy", "telemetry", "observability"]
 dependencies = [
     "httpx>=0.28.1",
+    "litellm>=1.83.0",
     "mitmproxy>=12.2.1",
     "opentelemetry-api>=1.39.1",
     "opentelemetry-exporter-otlp-proto-http>=1.39.1",

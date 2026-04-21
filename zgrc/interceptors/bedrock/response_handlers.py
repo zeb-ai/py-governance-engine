@@ -64,12 +64,9 @@ class InvokeModelHandler(BaseResponseHandler):
     def _extract_token_usage(response_json: Dict[str, Any]) -> TokenUsage:
         """Extract token usage from InvokeModel response JSON."""
         if "usage" in response_json:
-            usage = response_json["usage"]
-            if "input_tokens" in usage:
-                return TokenUsage(
-                    input_tokens=usage.get("input_tokens", 0),
-                    output_tokens=usage.get("output_tokens", 0),
-                )
+            return TokenUsage.from_usage_dict(
+                response_json["usage"], key_format="snake_case"
+            )
         return TokenUsage()
 
 
@@ -108,13 +105,10 @@ class ConverseHandler(BaseResponseHandler):
     def _extract_token_usage(response_json: Dict[str, str]) -> TokenUsage:
         """Extract token usage from Converse response JSON (camelCase format)."""
         if "usage" in response_json:
-            usage = response_json["usage"]
-            # Converse API uses camelCase (inputTokens, outputTokens)
-            if "inputTokens" in usage:
-                return TokenUsage(
-                    input_tokens=usage.get("inputTokens", 0),
-                    output_tokens=usage.get("outputTokens", 0),
-                )
+            # why camelCase :  Converse API uses camelCase (inputTokens, outputTokens)
+            return TokenUsage.from_usage_dict(
+                response_json["usage"], key_format="camelCase"
+            )
         return TokenUsage()
 
 
@@ -221,27 +215,17 @@ class StreamingBodyTokenTracker:
     @staticmethod
     def _extract_token_usage(chunk_data: Dict) -> TokenUsage:
         """Extract token usage from stream chunk JSON supporting both snake_case and camelCase formats."""
-        # Try snake_case (Anthropic Claude)
         if "usage" in chunk_data:
             usage = chunk_data["usage"]
             if "input_tokens" in usage:
-                return TokenUsage(
-                    input_tokens=usage.get("input_tokens", 0),
-                    output_tokens=usage.get("output_tokens", 0),
-                )
-            # Try camelCase (Amazon models)
+                return TokenUsage.from_usage_dict(usage, key_format="snake_case")
             if "inputTokens" in usage:
-                return TokenUsage(
-                    input_tokens=usage.get("inputTokens", 0),
-                    output_tokens=usage.get("outputTokens", 0),
-                )
+                return TokenUsage.from_usage_dict(
+                    usage, key_format="camelCase"
+                )  # camelCase (Amazon models)
 
-        # Try top-level keys (some models)
         if "inputTokens" in chunk_data and "outputTokens" in chunk_data:
-            return TokenUsage(
-                input_tokens=chunk_data.get("inputTokens", 0),
-                output_tokens=chunk_data.get("outputTokens", 0),
-            )
+            return TokenUsage.from_usage_dict(chunk_data, key_format="camelCase")
 
         return TokenUsage()
 
@@ -283,12 +267,9 @@ class TokenTrackingEventStream:
     @staticmethod
     def _extract_token_usage(usage_data: Dict[str, Any]) -> TokenUsage:
         """Extract token usage from ConverseStream metadata (camelCase format)."""
-        # ConverseStream uses camelCase
         if "inputTokens" in usage_data:
-            return TokenUsage(
-                input_tokens=usage_data.get("inputTokens", 0),
-                output_tokens=usage_data.get("outputTokens", 0),
-            )
+            # ConverseStream uses camelCase
+            return TokenUsage.from_usage_dict(usage_data, key_format="camelCase")
         return TokenUsage()
 
     def _update_policy(self, usage: TokenUsage):
