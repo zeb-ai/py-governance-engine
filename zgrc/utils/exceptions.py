@@ -7,9 +7,9 @@ class PolicyException(Exception):
 
 
 class QuotaExceededException(PolicyException):
-    """Raised when user has exceeded their token quota (100% threshold)"""
+    """Raised when user has exceeded their dollar-based quota"""
 
-    def __init__(self, used: int, limit: int, percentage: float, domain: str = None):
+    def __init__(self, used: float, remaining: float, domain: str = None):
         from rich.console import Console
         from rich.panel import Panel
         from rich.text import Text
@@ -24,19 +24,16 @@ class QuotaExceededException(PolicyException):
 
         message.append("Quota Status:\n", style="bold yellow")
         message.append("  Used:      ", style="white")
-        message.append(f"{used:,}", style="bold red")
-        message.append(f" / {limit:,} tokens\n", style="white")
+        message.append(f"${used:.4f}\n", style="bold red")
         message.append("  Remaining: ", style="white")
-        message.append("0 tokens\n", style="bold red")
-        message.append("  Usage:     ", style="white")
-        message.append(f"{percentage:.1f}%\n\n", style="bold red")
+        message.append(f"${remaining:.4f}\n\n", style="bold red")
 
         message.append("Actions:\n", style="bold yellow")
         message.append("  • Wait for monthly quota reset\n", style="white")
 
         if domain:
             message.append(
-                f"  • Increase your quota at {domain}/billing", style="white"
+                f"  • Increase your quota at {domain}/user-groups", style="white"
             )
         else:
             message.append(
@@ -52,13 +49,10 @@ class QuotaExceededException(PolicyException):
         )
 
         console.print(panel)
-        simple_message = (
-            f"Quota exceeded: {used:,}/{limit:,} tokens ({percentage:.1f}%)"
-        )
-        super().__init__(simple_message, used=used, limit=limit, percentage=percentage)
+        simple_message = f"Quota exceeded: ${used:.4f} used, ${remaining:.4f} remaining"
+        super().__init__(simple_message, used=used, remaining=remaining)
         self.used = used
-        self.limit = limit
-        self.percentage = percentage
+        self.remaining = remaining
         self.domain = domain
 
 

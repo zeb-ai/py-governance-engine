@@ -242,7 +242,7 @@ After initialization, use your AWS Bedrock SDKs as you normally would. Z-GRC aut
             })
         )
     except QuotaExceededException as e:
-        print(f"❌ Quota exceeded: {e.used}/{e.limit} tokens used")
+        print(f"❌ Quota exceeded: ${e.used:.4f} used, ${e.remaining:.4f} remaining")
         print(f"Please contact your administrator to increase the quota")
         # Implement fallback logic or notify administrators
     except Exception as e:

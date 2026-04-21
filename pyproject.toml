@@ -45,6 +45,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/zeb-ai/z-grc"
+Documentation = "https://zeb-ai.github.io/z-grc/"
 Repository = "https://github.com/zeb-ai/z-grc"
 
 

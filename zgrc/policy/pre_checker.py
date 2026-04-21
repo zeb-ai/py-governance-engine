@@ -29,19 +29,12 @@ class PreChecker:
 
         # If continue_to_inference is False, it means quota is exceeded
         if not current_quota.continue_to_inference:
-            usage_percentage: float = (
-                (current_quota.used_quota / current_quota.monthly_quota * 100)
-                if current_quota.monthly_quota > 0
-                else 0.0
-            )
-
             # For error message
             auth_token = auth_ctx.get()
             domain: str | None = auth_token.domain if auth_token else None
 
             raise QuotaExceededException(
                 used=current_quota.used_quota,
-                limit=current_quota.monthly_quota,
-                percentage=usage_percentage,
+                remaining=current_quota.remaining_quota,
                 domain=domain,
             )
