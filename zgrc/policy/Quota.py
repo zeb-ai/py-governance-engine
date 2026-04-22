@@ -12,18 +12,13 @@ if TYPE_CHECKING:
 
 
 class Quota(BaseModel):
-    used_quota: int = 0
-    remaining_quota: int = 0
-    monthly_quota: int = 0
+    used_quota: float = 0.0  # Dollar-based tracking instead of tokens
+    remaining_quota: float = 0.0  # Dollar-based tracking instead of tokens
 
     @property
     def need_to_check_usage(self) -> bool:
         """Check if quota usage needs to be fetched from the API (all values are zero initially)."""
-        return (
-            self.used_quota == 0
-            and self.remaining_quota == 0
-            and self.monthly_quota == 0
-        )
+        return self.used_quota == 0 and self.remaining_quota == 0
 
     @property
     def continue_to_inference(self) -> bool:
@@ -49,20 +44,21 @@ class QuotaClient:
         response: Dict[str, Any] = await self.client.get(
             "/api/quota/user", params=params
         )
+
         quota_status = Quota(
-            used_quota=response["used_quota"],
-            remaining_quota=response["remaining_quota"],
-            monthly_quota=response["monthly_quota"],
+            used_quota=response.get("used_cost", 0.0),
+            remaining_quota=response.get("remaining_cost", 0.0),
         )
         quota_ctx.set(quota_status)
         return quota_status
 
-    async def post_quota_usage(self, tokens_used: int) -> Quota:
-        """Report token consumption to the GRC API and receive updated quota status."""
+    async def post_quota_usage(self, tokens_used: int, cost: float) -> Quota:
+        """Report token consumption and cost to the GRC API."""
         body = {
             "user_id": self.auth_token.user_id,
-            "policy_id": self.auth_token.group_id,  # policy_id is group_id
+            "policy_id": self.auth_token.group_id,
             "amount": tokens_used,
+            "cost": cost,
         }
 
         response: Dict[str, Any] = await self.client.post(
@@ -70,9 +66,8 @@ class QuotaClient:
         )
 
         quota_status = Quota(
-            used_quota=response["used_quota"],
-            remaining_quota=response["remaining_quota"],
-            monthly_quota=response["monthly_quota"],
+            used_quota=response.get("used_cost", 0.0),
+            remaining_quota=response.get("remaining_cost", 0.0),
         )
         quota_ctx.set(quota_status)
         return quota_status

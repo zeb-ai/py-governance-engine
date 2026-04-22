@@ -10,6 +10,9 @@ help:
 	@echo "  make fix                      - Run ruff check and fix issues automatically"
 	@echo "  make clean                    - Clean build artifacts, cache files, and Python bytecode"
 	@echo
+	@echo "Development:"
+	@echo "  make up-proxy                 - Run the proxy server locally (requires GRC_API_KEY)"
+	@echo
 	@echo "Executable builds:"
 	@echo "  make grpc-proxy-build         - Build z-grc-proxy for current platform only"
 	@echo
@@ -59,9 +62,13 @@ clean:
 
 # dev
 up-proxy:
-	uv run grc/proxy/main.py --api-key $(GRC_API_KEY)
+	@clear 2>/dev/null || true
+	@echo
+	PYTHONPATH="$(CURDIR)" uv run python zgrc/proxy.main.py --api-key $(GRC_API_KEY)
 
 grpc-proxy-build:
+	@clear 2>/dev/null || true
+	@echo
 	@echo "Building z-grc-proxy for current platform ($(shell uname -s)-$(shell uname -m))..."
 	uv run pyinstaller z-grc-proxy.spec
 	@echo

@@ -22,7 +22,6 @@ class GRC:
         auto_instrument: bool = False,
         app_name: Optional[str] = None,
         environment: Optional[str] = None,
-        log_level: int = logging.ERROR,
     ) -> None:
         """
         Initialize GRC with optional auto-instrumentation.
@@ -32,12 +31,11 @@ class GRC:
             auto_instrument    :  Enable automatic instrumentation of frameworks (default: False)
             app_name           :  Application name for resource attributes
             environment        :  Deployment environment (dev/staging/prod)
-            log_level          :  Logging level for GRC internal logs (default: ERROR)
         """
         from .core import auto_manager
 
         # logging configuration
-        GRC._config_grc_logger(log_level)
+        GRC._config_grc_logger(logging.ERROR)
 
         # api token decoding and storing in context vars
         auth_token = AuthToken.decode(api_key)

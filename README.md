@@ -71,7 +71,7 @@ Automatically detects and intercepts installed LLM SDKs:
 - Azure OpenAI (coming soon)
 
 ### Policy Enforcement
-Real-time quota validation and token limit enforcement. Blocks requests when quota is exceeded.
+Real-time quota validation and cost limit enforcement. Blocks requests when quota is exceeded.
 
 ```python
 from zgrc.utils import QuotaExceededException
@@ -79,7 +79,7 @@ from zgrc.utils import QuotaExceededException
 try:
     response = client.invoke_model(...)
 except QuotaExceededException as e:
-    print(f"Quota exceeded: {e.used}/{e.limit} tokens")
+    print(f"Quota exceeded: ${e.used:.4f} used, ${e.remaining:.4f} remaining")
 ```
 
 ### Auto-Instrumentation

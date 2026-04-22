@@ -5,9 +5,12 @@ import struct
 from datetime import datetime
 from mitmproxy.http import Response
 
+from ..interceptors.models import TokenUsage
 from ..policy.pre_checker import PreChecker
 from ..policy.post_checker import PostChecker
+from ..utils.cost_calculator import calculate_cost_from_events
 from ..utils.exceptions import QuotaExceededException
+from ..utils.model_resolver import resolve_model_id_from_url
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +28,7 @@ class RequestHandler:
         if "invoke" not in flow.request.path:
             return
 
-        logger.info(f"[REQUEST] {flow.request.pretty_url}")
+        logger.debug(f"{flow.request.pretty_url}")
 
         try:
             await self.pre_checker.check_quota()
@@ -54,40 +57,91 @@ class ResponseHandler:
         if "invoke" not in flow.request.path:
             return
 
-        logger.info(f"[RESPONSE] {flow.response.status_code} {flow.request.pretty_url}")
+        logger.info(f"{flow.response.status_code} {flow.request.pretty_url}")
 
         try:
             response_data = self._parse_response(flow.response.content)
 
-            input_tokens = 0
-            output_tokens = 0
+            total_usage = TokenUsage()
 
             if isinstance(response_data, dict) and "events" in response_data:
-                for event in response_data["events"]:
-                    usage = event.get("usage", {})
-                    input_tokens += usage.get("input_tokens", 0)
-                    output_tokens += usage.get("output_tokens", 0)
+                for idx, event in enumerate(response_data["events"]):
+                    usage_dict = event.get("usage", {})
+                    if not usage_dict:
+                        continue
+                    # Try snake_case first (Anthropic models)
+                    if "input_tokens" in usage_dict:
+                        event_usage = TokenUsage.from_usage_dict(
+                            usage_dict, key_format="snake_case"
+                        )
+                    # Try camelCase (Amazon models)
+                    elif "inputTokens" in usage_dict:
+                        event_usage = TokenUsage.from_usage_dict(
+                            usage_dict, key_format="camelCase"
+                        )
+                    else:
+                        continue
 
-            used = input_tokens + output_tokens
+                    # DEBUG: Log parsed event usage
+                    logger.info(
+                        f"Event {idx} parsed - "
+                        f"input={event_usage.input_tokens}, "
+                        f"output={event_usage.output_tokens}, "
+                        f"cache_read={event_usage.cache_read_input_tokens}, "
+                        f"cache_write={event_usage.cache_creation_input_tokens}"
+                    )
+
+                    total_usage = TokenUsage(
+                        input_tokens=total_usage.input_tokens
+                        + event_usage.input_tokens,
+                        output_tokens=total_usage.output_tokens
+                        + event_usage.output_tokens,
+                        cache_read_input_tokens=total_usage.cache_read_input_tokens
+                        + event_usage.cache_read_input_tokens,
+                        cache_creation_input_tokens=total_usage.cache_creation_input_tokens
+                        + event_usage.cache_creation_input_tokens,
+                    )
+
+            # Calculate cost using the new event-based method
+            cost = 0.0
+            if isinstance(response_data, dict) and "events" in response_data:
+                model_id = await resolve_model_id_from_url(flow.request.pretty_url)
+                if model_id:
+                    logger.debug(f"Resolved model_id: {model_id}")
+                    cost = (
+                        calculate_cost_from_events(response_data["events"], model_id)
+                        or 0.0
+                    )
+                    logger.info(f"Calculated cost: ${cost}")
+
+            used = total_usage.total_tokens
             self.request_handler.total_tokens += used
 
             if used > 0:
-                logger.info(
-                    f"[OK] Tokens: {used} (in={input_tokens}, out={output_tokens}) | Total: {self.request_handler.total_tokens}"
+                logger.debug(
+                    f"Tokens: {used} (in={total_usage.input_tokens}, out={total_usage.output_tokens}, "
+                    f"cache_read={total_usage.cache_read_input_tokens}, cache_write={total_usage.cache_creation_input_tokens}) | "
+                    f"Cost: ${cost:.6f} | Total: {self.request_handler.total_tokens}"
                 )
 
-                self.post_checker.schedule_background_report(used)
+                self.post_checker.schedule_background_report(used, cost)
 
-                self._log_entry(flow, response_data, input_tokens, output_tokens)
+                self._log_entry(
+                    flow,
+                    response_data,
+                    total_usage.input_tokens,
+                    total_usage.output_tokens,
+                )
 
         except Exception as e:
             logger.error(f"[ERROR] Response processing failed: {e}")
 
+    # noinspection PyBroadException
     def _parse_response(self, content):
         try:
             return json.loads(content.decode("utf-8"))
-        except Exception as e:
-            logger.error(f"[ERROR] Response processing failed: {e}")
+        except Exception:
+            pass
 
         events = self._parse_event_stream(content)
         if events:

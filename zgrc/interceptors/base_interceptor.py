@@ -38,12 +38,10 @@ class BaseInterceptor(ABC):
 
     async def pre_request_check(self) -> None:
         """Validate user quota before allowing the LLM API request to proceed."""
-        # TODO: Need to work on the SSR application and should be change here
         await self.pre_checker.check_quota()
         logger.debug("Pre-request quota check passed")
 
-    def post_request_report(self, tokens: int) -> None:
-        """Report token usage to the GRC API after request completion."""
-        # TODO: Need to work on the SSR application and should be change here
-        self.post_checker.schedule_background_report(tokens)
-        logger.debug(f"Reported {tokens} tokens to API")
+    def post_request_report(self, tokens: int, cost: float) -> None:
+        """Report token usage and cost to the GRC API after request completion."""
+        self.post_checker.schedule_background_report(tokens=tokens, cost=cost)
+        logger.debug(f"Reported {tokens} tokens, ${cost:.6f} to API")
