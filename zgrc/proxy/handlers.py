@@ -8,10 +8,9 @@ from mitmproxy.http import Response
 from ..interceptors.models import TokenUsage
 from ..policy.pre_checker import PreChecker
 from ..policy.post_checker import PostChecker
-from ..utils.cost_calculator import CostCalculationInput, calculate_cost
+from ..utils.cost_calculator import calculate_cost_from_events
 from ..utils.exceptions import QuotaExceededException
 from ..utils.model_resolver import resolve_model_id_from_url
-from ..providers import Providers
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +65,7 @@ class ResponseHandler:
             total_usage = TokenUsage()
 
             if isinstance(response_data, dict) and "events" in response_data:
-                for event in response_data["events"]:
+                for idx, event in enumerate(response_data["events"]):
                     usage_dict = event.get("usage", {})
                     if not usage_dict:
                         continue
@@ -83,6 +82,15 @@ class ResponseHandler:
                     else:
                         continue
 
+                    # DEBUG: Log parsed event usage
+                    logger.info(
+                        f"[DEBUG] Event {idx} parsed - "
+                        f"input={event_usage.input_tokens}, "
+                        f"output={event_usage.output_tokens}, "
+                        f"cache_read={event_usage.cache_read_input_tokens}, "
+                        f"cache_write={event_usage.cache_creation_input_tokens}"
+                    )
+
                     total_usage = TokenUsage(
                         input_tokens=total_usage.input_tokens
                         + event_usage.input_tokens,
@@ -94,23 +102,22 @@ class ResponseHandler:
                         + event_usage.cache_creation_input_tokens,
                     )
 
+            # Calculate cost using the new event-based method
+            cost = 0.0
+            if isinstance(response_data, dict) and "events" in response_data:
+                model_id = await resolve_model_id_from_url(flow.request.pretty_url)
+                if model_id:
+                    logger.info(f"[DEBUG] Resolved model_id: {model_id}")
+                    cost = (
+                        calculate_cost_from_events(response_data["events"], model_id)
+                        or 0.0
+                    )
+                    logger.info(f"[DEBUG] Calculated cost: ${cost:.8f}")
+
             used = total_usage.total_tokens
             self.request_handler.total_tokens += used
 
             if used > 0:
-                cost = 0.0
-                model_id = await resolve_model_id_from_url(flow.request.pretty_url)
-                if model_id:
-                    cost_input = CostCalculationInput(
-                        model_id=model_id,
-                        input_tokens=total_usage.input_tokens,
-                        output_tokens=total_usage.output_tokens,
-                        cache_read_input_tokens=total_usage.cache_read_input_tokens,
-                        cache_creation_input_tokens=total_usage.cache_creation_input_tokens,
-                        provider=Providers.BEDROCK,
-                    )
-                    cost = calculate_cost(cost_input) or 0.0
-
                 logger.debug(
                     f"Tokens: {used} (in={total_usage.input_tokens}, out={total_usage.output_tokens}, "
                     f"cache_read={total_usage.cache_read_input_tokens}, cache_write={total_usage.cache_creation_input_tokens}) | "

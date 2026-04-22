@@ -65,123 +65,27 @@ body {
   background: var(--md-default-bg-color);
   border-bottom: 1px solid var(--border);
   box-shadow: none;
-  height: 72px;
+  height: 56px;
 }
 
-.md-header__inner {
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* Override grid margin and max-width to align header content properly */
-.md-grid {
-  margin-left: 0 !important;
-  max-width: none !important;
-}
+.md-header__inner { height: 56px; padding: 0 1.25rem; }
 
 .md-header__title {
-  font-size: 1.4rem;
+  font-weight: 600;
+  font-size: 1.1rem;
   letter-spacing: -0.01em;
-  margin-right: auto;
-  flex-shrink: 0;
+  margin-left: 0.5rem;
+  color: #ffffff !important;
 }
 
-.md-header__button.md-logo { margin: 0 0.75rem 0 0; }
+.md-header__button.md-logo { margin: 0 0.5rem 0 0; }
 .md-header__button.md-logo img,
-.md-header__button.md-logo svg { height: 2.2rem; }
+.md-header__button.md-logo svg { height: 1.6rem; }
 
 /* Header links white */
 .md-header__topic,
 .md-header a {
   color: #ffffff !important;
-}
-
-/* GitHub/social links in header */
-.md-header__source {
-  display: flex;
-  align-items: center;
-}
-
-.md-source {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.md-source__icon {
-  display: flex;
-  align-items: flex-start;
-  flex-shrink: 0;
-  padding-top: 0.15rem;
-}
-
-.md-source__icon svg {
-  width: 1.8rem;
-  height: 1.8rem;
-  display: block;
-}
-
-/* Repository name and stats container - vertical stack */
-html body .md-header .md-source__repository {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  gap: 0.35rem !important;
-  line-height: 1.2 !important;
-  font-size: 1.1rem !important;
-  font-weight: 700 !important;
-}
-
-/* Target ALL elements inside repository to make repo name large */
-html body .md-header .md-source__repository *,
-html body .md-header .md-source__repository > *,
-html body .md-header .md-source__repository a,
-html body .md-header .md-source__repository span:not(.md-source__fact):not([class*="fact"]) {
-  font-size: 1.1rem !important;
-  font-weight: 700 !important;
-  white-space: nowrap !important;
-  color: #ffffff !important;
-}
-
-/* Stats row - version, stars, forks - override with even higher specificity */
-html body .md-header .md-source__facts,
-html body .md-header .md-source__facts *,
-html body .md-header .md-source__repository .md-source__facts {
-  font-size: 0.7rem !important;
-  font-weight: 400 !important;
-  line-height: 1 !important;
-}
-
-html body .md-header .md-source__facts {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.6rem !important;
-  flex-shrink: 0;
-}
-
-.md-source__fact {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-/* Push search and GitHub to the right */
-.md-header__option {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  margin-left: auto;
-}
-
-.md-search {
-  order: 1;
-}
-
-.md-header__source {
-  order: 2;
-  margin-left: 1.5rem;
 }
 
 /* Tabs — remove the second-row clutter, just an underline */
@@ -210,7 +114,7 @@ html body .md-header .md-source__facts {
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: 6px;
-  height: 40px;
+  height: 32px;
   transition: border-color 0.15s ease;
 }
 .md-search__form:hover { border-color: var(--border-strong); }
@@ -218,7 +122,7 @@ html body .md-header .md-source__facts {
   border-color: var(--md-primary-fg-color);
   background: var(--surface-1);
 }
-.md-search__input { font-size: 0.95rem; }
+.md-search__input { font-size: 0.82rem; }
 .md-search__input::placeholder { color: var(--md-default-fg-color--lighter); }
 
 .md-search__output {
@@ -242,6 +146,24 @@ html body .md-header .md-source__facts {
 .md-sidebar {
   padding: 1.25rem 0;
   width: 12.5rem;
+}
+
+/* Reduce sidebar width for more content space */
+.md-sidebar--primary {
+  width: 12.5rem;
+}
+.md-sidebar--secondary {
+  width: 12.5rem;
+}
+
+/* Make grid use full width */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary {
+    width: 12.5rem;
+  }
+  .md-sidebar--secondary {
+    width: 12.5rem;
+  }
 }
 
 .md-sidebar__scrollwrap {
@@ -333,20 +255,20 @@ html body .md-header .md-source__facts {
   max-width: none !important;
 }
 .md-content__inner {
-  margin: 0 auto !important;
-  max-width: 75rem !important;
+  margin: 0 1.5rem;
+  max-width: none !important;
   padding-top: 1rem;
-  padding-left: 1.5rem !important;
-  padding-right: 1.5rem !important;
 }
 .md-content__inner:before { height: 0; }
 
-/* Override Material's default narrow content width */
-@media screen and (min-width: 76.25em) {
-  .md-content {
-    /* margin-left: 0 !important; */
-    margin-right: 0 !important;
-  }
+/* Force full width layout */
+.md-grid {
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+.md-main {
+  max-width: none !important;
 }
 
 .md-typeset {

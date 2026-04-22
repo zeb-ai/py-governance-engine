@@ -10,6 +10,9 @@ help:
 	@echo "  make fix                      - Run ruff check and fix issues automatically"
 	@echo "  make clean                    - Clean build artifacts, cache files, and Python bytecode"
 	@echo
+	@echo "Development:"
+	@echo "  make up-proxy                 - Run the proxy server locally (requires GRC_API_KEY)"
+	@echo
 	@echo "Executable builds:"
 	@echo "  make grpc-proxy-build         - Build z-grc-proxy for current platform only"
 	@echo

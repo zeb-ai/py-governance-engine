@@ -16,12 +16,29 @@ def _extract_model_id_from_url(url: str) -> Optional[str]:
         return None
 
     # URL format: https://bedrock-runtime.{region}.amazonaws.com/model/{model_id}/invoke
+    # For ARNs, the URL might be split like: /model/{arn}/{profile_id}/invoke
     parts = url.split("/")
     if "model" in parts:
         model_index = parts.index("model")
         if model_index + 1 < len(parts):
             # URL decode the model ID (handles %3A, %2F, etc.)
-            return unquote(parts[model_index + 1])
+            model_part = unquote(parts[model_index + 1])
+
+            # Check if this is an ARN that got split
+            if model_part.startswith("arn:aws:bedrock") and model_index + 2 < len(
+                parts
+            ):
+                # The next part might be the profile ID
+                next_part = parts[model_index + 2]
+                if next_part and next_part not in [
+                    "invoke",
+                    "invoke-with-response-stream",
+                    "converse",
+                ]:
+                    # Reconstruct the full ARN with profile ID
+                    return f"{model_part}/{next_part}"
+
+            return model_part
 
     return None
 
