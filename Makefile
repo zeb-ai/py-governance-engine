@@ -59,9 +59,13 @@ clean:
 
 # dev
 up-proxy:
-	uv run zgrc/proxy.main.py --api-key $(GRC_API_KEY)
+	@clear 2>/dev/null || true
+	@echo
+	PYTHONPATH="$(CURDIR)" uv run python zgrc/proxy.main.py --api-key $(GRC_API_KEY)
 
 grpc-proxy-build:
+	@clear 2>/dev/null || true
+	@echo
 	@echo "Building z-grc-proxy for current platform ($(shell uname -s)-$(shell uname -m))..."
 	uv run pyinstaller z-grc-proxy.spec
 	@echo
