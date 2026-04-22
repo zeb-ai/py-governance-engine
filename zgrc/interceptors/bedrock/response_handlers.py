@@ -171,7 +171,11 @@ class InvokeModelWithResponseStreamHandler(BaseResponseHandler):
                 "Processing InvokeModelWithResponseStream response (streaming body)"
             )
 
-            wrapped_stream = StreamingBodyTokenTracker(body, interceptor_instance)
+            # Wrap the stream to capture token usage, passing request URL
+            request_url = request_data.url if request_data else None
+            wrapped_stream = StreamingBodyTokenTracker(
+                body, interceptor_instance, request_url
+            )
             parsed_response["body"] = wrapped_stream
             response_tuple = (http_response, parsed_response)
 
@@ -185,12 +189,18 @@ class InvokeModelWithResponseStreamHandler(BaseResponseHandler):
 class StreamingBodyTokenTracker:
     """Wrapper around EventStream for InvokeModelWithResponseStream that captures token usage"""
 
-    def __init__(self, stream: Any, interceptor_instance: BaseInterceptor) -> None:
+    def __init__(
+        self,
+        stream: Any,
+        interceptor_instance: BaseInterceptor,
+        request_url: str = None,
+    ) -> None:
         self._stream: Any = stream
         self._interceptor: BaseInterceptor = interceptor_instance
         self._usage: TokenUsage = TokenUsage()
         self._events: list = []  # Store all events
         self._operation_name = "InvokeModelWithResponseStream"
+        self._request_url = request_url  # Store URL for cost calculation
 
     def __iter__(self):
         """Iterate through stream chunks, parse JSON data, extract token usage, and report after completion."""
@@ -243,29 +253,51 @@ class StreamingBodyTokenTracker:
         try:
             # Calculate cost from collected events
             cost = 0.0
+            logger.debug(f"Starting cost calculation for {self._operation_name}")
+            logger.debug(f"Events collected: {len(self._events)}")
+
             if self._events:
                 from ...utils.cost_calculator import calculate_cost_from_events
                 from ...utils.model_resolver import resolve_model_id_from_url
+                from . import interceptor
                 import asyncio
 
-                # Get model ID from interceptor's last request
-                if hasattr(self._interceptor, "calls") and self._interceptor.calls:
-                    last_call = self._interceptor.calls[-1]
-                    url = last_call.request.url
+                # Use stored URL instead of trying to get it from calls
+                url = self._request_url
+                if url:
+                    logger.debug(f"Request URL: {url}")
 
                     # Resolve model ID synchronously using asyncio.run
                     try:
                         model_id = asyncio.run(resolve_model_id_from_url(url))
+                        logger.debug(f"Resolved model_id: {model_id}")
                     except Exception as e:
-                        logger.error(f"Failed to resolve model ID: {e}")
+                        logger.error(f"Failed to resolve model ID: {e}", exc_info=True)
                         model_id = None
 
                     if model_id:
-                        # Use the standard events format for cost calculation
-                        cost = calculate_cost_from_events(self._events, model_id) or 0.0
-                        logger.debug(
-                            f"Calculated cost from streaming events: ${cost:.6f}"
+                        # Transform events to standard format
+                        standard_events = interceptor._transform_to_standard_events(
+                            {"events": self._events}, self._operation_name
                         )
+                        logger.debug(
+                            f"Transformed to {len(standard_events)} standard events"
+                        )
+
+                        if standard_events:
+                            cost = (
+                                calculate_cost_from_events(standard_events, model_id)
+                                or 0.0
+                            )
+                            logger.info(
+                                f"Calculated cost from streaming events: ${cost}"
+                            )
+                        else:
+                            logger.warning("No standard events after transformation")
+                    else:
+                        logger.warning("No model_id resolved")
+                else:
+                    logger.warning("No request URL available")
 
             self._interceptor.post_request_report(usage.total_tokens, cost)
             logger.debug(
