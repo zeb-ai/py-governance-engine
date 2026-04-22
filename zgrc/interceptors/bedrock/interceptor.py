@@ -10,18 +10,125 @@ from opentelemetry import context, trace
 
 from ...observability import logs, metrics, traces
 from ...observability.logs import LogsConfig
-from ...providers import Providers
-from ...utils.cost_calculator import CostCalculationInput, calculate_cost
+from ...utils.cost_calculator import calculate_cost_from_events
 from ...utils.exceptions import QuotaExceededException
 from ...utils.model_resolver import resolve_model_id_from_url
 from ..base_interceptor import BaseInterceptor
 from ..models import InterceptedCall, RequestData, ResponseData
 from .response_handlers import ResponseHandlerFactory
+from ...providers import Providers
 
 if TYPE_CHECKING:
     from opentelemetry.trace import Span, Tracer
 
 logger = logging.getLogger(__name__)
+
+
+def _transform_to_standard_events(
+    response_json: Dict[str, Any], operation_name: str
+) -> list:
+    """
+    Transform any Bedrock response format to InvokeModelWithResponseStream format
+    that cost_calculator expects.
+    """
+    if not response_json:
+        return []
+
+    try:
+        if operation_name == "InvokeModel":
+            # Non-streaming InvokeModel: direct usage object with snake_case
+            usage = response_json.get("usage", {})
+            return [
+                {
+                    "type": "message_start",
+                    "message": {
+                        "usage": {
+                            "cache_read_input_tokens": usage.get(
+                                "cache_read_input_tokens", 0
+                            ),
+                            "cache_creation_input_tokens": usage.get(
+                                "cache_creation_input_tokens", 0
+                            ),
+                        }
+                    },
+                },
+                {
+                    "type": "message_delta",
+                    "usage": {
+                        "input_tokens": usage.get("input_tokens", 0),
+                        "output_tokens": usage.get("output_tokens", 0),
+                    },
+                },
+            ]
+
+        elif operation_name == "Converse":
+            # Non-streaming Converse: usage object with camelCase
+            usage = response_json.get("usage", {})
+            return [
+                {
+                    "type": "message_start",
+                    "message": {
+                        "usage": {
+                            "cache_read_input_tokens": usage.get(
+                                "cacheReadInputTokens", 0
+                            ),
+                            "cache_creation_input_tokens": usage.get(
+                                "cacheWriteInputTokens", 0
+                            ),
+                        }
+                    },
+                },
+                {
+                    "type": "message_delta",
+                    "usage": {
+                        "input_tokens": usage.get("inputTokens", 0),
+                        "output_tokens": usage.get("outputTokens", 0),
+                    },
+                },
+            ]
+
+        elif operation_name == "ConverseStream":
+            # Streaming ConverseStream: events with metadata.usage (camelCase)
+            events = response_json.get("events", [])
+            metadata_event = next(
+                (e for e in events if isinstance(e, dict) and "metadata" in e), None
+            )
+            if metadata_event:
+                usage = metadata_event.get("metadata", {}).get("usage", {})
+                return [
+                    {
+                        "type": "message_start",
+                        "message": {
+                            "usage": {
+                                "cache_read_input_tokens": usage.get(
+                                    "cacheReadInputTokens", 0
+                                ),
+                                "cache_creation_input_tokens": usage.get(
+                                    "cacheWriteInputTokens", 0
+                                ),
+                            }
+                        },
+                    },
+                    {
+                        "type": "message_delta",
+                        "usage": {
+                            "input_tokens": usage.get("inputTokens", 0),
+                            "output_tokens": usage.get("outputTokens", 0),
+                        },
+                    },
+                ]
+
+        elif operation_name == "InvokeModelWithResponseStream":
+            # Already in correct format with events array
+            if "events" in response_json:
+                return response_json["events"]
+
+        logger.warning(f"Unknown operation type for transformation: {operation_name}")
+        return []
+
+    except Exception as e:
+        logger.error(f"Failed to transform response format: {e}", exc_info=True)
+        return []
 
 
 class BedrockInterceptor(BaseInterceptor):
@@ -94,28 +201,29 @@ class BedrockInterceptor(BaseInterceptor):
                 return response_tuple
 
             response_json, usage, response_tuple = handler.process_response(
-                response_tuple, self
+                response_tuple, self, request_data
             )
 
             # Skip if no data extracted
             if response_json is None and usage.total_tokens == 0:
                 return response_tuple
 
-            # calculate cost from the tokens
+            # Calculate cost using the new event-based method
             resolved_model_id = await resolve_model_id_from_url(request_data.url)
             if resolved_model_id and usage.total_tokens > 0:
-                cost_input = CostCalculationInput(
-                    model_id=resolved_model_id,
-                    input_tokens=usage.input_tokens,
-                    output_tokens=usage.output_tokens,
-                    cache_read_input_tokens=usage.cache_read_input_tokens,
-                    cache_creation_input_tokens=usage.cache_creation_input_tokens,
-                    provider=Providers.BEDROCK,
+                # Transform response to standard format
+                standard_events = _transform_to_standard_events(
+                    response_json, operation_name
                 )
-                total_cost = calculate_cost(cost_input)
-                if total_cost:
-                    usage.total_cost = total_cost
-                    logger.debug(f"Calculated cost: ${total_cost:.6f}")
+
+                if standard_events:
+                    # Calculate cost using pure utility
+                    total_cost = calculate_cost_from_events(
+                        standard_events, resolved_model_id
+                    )
+                    if total_cost:
+                        usage.total_cost = total_cost
+                        logger.debug(f"Calculated cost from events: ${total_cost:.6f}")
 
             response_data = ResponseData(
                 body=response_json or {},

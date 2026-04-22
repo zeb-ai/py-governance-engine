@@ -60,11 +60,3 @@ def calculate_cost_from_events(events: list, model_id: str) -> Optional[float]:
     except Exception as e:
         logger.error(f"Cost calculation failed for {model_id}: {e}", exc_info=True)
         return None
-
-
-class CostCalculationInput:
-    pass
-
-
-class calculate_cost:
-    pass

@@ -24,7 +24,10 @@ class InvokeModelHandler(BaseResponseHandler):
         return operation_name == "InvokeModel"
 
     def process_response(
-        self, response_tuple: Tuple[Any, Any], interceptor_instance: BaseInterceptor
+        self,
+        response_tuple: Tuple[Any, Any],
+        interceptor_instance: BaseInterceptor,
+        request_data=None,
     ) -> Tuple[Optional[Dict[str, Any]], TokenUsage, Tuple[Any, Any]]:
         """Read and parse the streaming body response, extract token usage, and return reconstructed response tuple."""
         http_response, parsed_response = response_tuple
@@ -78,7 +81,7 @@ class ConverseHandler(BaseResponseHandler):
         return operation_name == "Converse"
 
     def process_response(
-        self, response_tuple: Tuple, interceptor_instance
+        self, response_tuple: Tuple, interceptor_instance, request_data=None
     ) -> Tuple[Optional[Dict], TokenUsage, Tuple]:
         """Extract token usage from already-parsed Converse API response."""
         http_response, parsed_response = response_tuple
@@ -120,7 +123,7 @@ class ConverseStreamHandler(BaseResponseHandler):
         return operation_name == "ConverseStream"
 
     def process_response(
-        self, response_tuple: Tuple, interceptor_instance
+        self, response_tuple: Tuple, interceptor_instance, request_data=None
     ) -> Tuple[Optional[Dict], TokenUsage, Tuple]:
         """Wrap the EventStream with token tracking to capture usage from metadata events."""
         http_response, parsed_response = response_tuple
@@ -130,8 +133,11 @@ class ConverseStreamHandler(BaseResponseHandler):
             if isinstance(stream, botocore.eventstream.EventStream):
                 logger.debug("Processing ConverseStream response (streaming)")
 
-                # Wrap the stream to capture token usage
-                wrapped_stream = TokenTrackingEventStream(stream, interceptor_instance)
+                # Wrap the stream to capture token usage, passing request URL
+                request_url = request_data.url if request_data else None
+                wrapped_stream = TokenTrackingEventStream(
+                    stream, interceptor_instance, request_url
+                )
                 parsed_response["stream"] = wrapped_stream
                 response_tuple = (http_response, parsed_response)
 
@@ -151,7 +157,7 @@ class InvokeModelWithResponseStreamHandler(BaseResponseHandler):
         return operation_name == "InvokeModelWithResponseStream"
 
     def process_response(
-        self, response_tuple: Tuple, interceptor_instance
+        self, response_tuple: Tuple, interceptor_instance, request_data=None
     ) -> Tuple[Optional[Dict], TokenUsage, Tuple]:
         """Wrap the streaming body EventStream with token tracking to capture usage from chunks."""
         http_response, parsed_response = response_tuple
@@ -183,6 +189,8 @@ class StreamingBodyTokenTracker:
         self._stream: Any = stream
         self._interceptor: BaseInterceptor = interceptor_instance
         self._usage: TokenUsage = TokenUsage()
+        self._events: list = []  # Store all events
+        self._operation_name = "InvokeModelWithResponseStream"
 
     def __iter__(self):
         """Iterate through stream chunks, parse JSON data, extract token usage, and report after completion."""
@@ -192,6 +200,7 @@ class StreamingBodyTokenTracker:
                 if chunk_bytes:
                     try:
                         chunk_data = json.loads(chunk_bytes.decode("utf-8"))
+                        self._events.append(chunk_data)  # Store event
 
                         usage = self._extract_token_usage(chunk_data)
                         if usage.total_tokens > 0:
@@ -230,11 +239,37 @@ class StreamingBodyTokenTracker:
         return TokenUsage()
 
     def _update_policy(self, usage: TokenUsage):
-        """Schedule background reporting of token usage after stream completes."""
+        """Schedule background reporting of token usage and cost after stream completes."""
         try:
-            self._interceptor.post_request_report(usage.total_tokens)
+            # Calculate cost from collected events
+            cost = 0.0
+            if self._events:
+                from ...utils.cost_calculator import calculate_cost_from_events
+                from ...utils.model_resolver import resolve_model_id_from_url
+                import asyncio
+
+                # Get model ID from interceptor's last request
+                if hasattr(self._interceptor, "calls") and self._interceptor.calls:
+                    last_call = self._interceptor.calls[-1]
+                    url = last_call.request.url
+
+                    # Resolve model ID synchronously using asyncio.run
+                    try:
+                        model_id = asyncio.run(resolve_model_id_from_url(url))
+                    except Exception as e:
+                        logger.error(f"Failed to resolve model ID: {e}")
+                        model_id = None
+
+                    if model_id:
+                        # Use the standard events format for cost calculation
+                        cost = calculate_cost_from_events(self._events, model_id) or 0.0
+                        logger.debug(
+                            f"Calculated cost from streaming events: ${cost:.6f}"
+                        )
+
+            self._interceptor.post_request_report(usage.total_tokens, cost)
             logger.debug(
-                f"Scheduled background report for {usage.total_tokens} tokens from streaming body"
+                f"Scheduled background report for {usage.total_tokens} tokens, ${cost:.6f} cost from streaming body"
             )
         except Exception as e:
             logger.error(f"Failed to schedule usage reporting: {e}", exc_info=True)
@@ -243,14 +278,25 @@ class StreamingBodyTokenTracker:
 class TokenTrackingEventStream:
     """Wrapper around EventStream that captures token usage from final metadata event"""
 
-    def __init__(self, stream: Any, interceptor_instance: BaseInterceptor) -> None:
+    def __init__(
+        self,
+        stream: Any,
+        interceptor_instance: BaseInterceptor,
+        request_url: str = None,
+    ) -> None:
         self._stream: Any = stream
         self._interceptor: BaseInterceptor = interceptor_instance
         self._usage: TokenUsage = TokenUsage()
+        self._events: list = []  # Store all events
+        self._operation_name = "ConverseStream"
+        self._request_url = request_url  # Store URL for cost calculation
 
     def __iter__(self):
         """Iterate through stream events, capture token usage from metadata event, and report after completion."""
         for event in self._stream:
+            # Store all events
+            self._events.append(event)
+
             # Check if this is a metadata event with usage
             if isinstance(event, dict) and "metadata" in event:
                 metadata = event.get("metadata", {})
@@ -273,11 +319,66 @@ class TokenTrackingEventStream:
         return TokenUsage()
 
     def _update_policy(self, usage: TokenUsage):
-        """Schedule background reporting of token usage after stream completes."""
+        """Schedule background reporting of token usage and cost after stream completes."""
         try:
-            self._interceptor.post_request_report(usage.total_tokens)
+            # Calculate cost from collected events
+            cost = 0.0
             logger.debug(
-                f"Scheduled background report for {usage.total_tokens} tokens from streaming response"
+                f"[COST_DEBUG] Starting cost calculation for {self._operation_name}"
+            )
+            logger.debug(f"[COST_DEBUG] Events collected: {len(self._events)}")
+
+            if self._events:
+                from ...utils.cost_calculator import calculate_cost_from_events
+                from ...utils.model_resolver import resolve_model_id_from_url
+                from . import interceptor
+                import asyncio
+
+                # Use stored URL instead of trying to get it from calls
+                url = self._request_url
+                if url:
+                    logger.debug(f"[COST_DEBUG] Request URL: {url}")
+
+                    # Resolve model ID synchronously using asyncio.run
+                    try:
+                        model_id = asyncio.run(resolve_model_id_from_url(url))
+                        logger.debug(f"[COST_DEBUG] Resolved model_id: {model_id}")
+                    except Exception as e:
+                        logger.error(
+                            f"[COST_DEBUG] Failed to resolve model ID: {e}",
+                            exc_info=True,
+                        )
+                        model_id = None
+
+                    if model_id:
+                        # Transform events to standard format
+                        standard_events = interceptor._transform_to_standard_events(
+                            {"events": self._events}, self._operation_name
+                        )
+                        logger.debug(
+                            f"[COST_DEBUG] Transformed to {len(standard_events)} standard events"
+                        )
+
+                        if standard_events:
+                            cost = (
+                                calculate_cost_from_events(standard_events, model_id)
+                                or 0.0
+                            )
+                            logger.info(
+                                f"[COST_DEBUG] ✓ Calculated cost from streaming events: ${cost:.6f}"
+                            )
+                        else:
+                            logger.warning(
+                                "[COST_DEBUG] No standard events after transformation"
+                            )
+                    else:
+                        logger.warning("[COST_DEBUG] No model_id resolved")
+                else:
+                    logger.warning("[COST_DEBUG] No request URL available")
+
+            self._interceptor.post_request_report(usage.total_tokens, cost)
+            logger.debug(
+                f"Scheduled background report for {usage.total_tokens} tokens, ${cost:.6f} cost from streaming response"
             )
         except Exception as e:
             logger.error(f"Failed to schedule usage reporting: {e}", exc_info=True)
