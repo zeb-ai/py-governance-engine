@@ -40,6 +40,10 @@
   /* Typography */
   --md-text-font:    "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
   --md-code-font:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Override Material's tooltip colors */
+  --md-tooltip-bg-color:             var(--surface-1);
+  --md-tooltip-fg-color:             rgba(255, 255, 255, 0.92);
 }
 
 /* ============================================================
@@ -61,27 +65,123 @@ body {
   background: var(--md-default-bg-color);
   border-bottom: 1px solid var(--border);
   box-shadow: none;
-  height: 56px;
+  height: 72px;
 }
 
-.md-header__inner { height: 56px; padding: 0 1.25rem; }
+.md-header__inner {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Override grid margin and max-width to align header content properly */
+.md-grid {
+  margin-left: 0 !important;
+  max-width: none !important;
+}
 
 .md-header__title {
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   letter-spacing: -0.01em;
-  margin-left: 0.5rem;
-  color: #ffffff !important;
+  margin-right: auto;
+  flex-shrink: 0;
 }
 
-.md-header__button.md-logo { margin: 0 0.5rem 0 0; }
+.md-header__button.md-logo { margin: 0 0.75rem 0 0; }
 .md-header__button.md-logo img,
-.md-header__button.md-logo svg { height: 1.6rem; }
+.md-header__button.md-logo svg { height: 2.2rem; }
 
 /* Header links white */
 .md-header__topic,
 .md-header a {
   color: #ffffff !important;
+}
+
+/* GitHub/social links in header */
+.md-header__source {
+  display: flex;
+  align-items: center;
+}
+
+.md-source {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.md-source__icon {
+  display: flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+  padding-top: 0.15rem;
+}
+
+.md-source__icon svg {
+  width: 1.8rem;
+  height: 1.8rem;
+  display: block;
+}
+
+/* Repository name and stats container - vertical stack */
+html body .md-header .md-source__repository {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0.35rem !important;
+  line-height: 1.2 !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+}
+
+/* Target ALL elements inside repository to make repo name large */
+html body .md-header .md-source__repository *,
+html body .md-header .md-source__repository > *,
+html body .md-header .md-source__repository a,
+html body .md-header .md-source__repository span:not(.md-source__fact):not([class*="fact"]) {
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+  color: #ffffff !important;
+}
+
+/* Stats row - version, stars, forks - override with even higher specificity */
+html body .md-header .md-source__facts,
+html body .md-header .md-source__facts *,
+html body .md-header .md-source__repository .md-source__facts {
+  font-size: 0.7rem !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+}
+
+html body .md-header .md-source__facts {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.6rem !important;
+  flex-shrink: 0;
+}
+
+.md-source__fact {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Push search and GitHub to the right */
+.md-header__option {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-left: auto;
+}
+
+.md-search {
+  order: 1;
+}
+
+.md-header__source {
+  order: 2;
+  margin-left: 1.5rem;
 }
 
 /* Tabs — remove the second-row clutter, just an underline */
@@ -110,7 +210,7 @@ body {
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: 6px;
-  height: 32px;
+  height: 40px;
   transition: border-color 0.15s ease;
 }
 .md-search__form:hover { border-color: var(--border-strong); }
@@ -118,7 +218,7 @@ body {
   border-color: var(--md-primary-fg-color);
   background: var(--surface-1);
 }
-.md-search__input { font-size: 0.82rem; }
+.md-search__input { font-size: 0.95rem; }
 .md-search__input::placeholder { color: var(--md-default-fg-color--lighter); }
 
 .md-search__output {
@@ -224,10 +324,30 @@ body {
 /* ============================================================
    7. Main content  —  generous measure, Apple spacing
    ============================================================ */
-.md-main__inner { margin-top: 0; }
-.md-content { padding: 1.5rem 0 4rem; }
-.md-content__inner { margin: 0 1.5rem; max-width: 62rem; padding-top: 1rem; }
+.md-main__inner {
+  margin-top: 0;
+  max-width: none !important;
+}
+.md-content {
+  padding: 1.5rem 0 4rem;
+  max-width: none !important;
+}
+.md-content__inner {
+  margin: 0 auto !important;
+  max-width: 75rem !important;
+  padding-top: 1rem;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+}
 .md-content__inner:before { height: 0; }
+
+/* Override Material's default narrow content width */
+@media screen and (min-width: 76.25em) {
+  .md-content {
+    /* margin-left: 0 !important; */
+    margin-right: 0 !important;
+  }
+}
 
 .md-typeset {
   font-size: 0.9rem;
@@ -378,6 +498,53 @@ body {
   right: 0.4rem;
 }
 .md-clipboard:hover { color: var(--md-default-fg-color); }
+
+/* Clipboard notification/toast styling - dark theme fix */
+/* Target all possible clipboard notification elements */
+.md-tooltip,
+.md-annotation__tooltip,
+[id^="__tooltip"],
+[id*="tooltip"] {
+  background-color: var(--surface-1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6) !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+}
+
+/* Clipboard message specific */
+.md-clipboard__message {
+  background-color: var(--surface-1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Clipboard success state */
+.md-clipboard--copied .md-clipboard__message,
+.md-clipboard--copied .md-tooltip {
+  background-color: var(--surface-1) !important;
+  color: var(--md-primary-fg-color) !important;
+  border-color: var(--md-primary-fg-color) !important;
+}
+
+/* Force dark background on all tooltip-like elements */
+.md-snackbar,
+[class*="clipboard"][class*="message"],
+[role="tooltip"],
+[data-md-component="tooltip"] {
+  background-color: var(--surface-1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid var(--border-strong) !important;
+}
+
+/* Override any light background colors */
+[class*="tooltip"],
+[class*="message"],
+[class*="snackbar"] {
+  background-color: var(--surface-1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
 
 /* ============================================================
    9. Admonitions  —  flat, thin left accent only
@@ -592,3 +759,75 @@ body {
    ============================================================ */
 /* Page titles are shown by default on all pages */
 /* Individual pages can override this with inline styles if needed */
+
+/* ============================================================
+   17. Dialog / Modal customization
+   ============================================================ */
+.md-dialog {
+  background-color: #30d158;
+  border-radius: .1rem;
+  bottom: .8rem;
+  box-shadow: var(--md-shadow-z3);
+  min-width: 11.1rem;
+  opacity: 0;
+  padding: .4rem .6rem;
+  pointer-events: none;
+  position: fixed;
+  transform: translateY(100%);
+  transition: transform 0ms .4s, opacity .4s;
+  z-index: 4;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.md-dialog--active {
+  transform: translateY(0);
+  transition: transform .4s cubic-bezier(.075,.82,.165,1), opacity .4s;
+  opacity: 1;
+}
+
+/* Print mode - hide dialog */
+@media print {
+  .md-dialog {
+    display: none;
+  }
+}
+
+/* ============================================================
+   18. Consolidated Clipboard/Tooltip/Snackbar Dark Theme
+   ============================================================ */
+/* High specificity to override Material's defaults */
+body .md-clipboard__message,
+body .md-snackbar,
+body .md-snackbar__inner,
+body .md-tooltip,
+html body .md-clipboard__message,
+html body .md-snackbar,
+html body .md-tooltip,
+.md-annotation__tooltip,
+[role="status"],
+[role="alert"],
+[data-md-component="announce"],
+[id^="__tooltip_"],
+html body [class*="clipboard"],
+html body [class*="snackbar"],
+html body [class*="toast"] {
+  background-color: var(--surface-1) !important;
+  color: var(--md-default-fg-color) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6) !important;
+  font-weight: 500 !important;
+  font-size: 0.85rem !important;
+}
+
+/* Ensure children inherit correct colors */
+body .md-tooltip *,
+body .md-clipboard__message *,
+body .md-snackbar *,
+html body .md-tooltip *,
+html body .md-clipboard__message *,
+html body .md-snackbar * {
+  color: var(--md-default-fg-color) !important;
+  background: transparent !important;
+}
