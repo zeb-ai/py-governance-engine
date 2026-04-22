@@ -28,7 +28,7 @@ class RequestHandler:
         if "invoke" not in flow.request.path:
             return
 
-        logger.info(f"[REQUEST] {flow.request.pretty_url}")
+        logger.debug(f"{flow.request.pretty_url}")
 
         try:
             await self.pre_checker.check_quota()
@@ -57,7 +57,7 @@ class ResponseHandler:
         if "invoke" not in flow.request.path:
             return
 
-        logger.info(f"[RESPONSE] {flow.response.status_code} {flow.request.pretty_url}")
+        logger.info(f"{flow.response.status_code} {flow.request.pretty_url}")
 
         try:
             response_data = self._parse_response(flow.response.content)
@@ -84,7 +84,7 @@ class ResponseHandler:
 
                     # DEBUG: Log parsed event usage
                     logger.info(
-                        f"[DEBUG] Event {idx} parsed - "
+                        f"Event {idx} parsed - "
                         f"input={event_usage.input_tokens}, "
                         f"output={event_usage.output_tokens}, "
                         f"cache_read={event_usage.cache_read_input_tokens}, "
@@ -107,12 +107,12 @@ class ResponseHandler:
             if isinstance(response_data, dict) and "events" in response_data:
                 model_id = await resolve_model_id_from_url(flow.request.pretty_url)
                 if model_id:
-                    logger.info(f"[DEBUG] Resolved model_id: {model_id}")
+                    logger.debug(f"Resolved model_id: {model_id}")
                     cost = (
                         calculate_cost_from_events(response_data["events"], model_id)
                         or 0.0
                     )
-                    logger.info(f"[DEBUG] Calculated cost: ${cost:.8f}")
+                    logger.info(f"Calculated cost: ${cost}")
 
             used = total_usage.total_tokens
             self.request_handler.total_tokens += used

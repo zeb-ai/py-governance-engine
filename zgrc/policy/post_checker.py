@@ -13,13 +13,7 @@ class PostChecker:
 
     async def send_usage_report(self, used_tokens: int, cost: float) -> None:
         """Send token usage, cost report to the GRC API."""
-        print(f"[POST_CHECKER] Sending to API: tokens={used_tokens}, cost=${cost:.6f}")
-        result = await self.quota_client.post_quota_usage(
-            tokens_used=used_tokens, cost=cost
-        )
-        print(
-            f"[POST_CHECKER] API Response: used={result.used_quota}, remaining={result.remaining_quota}"
-        )
+        await self.quota_client.post_quota_usage(tokens_used=used_tokens, cost=cost)
 
     def schedule_background_report(self, tokens: int, cost: float) -> None:
         """Schedule token usage, cost reporting in background without blocking."""
