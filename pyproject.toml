@@ -38,6 +38,7 @@ dependencies = [
     "opentelemetry-instrumentation-httpx>=0.60b1",
     "opentelemetry-instrumentation-threading>=0.60b1",
     "opentelemetry-sdk>=1.39.1",
+    "psutil>=6.1.1",
     "pydantic>=2.12.5",
     "rich>=14.3.3",
     "tenacity>=9.1.4",
@@ -93,4 +94,4 @@ auto-instrument = [
 ]
 
 [project.scripts]
-zgrc-proxy = "zgrc.zgrc.proxy.main:main"
+z-grc-proxy = "zgrc.proxy.main:main"

@@ -24,7 +24,7 @@ ARCHITECTURE:
 
 CLIENT SETUP (Claude Code):
     Set these environment variables before running LLM applications:
-    - HTTPS_PROXY=http://localhost:8080 or where the Executable is deployed!
+    - HTTPS_PROXY=http://localhost:PORT or where the Executable is deployed!
     - NODE_EXTRA_CA_CERTS=~/.mitmproxy/mitmproxy-ca-cert.pem (Node.js only)
 
 TARGET:
@@ -35,52 +35,106 @@ TARGET:
 import argparse
 import asyncio
 import logging
+import sys
 
 from mitmproxy import options
 from mitmproxy.tools import dump
 
 from zgrc.proxy import ProxyAddon
+from zgrc.proxy.script import Manager, Process
 from zgrc.auth import AuthToken
 from zgrc.context import auth_ctx
 
 logger = logging.getLogger(__name__)
 
 
-async def main():
-
-    parser = argparse.ArgumentParser(
-        prog="zgrc-proxy",
-        description="GRC Proxy Server - For Claude Code",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-
-    parser.add_argument("--api-key", required=True, help="GRC API key")
-    parser.add_argument(
-        "--port", type=int, default=8080, help="Proxy port (default: 8080)"
-    )
-    parser.add_argument("--verbose", action="store_true", help="Verbose logging")
-
-    args = parser.parse_args()
-
-    log_level = logging.DEBUG if args.verbose else logging.INFO
+async def run_proxy(api_key, port, verbose):
+    """Run proxy server"""
     logging.basicConfig(
-        level=log_level,
+        level=logging.DEBUG if verbose else logging.INFO,
         format="[%(asctime)s] [%(name)s] %(levelname)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    auth = AuthToken.decode(args.api_key)
+    auth = AuthToken.decode(api_key)
     auth_ctx.set(auth)
 
     addon = ProxyAddon()
+    logger.info(f"GRC Proxy running on PORT:{port}")
 
-    logger.info(f"GRC Proxy running on PORT:{args.port}")
-
-    opts = options.Options(listen_host="127.0.0.1", listen_port=args.port)
+    opts = options.Options(listen_host="127.0.0.1", listen_port=port)
     master = dump.DumpMaster(opts, with_termlog=False, with_dumper=False)
     master.addons.add(addon)
     await master.run()
 
 
+def main():
+    parser = argparse.ArgumentParser(prog="z-grc-proxy", description="GRC Proxy Server")
+    parser.add_argument("--api-key", help="GRC API key")
+    parser.add_argument("--port", type=int, help="Proxy port (default: auto-detect)")
+    parser.add_argument("--verbose", action="store_true", help="Verbose logging")
+    parser.add_argument(
+        "-d",
+        "--background",
+        action="store_true",
+        help="Run in background (use with eval)",
+    )
+    parser.add_argument("--status", action="store_true", help="Show active sessions")
+    parser.add_argument("--kill-all", action="store_true", help="Kill all servers")
+    parser.add_argument("--detach", action="store_true", help=argparse.SUPPRESS)
+
+    args = parser.parse_args()
+    mgr = Manager()
+
+    if args.detach:
+        if not args.api_key or not args.port:
+            return 1
+        asyncio.run(run_proxy(args.api_key, args.port, args.verbose))
+        return 0
+
+    if args.status:
+        sessions = mgr.status()
+        if not sessions:
+            print("No active servers", file=sys.stderr)
+            return 0
+        for i, s in enumerate(sessions, 1):
+            print(f"[{i}] Port:{s['port']} PID:{s['pid']}", file=sys.stderr)
+        return 0
+
+    if args.kill_all:
+        print(f"Killed {mgr.kill_all()} server(s)", file=sys.stderr)
+        return 0
+
+    if not args.api_key:
+        parser.error("--api-key required")
+
+    # Background mode: spawn detached + output env vars
+    if args.background:
+        try:
+            port, pid, is_new = mgr.start(args.api_key, args.port, args.verbose)
+            print(
+                f"# {'Started' if is_new else 'Reusing'} port {port}", file=sys.stderr
+            )
+            # Where needed to store the creds in current terminal session, so getting the printing the creds and using
+            # eval to run the command in terminal.
+            for k, v in mgr.env(port).items():
+                # Single quotes protect spaces in paths
+                print(f"export {k}='{v}'")
+            return 0
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+            return 1
+
+    # Default: Foreground mode - run proxy directly
+    port = args.port if args.port else Process.find_port()
+    if not port:
+        print("Error: No available port", file=sys.stderr)
+        return 1
+
+    print(f"Starting proxy on port {port}...", file=sys.stderr)
+    asyncio.run(run_proxy(args.api_key, port, args.verbose))
+    return 0
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    sys.exit(main())

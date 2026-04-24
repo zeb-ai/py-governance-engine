@@ -298,9 +298,40 @@ Install the Z-GRC proxy executable on your system:
 
     Output: `dist/z-grc-proxy-windows-x64.exe`
 
-### Step 2: Start the Z-GRC Proxy Server
+### Step 2: Start the Z-GRC Proxy
 
-Launch the proxy server with your API key:
+Z-GRC proxy can run in two modes: **background** (recommended) or **foreground**.
+
+#### Option A: Background Mode (Recommended)
+
+Launch proxy in background and automatically set environment variables:
+
+=== "macOS / Linux"
+
+    ```bash
+    # Automatically start proxy + set env vars for current terminal
+    eval $(z-grc-proxy --api-key=zgrc_your_api_key_here -d)
+
+    # Now run Claude Code - it will use the proxy automatically
+    claude
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    # Automatically start proxy + set env vars for current terminal
+    Invoke-Expression (& z-grc-proxy --api-key=zgrc_your_api_key_here -d)
+
+    # Now run Claude Code
+    claude
+    ```
+
+!!! tip "Session-Scoped"
+    Environment variables are set only for the current terminal session. Each new terminal requires running the proxy command again.
+
+#### Option B: Foreground Mode
+
+Run proxy in foreground (shows logs, blocks terminal):
 
 === "macOS / Linux"
 
@@ -310,80 +341,62 @@ Launch the proxy server with your API key:
 
 === "Windows"
 
-    ```bash
-    z-grc-proxy.exe --api-key=zgrc_your_api_key_here
+    ```powershell
+    z-grc-proxy --api-key=zgrc_your_api_key_here
     ```
 
-If you built from source:
-
-=== "macOS/Linux"
-
-    ```bash
-    ./dist/z-grc-proxy-macos-arm64 --api-key=zgrc_your_api_key_here
-    ```
-
-=== "Windows"
-
-    ```bash
-    dist\z-grc-proxy-windows-x64.exe --api-key=zgrc_your_api_key_here
-    ```
-
-!!! info "Certificate Generation"
-    On first run, the proxy automatically generates SSL certificates in `~/.mitmproxy/`. These certificates are required for HTTPS interception.
-
-The proxy will start listening on `http://localhost:8080` by default.
-
-### Step 3: Launch Claude Code with Proxy Configuration
-
-Launch Claude Code with the required environment variables to route traffic through the Z-GRC proxy:
+Then in a **separate terminal**, set environment variables manually:
 
 === "macOS / Linux"
 
     ```bash
-    NODE_EXTRA_CA_CERTS=~/.mitmproxy/mitmproxy-ca.pem \
-    HTTPS_PROXY=http://localhost:8080 \
+    export HTTPS_PROXY=http://127.0.0.1:8080
+    export NODE_EXTRA_CA_CERTS=~/.mitmproxy/mitmproxy-ca-cert.pem
     claude
     ```
-
-    ??? tip "Optional: Create a Convenient Alias"
-
-        For easier usage, you can create an alias in your shell configuration (`~/.bashrc`, `~/.zshrc`):
-
-        ```bash
-        alias claude-grc='NODE_EXTRA_CA_CERTS=~/.mitmproxy/mitmproxy-ca.pem HTTPS_PROXY=http://localhost:8080 claude'
-        ```
-
-        Then simply run:
-
-        ```bash
-        claude-grc
-        ```
 
 === "Windows (PowerShell)"
 
     ```powershell
-    $env:NODE_EXTRA_CA_CERTS="$HOME\.mitmproxy\mitmproxy-ca.pem"
-    $env:HTTPS_PROXY="http://localhost:8080"
+    $env:HTTPS_PROXY="http://127.0.0.1:8080"
+    $env:NODE_EXTRA_CA_CERTS="$HOME\.mitmproxy\mitmproxy-ca-cert.pem"
     claude
     ```
 
-    ??? tip "Optional: Create a Convenient Function"
+### Proxy Management Commands
 
-        For easier usage, create a PowerShell function in your profile (`$PROFILE`):
+```bash
+# Check active proxy sessions
+z-grc-proxy --status
 
-        ```powershell
-        function claude-grc {
-            $env:NODE_EXTRA_CA_CERTS="$HOME\.mitmproxy\mitmproxy-ca.pem"
-            $env:HTTPS_PROXY="http://localhost:8080"
-            claude
-        }
-        ```
+# Kill all running proxy servers
+z-grc-proxy --kill-all
 
-        Then simply run:
+# Run on specific port
+eval $(z-grc-proxy --api-key=your-key --port=8085 -d)
 
-        ```powershell
-        claude-grc
-        ```
+# Enable verbose logging
+eval $(z-grc-proxy --api-key=your-key -d --verbose)
+```
+
+!!! info "Smart Session Management"
+    - **Auto Port Detection**: Finds available port (8080-8090)
+    - **Session Reuse**: Running with same API key reuses existing proxy
+    - **Certificate Auto-Generation**: SSL certs created in `~/.mitmproxy/` on first run
+    - **Platform Independent**: Works on Linux, macOS, Windows
+
+### Step 3: Verify Proxy is Running
+
+Check that the proxy is active:
+
+```bash
+z-grc-proxy --status
+```
+
+Expected output:
+```
+[1] Port:8080 PID:12345
+```
 
 ---
 
