@@ -7,10 +7,10 @@
 
 <p align="center">
 
-  <a href="https://pypi.org/project/z-grc/"><img src="https://img.shields.io/badge/PyPI-z--grc-FFD700?style=for-the-badge&logo=pypi&logoColor=white" alt="PyPI"></a>
-  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.14+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python Version"></a>
-  <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/badge/Code_Style-Ruff-000000?style=for-the-badge&logo=ruff&logoColor=white" alt="Code Style: Ruff"></a>
-  <a href="https://zeb.ai"><img src="https://img.shields.io/badge/Built_by-Zeb_Labs-blueviolet?style=for-the-badge" alt="Built by Zeb Labs"></a>
+  <a href="https://pypi.org/project/z-grc/"><img src="https://img.shields.io/badge/PyPI-z--grc-FFD700?style=flat&logo=pypi&logoColor=white" alt="PyPI"></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.14+-3776AB?style=flat&logo=python&logoColor=white" alt="Python Version"></a>
+  <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/badge/Code_Style-Ruff-000000?style=flat&logo=ruff&logoColor=white" alt="Code Style: Ruff"></a>
+  <a href="https://zeb.ai"><img src="https://img.shields.io/badge/Built_by-Zeb_Labs-blueviolet?style=flat" alt="Built by Zeb Labs"></a>
 </p>
 
 ---
@@ -140,32 +140,78 @@ zgrc.init(
 )
 ```
 
-## Building Executables
+## Proxy Mode (Claude Code CLI)
 
-Build standalone executables with PyInstaller:
+For environments where code modification isn't possible (like Claude Code CLI), use the standalone proxy:
 
-### macOS/Linux
+### Quick Start
+
+**Background Mode (Recommended):**
 ```bash
-./build.sh
-```
-Output: `dist/z-grc-proxy-macos-arm64` or `dist/z-grc-proxy-linux-x86_64`
+# Set proxy environment variables automatically
+eval $(z-grc-proxy --api-key=your-key -d)
 
-### Windows
-```bash
-build.bat
-```
-Output: `dist/z-grc-proxy-windows-x64.exe`
-
-### Test Executable
-```bash
-# macOS/Linux
-./dist/z-grc-proxy-macos-arm64 --api-key=zgrc_xxx
-
-# Windows
-dist\z-grc-proxy-windows-x64.exe --api-key=zgrc_xxx
+# Now run Claude Code - it will use the proxy
+claude
 ```
 
-**Note:** Certificates auto-generate in `~/.mitmproxy/` on first run. Users must set `HTTPS_PROXY` and `NODE_EXTRA_CA_CERTS` environment variables.
+**Foreground Mode:**
+```bash
+# Run proxy in foreground (shows logs, blocks terminal)
+z-grc-proxy --api-key=your-key
+
+# In another terminal, set env vars manually:
+export HTTPS_PROXY=http://127.0.0.1:8080
+export NODE_EXTRA_CA_CERTS=~/.mitmproxy/mitmproxy-ca-cert.pem
+
+claude
+```
+
+### Proxy Commands
+
+```bash
+# Start in background (auto port detection)
+eval $(z-grc-proxy --api-key=your-key -d)
+
+# Start on specific port
+eval $(z-grc-proxy --api-key=your-key --port=8085 -d)
+
+# Check active proxy sessions
+z-grc-proxy --status
+
+# Kill all proxy servers
+z-grc-proxy --kill-all
+
+# Verbose logging
+eval $(z-grc-proxy --api-key=your-key -d --verbose)
+```
+
+### How It Works
+
+1. **Automatic Port Detection**: Finds available port (8080-8090)
+2. **Session Management**: Reuses existing proxy for same API key
+3. **mitmproxy Certificates**: Auto-generated in `~/.mitmproxy/` on first run
+4. **Platform Independent**: Works on macOS, Linux, Windows
+
+### Building Executables
+
+Build standalone proxy binary with PyInstaller:
+
+```bash
+# Current platform only
+make grpc-proxy-build
+```
+
+Output: `dist/z-grc-proxy`
+
+### Test Binary
+```bash
+# Background mode
+eval $(./dist/z-grc-proxy --api-key=your-key -d)
+
+# Foreground mode
+./dist/z-grc-proxy --api-key=your-key
+```
 
 ## Installing Executor
 

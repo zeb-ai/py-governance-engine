@@ -1,4 +1,5 @@
 from .handlers import RequestHandler, ResponseHandler
+from .script import Manager
 
 import logging
 
@@ -19,4 +20,4 @@ class ProxyAddon:
         await self.response_handler.handle(flow)
 
 
-__all__ = ["ProxyAddon"]
+__all__ = ["ProxyAddon", "Manager"]
