@@ -32,6 +32,13 @@ TARGET:
     - **Designed specifically for tracking Claude Code CLI usage and costs in terminal sessions**
 """
 
+# CRITICAL: Disable logfire before any imports that use Pydantic
+# This prevents "OSError: could not get source code" in PyInstaller executables
+import os
+
+os.environ["LOGFIRE_IGNORE_NO_CONFIG"] = "1"
+os.environ["LOGFIRE_SEND_TO_LOGFIRE"] = "false"
+
 import argparse
 import asyncio
 import logging
