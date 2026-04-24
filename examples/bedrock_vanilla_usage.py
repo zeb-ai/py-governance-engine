@@ -83,10 +83,9 @@ if __name__ == "__main__":
     # MAIN
     zgrc.init(
         api_key=os.getenv("API_KEY"),
-        # auto_instrument=True,
-        # app_name="bedrock-chat-demo",
-        # environment="development",
-        # log_level=logging.DEBUG,
+        auto_instrument=True,
+        app_name="bedrock-chat-demo",
+        environment="development",
     )
 
     try:

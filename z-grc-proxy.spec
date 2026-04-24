@@ -1,12 +1,16 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import collect_data_files
 
 block_cipher = None
+
+# Collect litellm data files (model pricing JSON, etc.)
+litellm_datas = collect_data_files('litellm')
 
 a = Analysis(
     ['zgrc/proxy.main.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=litellm_datas,
     hiddenimports=[
         'zgrc',
         'zgrc.proxy',
@@ -34,7 +38,12 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=[
+        'logfire',
+        'logfire._internal',
+        'logfire.integrations',
+        'logfire.integrations.pydantic',
+    ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
