@@ -125,8 +125,12 @@ def main():
             # Where needed to store the creds in current terminal session, so getting the printing the creds and using
             # eval to run the command in terminal.
             for k, v in mgr.env(port).items():
-                # Single quotes protect spaces in paths
-                print(f"export {k}='{v}'")
+                if sys.platform == "win32":
+                    # PowerShell syntax for Windows
+                    print(f"$env:{k}='{v}'")
+                else:
+                    # Unix/Linux/Mac bash syntax
+                    print(f"export {k}='{v}'")
             return 0
         except Exception as e:
             print(f"Error: {e}", file=sys.stderr)
