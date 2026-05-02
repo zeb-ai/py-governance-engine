@@ -1,12 +1,15 @@
-# Governance Engine Proxy - Windows Installer
+# Z-GRC Governance Engine Proxy - Windows Installer
 # Usage: irm https://raw.githubusercontent.com/zeb-ai/z-grc/main/install.ps1 | iex
 
 $ErrorActionPreference = "Stop"
 
-$Repo = "zeb-ai/z-grc"
-$BinaryName = "z-grc-proxy"
-$AssetName = "z-grc-proxy-windows-x64.exe"
-$InstallDir = "$env:LOCALAPPDATA\Programs\GovernanceEngine"
+$Repo        = "zeb-ai/z-grc"
+$BinaryName  = "z-grc-proxy"
+$AssetName   = "z-grc-proxy-windows-x64.zip"
+# Where the unpacked one-dir bundle lives
+$InstallDir  = "$env:LOCALAPPDATA\Programs\z-grc"
+# Inside the zip, contents are under z-grc-proxy-windows-x64\
+$BundleSubdir = "z-grc-proxy-windows-x64"
 
 function Write-Info($msg) { Write-Host "==> $msg" -ForegroundColor Green }
 function Write-Warn($msg) { Write-Host "==> $msg" -ForegroundColor Yellow }
@@ -23,43 +26,29 @@ function Get-LatestVersion {
     }
 }
 
-# Download and install
-function Install-Binary($version) {
-    $url = "https://github.com/$Repo/releases/download/$version/$AssetName"
-    $targetPath = Join-Path $InstallDir "$BinaryName.exe"
-
-    if (-not (Test-Path $InstallDir)) {
-        New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
-    }
+# Download zip, extract, surface launcher
+function Install-Bundle($version) {
+    $url     = "https://github.com/$Repo/releases/download/$version/$AssetName"
+    $tmpZip  = Join-Path $env:TEMP "$AssetName"
+    $tmpDir  = Join-Path $env:TEMP "z-grc-extract-$([Guid]::NewGuid().ToString('N'))"
 
     Write-Info "Downloading from $url"
     try {
-        Invoke-WebRequest -Uri $url -OutFile $targetPath -UseBasicParsing
+        Invoke-WebRequest -Uri $url -OutFile $tmpZip -UseBasicParsing
     } catch {
         Write-Err "Download failed: $_"
     }
 
-    Write-Info "Installed to $targetPath"
-    return $targetPath
-}
+    Write-Info "Extracting bundle..."
+    if (Test-Path $tmpDir) { Remove-Item -Recurse -Force $tmpDir }
+    New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null
+    Expand-Archive -Path $tmpZip -DestinationPath $tmpDir -Force
 
-# Add install directory to user PATH if missing
-function Add-ToPath {
-    $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-    if ($userPath -notlike "*$InstallDir*") {
-        Write-Info "Adding $InstallDir to PATH"
-        [Environment]::SetEnvironmentVariable("Path", "$userPath;$InstallDir", "User")
-        Write-Warn "Restart your terminal for PATH changes to take effect."
-    }
-}
+    # Wipe any prior install so _internal\ doesn't accumulate stale files
+    if (Test-Path $InstallDir) { Remove-Item -Recurse -Force $InstallDir }
+    New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
 
-function Main {
-    $version = Get-LatestVersion
-    Write-Info "Latest version: $version"
-    $path = Install-Binary $version
-    Add-ToPath
-    Write-Info "Installation complete!"
-    Write-Info "Run: $BinaryName --help (after restarting your terminal)"
-}
-
-Main
+    # Move the inner folder contents into $InstallDir
+    $extractedRoot = Join-Path $tmpDir $BundleSubdir
+    if (-not (Test-Path $extractedRoot)) {
+        Write-Err "Bundle

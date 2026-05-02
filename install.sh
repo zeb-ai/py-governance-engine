@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Governance Engine Proxy - Unix Installer
+# Z-GRC Governance Engine Proxy - Unix Installer
 # Usage: curl -fsSL https://raw.githubusercontent.com/zeb-ai/z-grc/main/install.sh | bash
 
 REPO="zeb-ai/z-grc"
 BINARY_NAME="z-grc-proxy"
-INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
+# Where the unpacked one-dir bundle lives (binary + _internal/ siblings)
+BUNDLE_DIR="${BUNDLE_DIR:-$HOME/.local/share/z-grc}"
+# Where we symlink the launcher so it lands on PATH
+INSTALL_DIR="${INSTALL_DIR:-$HOME/.local/bin}"
 
 # Colors
 RED='\033[0;31m'
@@ -25,23 +28,33 @@ detect_platform() {
 
     case "$OS" in
         Darwin)
-            PLATFORM="macos-arm64"
+            case "$ARCH" in
+                arm64|aarch64) PLATFORM="macos-arm64" ;;
+                *) error "Unsupported macOS architecture: $ARCH (only Apple Silicon is supported)" ;;
+            esac
             ;;
         Linux)
-            if [ "$ARCH" = "x86_64" ]; then
-                PLATFORM="linux-x86_64"
-            elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-                PLATFORM="linux-arm64"
-            else
-                error "Unsupported Linux architecture: $ARCH"
-            fi
+            case "$ARCH" in
+                x86_64|amd64) PLATFORM="linux-x86_64" ;;
+                aarch64|arm64) PLATFORM="linux-arm64" ;;
+                *) error "Unsupported Linux architecture: $ARCH" ;;
+            esac
             ;;
         *)
             error "Unsupported OS: $OS. Use install.ps1 for Windows."
             ;;
     esac
 
-    ASSET_NAME="${BINARY_NAME}-${PLATFORM}"
+    ASSET_NAME="${BINARY_NAME}-${PLATFORM}.tar.gz"
+}
+
+# Check required tools
+check_dependencies() {
+    for cmd in curl tar; do
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            error "Required command not found: $cmd"
+        fi
+    done
 }
 
 # Get the latest release version from GitHub
@@ -58,40 +71,55 @@ get_latest_version() {
     info "Latest version: $VERSION"
 }
 
-# Download and install
+# Download archive, extract bundle, symlink launcher
 install_binary() {
     DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${VERSION}/${ASSET_NAME}"
-    TMP_FILE="$(mktemp)"
+    TMP_DIR="$(mktemp -d)"
+    trap 'rm -rf "$TMP_DIR"' EXIT
+    TMP_ARCHIVE="${TMP_DIR}/${ASSET_NAME}"
 
     info "Downloading from $DOWNLOAD_URL"
-    if ! curl -fsSL -o "$TMP_FILE" "$DOWNLOAD_URL"; then
+    if ! curl -fsSL -o "$TMP_ARCHIVE" "$DOWNLOAD_URL"; then
         error "Download failed. Asset may not exist for your platform."
     fi
 
-    chmod +x "$TMP_FILE"
-
-    # Check if we need sudo
-    if [ -w "$INSTALL_DIR" ]; then
-        mv "$TMP_FILE" "$INSTALL_DIR/$BINARY_NAME"
-    else
-        warn "Need sudo to write to $INSTALL_DIR"
-        sudo mv "$TMP_FILE" "$INSTALL_DIR/$BINARY_NAME"
+    info "Extracting bundle..."
+    # Archive contents look like: z-grc-proxy-<platform>/{z-grc-proxy,_internal/...}
+    # Wipe any old bundle so we don't leave stale _internal files behind.
+    if [ -d "$BUNDLE_DIR" ]; then
+        rm -rf "$BUNDLE_DIR"
     fi
+    mkdir -p "$BUNDLE_DIR"
+    # --strip-components=1 drops the top-level z-grc-proxy-<platform>/ folder
+    tar -xzf "$TMP_ARCHIVE" -C "$BUNDLE_DIR" --strip-components=1
 
-    info "Installed to $INSTALL_DIR/$BINARY_NAME"
+    if [ ! -f "${BUNDLE_DIR}/${BINARY_NAME}" ]; then
+        error "Bundle layout unexpected: ${BUNDLE_DIR}/${BINARY_NAME} not found after extract."
+    fi
+    chmod +x "${BUNDLE_DIR}/${BINARY_NAME}"
+
+    # Symlink launcher onto PATH
+    mkdir -p "$INSTALL_DIR"
+    ln -sf "${BUNDLE_DIR}/${BINARY_NAME}" "${INSTALL_DIR}/${BINARY_NAME}"
+
+    info "Bundle installed at:  $BUNDLE_DIR"
+    info "Launcher symlinked at: $INSTALL_DIR/$BINARY_NAME"
 }
 
 # Verify installation
 verify() {
     if command -v "$BINARY_NAME" >/dev/null 2>&1; then
         info "Installation successful!"
-        info "Run: $BINARY_NAME --api-key=grc_xxx"
+        info "Run: $BINARY_NAME --api-key=zgrc_xxx"
     else
-        warn "Binary installed but not on PATH. Add $INSTALL_DIR to your PATH."
+        warn "Installed but $INSTALL_DIR is not on PATH."
+        warn "Add this to your shell config (~/.zshrc or ~/.bashrc):"
+        warn "    export PATH=\"$INSTALL_DIR:\$PATH\""
     fi
 }
 
 main() {
+    check_dependencies
     detect_platform
     get_latest_version
     install_binary
