@@ -26,7 +26,7 @@ class RequestHandler:
         if flow.request.path == "/__health":
             flow.response = Response.make(
                 200,
-                json.dumps({"status":200}, indent=2),
+                json.dumps({"status": 200}, indent=2),
                 {"Content-Type": "application/json"},
             )
             return
@@ -47,7 +47,7 @@ class RequestHandler:
                 "__type": "ServiceCostExceededException",
                 "message": f"Cost exceeded: ${e.used:.4f} used, ${e.remaining:.4f} remaining. Increase quota at your GRC dashboard to continue.",
                 "used": e.used,
-                "remaining": e.remaining
+                "remaining": e.remaining,
             }
             flow.response = Response.make(
                 400,

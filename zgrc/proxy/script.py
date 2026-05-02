@@ -71,7 +71,13 @@ class Process:
             script = Path(__file__).parent.parent / "proxy.main.py"
             if not script.exists():
                 raise RuntimeError(f"proxy.main.py not found at: {script}")
-            cmd = [exe, str(script), "--detach", f"--api-key={api_key}", f"--port={port}"]
+            cmd = [
+                exe,
+                str(script),
+                "--detach",
+                f"--api-key={api_key}",
+                f"--port={port}",
+            ]
 
         if verbose:
             cmd.append("--verbose")

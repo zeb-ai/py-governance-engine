@@ -5,7 +5,6 @@ on:
     tags:
       - "v*"
 
-# Opt into Node 24 now so deprecated-action warnings stop blocking you
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
@@ -17,16 +16,12 @@ jobs:
         include:
           - os: macos-latest
             artifact_name: z-grc-proxy-macos-arm64
-            ext: ""
           - os: ubuntu-latest
             artifact_name: z-grc-proxy-linux-x86_64
-            ext: ""
           - os: ubuntu-24.04-arm
             artifact_name: z-grc-proxy-linux-arm64
-            ext: ""
           - os: windows-latest
             artifact_name: z-grc-proxy-windows-x64
-            ext: ".exe"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -43,23 +38,30 @@ jobs:
       - name: Build executable (one-dir)
         run: uv run pyinstaller z-grc-proxy.spec
 
-      # PyInstaller one-dir produces dist/z-grc-proxy/  (a folder)
-      # Rename the folder, then zip it into a single distributable.
-      - name: Package one-dir bundle (Linux/macOS)
+      - name: Verify build output
+        shell: bash
+        run: |
+          echo "Contents of dist/:"
+          ls -la dist/
+          test -d dist/z-grc-proxy || { echo "ERROR: dist/z-grc-proxy folder not found. Check the name= field in your .spec file."; exit 1; }
+
+      - name: Package bundle (Linux/macOS)
         if: runner.os != 'Windows'
         shell: bash
         run: |
           mv dist/z-grc-proxy "dist/${{ matrix.artifact_name }}"
           cd dist
           tar -czvf "${{ matrix.artifact_name }}.tar.gz" "${{ matrix.artifact_name }}"
+          ls -lh "${{ matrix.artifact_name }}.tar.gz"
 
-      - name: Package one-dir bundle (Windows)
+      - name: Package bundle (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           Rename-Item -Path "dist/z-grc-proxy" -NewName "${{ matrix.artifact_name }}"
           Compress-Archive -Path "dist/${{ matrix.artifact_name }}" `
                            -DestinationPath "dist/${{ matrix.artifact_name }}.zip"
+          Get-ChildItem "dist/${{ matrix.artifact_name }}.zip"
 
       - name: Upload artifact (Linux/macOS)
         if: runner.os != 'Windows'
@@ -89,7 +91,7 @@ jobs:
           path: ./artifacts
           merge-multiple: true
 
-      - name: List downloaded files (debug)
+      - name: List downloaded files
         run: ls -lah ./artifacts
 
       - name: Create GitHub Release
