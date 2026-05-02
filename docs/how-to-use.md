@@ -249,6 +249,10 @@ After initialization, use your AWS Bedrock SDKs as you normally would. Z-GRC aut
         print(f"❌ Error: {str(e)}")
     ```
 
+    <p align="center">
+      <img src="../assets/quota-exceeded.png" alt="Quota Exceeded Example" width="600">
+    </p>
+
 !!! note "Framework Compatibility"
     Z-GRC seamlessly integrates with popular LLM frameworks and libraries including **PydanticAI**, **LangChain**, **Strands Agents**, and other AWS Bedrock-compatible frameworks. Simply initialize Z-GRC before using these frameworks, and governance will be automatically applied to all LLM interactions.
 
@@ -304,34 +308,40 @@ Z-GRC proxy can run in two modes: **background** (recommended) or **foreground**
 
 #### Option A: Background Mode (Recommended)
 
-Launch proxy in background and automatically set environment variables:
+Launch proxy in background and automatically set environment variables, then run Claude Code **in the same terminal**:
 
 === "macOS / Linux"
 
     ```bash
-    # Automatically start proxy + set env vars for current terminal
+    # Step 1: Start proxy in background and set environment variables
     eval $(z-grc-proxy --api-key=zgrc_your_api_key_here -d)
 
-    # Now run Claude Code - it will use the proxy automatically
+    # Step 2: Run Claude Code in the same terminal
     claude
     ```
 
 === "Windows (PowerShell)"
 
     ```powershell
-    # Automatically start proxy + set env vars for current terminal
+    # Step 1: Start proxy in background and set environment variables
     Invoke-Expression (& z-grc-proxy --api-key=zgrc_your_api_key_here -d)
 
-    # Now run Claude Code
+    # Step 2: Run Claude Code in the same terminal
     claude
     ```
 
-!!! tip "Session-Scoped"
-    Environment variables are set only for the current terminal session. Each new terminal requires running the proxy command again.
+<p align="center">
+  <img src="../assets/proxy-running.png" alt="Claude Code Running with Z-GRC Proxy" width="600">
+  <br>
+  <em>Claude Code running with Z-GRC proxy in background mode</em>
+</p>
+
+!!! warning "Important: Terminal Session Scope"
+    The environment variables are set **only for the current terminal session**. You need to run the `eval $(z-grc-proxy ...)` command in **every new terminal** where you want to use Claude Code with Z-GRC.
 
 #### Option B: Foreground Mode
 
-Run proxy in foreground (shows logs, blocks terminal):
+**Terminal 1** - Start the proxy (shows logs, blocks terminal):
 
 === "macOS / Linux"
 
@@ -345,23 +355,43 @@ Run proxy in foreground (shows logs, blocks terminal):
     z-grc-proxy --api-key=zgrc_your_api_key_here
     ```
 
-Then in a **separate terminal**, set environment variables manually:
+<p align="center">
+  <img src="../assets/proxy-foreground.png" alt="Z-GRC Proxy Running in Foreground" width="600">
+  <br>
+  <em>Proxy server running in foreground with request logs</em>
+</p>
+
+**Terminal 2** - Open another tab, set environment variables (HTTP proxy and certificate), then run Claude:
 
 === "macOS / Linux"
 
     ```bash
+    # Set HTTP proxy to point to Z-GRC proxy
     export HTTPS_PROXY=http://127.0.0.1:8080
+
+    # Set certificate for HTTPS interception
     export NODE_EXTRA_CA_CERTS=~/.mitmproxy/mitmproxy-ca-cert.pem
+
+    # Run Claude Code
     claude
     ```
 
 === "Windows (PowerShell)"
 
     ```powershell
+    # Set HTTP proxy to point to Z-GRC proxy
     $env:HTTPS_PROXY="http://127.0.0.1:8080"
+
+    # Set certificate for HTTPS interception
     $env:NODE_EXTRA_CA_CERTS="$HOME\.mitmproxy\mitmproxy-ca-cert.pem"
+
+    # Run Claude Code
     claude
     ```
+
+!!! info "How Foreground Mode Works"
+    - **Terminal 1**: Proxy runs in foreground and shows live request/response logs
+    - **Terminal 2**: Claude Code runs with environment variables that route traffic through the proxy (HTTP proxy + SSL certificate)
 
 ### Proxy Management Commands
 

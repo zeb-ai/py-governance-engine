@@ -82,6 +82,10 @@ except QuotaExceededException as e:
     print(f"Quota exceeded: ${e.used:.4f} used, ${e.remaining:.4f} remaining")
 ```
 
+<p align="center">
+  <img src="docs/assets/quota-exceeded.png" alt="Quota Exceeded Example" width="600">
+</p>
+
 ### Auto-Instrumentation
 Optional automatic instrumentation for HTTP clients, web frameworks, databases, and more:
 
@@ -147,25 +151,46 @@ For environments where code modification isn't possible (like Claude Code CLI), 
 ### Quick Start
 
 **Background Mode (Recommended):**
+
+In the same terminal, run both commands:
+
 ```bash
-# Set proxy environment variables automatically
+# Step 1: Start proxy in background and set environment variables
 eval $(z-grc-proxy --api-key=your-key -d)
 
-# Now run Claude Code - it will use the proxy
+# Step 2: Run Claude Code in the same terminal
 claude
 ```
+
+<p align="center">
+  <img src="docs/assets/proxy-running.png" alt="Claude Code Running with Z-GRC Proxy" width="600">
+  <br>
+  <em>Claude Code running with Z-GRC proxy in background mode</em>
+</p>
+
+> **Note:** You need to run the `eval $(z-grc-proxy ...)` command in every new terminal where you want to use Claude Code with Z-GRC. The environment variables only apply to the current terminal session.
 
 **Foreground Mode:**
-```bash
-# Run proxy in foreground (shows logs, blocks terminal)
-z-grc-proxy --api-key=your-key
 
-# In another terminal, set env vars manually:
+**Terminal 1** - Start the proxy (shows logs):
+```bash
+z-grc-proxy --api-key=your-key
+```
+
+<p align="center">
+  <img src="docs/assets/proxy-foreground.png" alt="Z-GRC Proxy Running in Foreground" width="600">
+  <br>
+  <em>Proxy server running in foreground with request logs</em>
+</p>
+
+**Terminal 2** - Open another tab, set environment variables, and run Claude:
+```bash
 export HTTPS_PROXY=http://127.0.0.1:8080
 export NODE_EXTRA_CA_CERTS=~/.mitmproxy/mitmproxy-ca-cert.pem
-
 claude
 ```
+
+> **Note:** In foreground mode, the proxy runs in Terminal 1 and shows live logs. Claude Code runs in Terminal 2 with the environment variables set to use the proxy.
 
 ### Proxy Commands
 
