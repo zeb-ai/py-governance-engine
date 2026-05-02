@@ -6,7 +6,7 @@
 <p align="center">Built by <a href="https://zeb.ai">Zeb Labs</a></p>
 
 <p align="center">
-
+  <a href="https://zeb-ai.github.io/z-grc-application/"><img src="https://img.shields.io/badge/app_Z--GRC_Application-4F46E5?style=flat" alt="Z-GRC Application"></a>
   <a href="https://pypi.org/project/z-grc/"><img src="https://img.shields.io/badge/PyPI-z--grc-FFD700?style=flat&logo=pypi&logoColor=white" alt="PyPI"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.14+-3776AB?style=flat&logo=python&logoColor=white" alt="Python Version"></a>
   <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/badge/Code_Style-Ruff-000000?style=flat&logo=ruff&logoColor=white" alt="Code Style: Ruff"></a>

@@ -78,4 +78,5 @@ plugins:
 
 nav:
   - Home: index.md
+  - Z-GRC Application: https://zeb-ai.github.io/z-grc-application/
   - How to Use?: how-to-use.md
