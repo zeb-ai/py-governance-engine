@@ -55,7 +55,7 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 exe = EXE(
     pyz,
     a.scripts,
-    []
+    [],
     exclude_binaries=True,
     name='z-grc-proxy',
     debug=False,
