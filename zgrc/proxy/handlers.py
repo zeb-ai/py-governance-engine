@@ -23,6 +23,14 @@ class RequestHandler:
         self.total_tokens = 0
 
     async def handle(self, flow):
+        if flow.request.path == "/__health":
+            flow.response = Response.make(
+                200,
+                json.dumps({"status":200}, indent=2),
+                {"Content-Type": "application/json"},
+            )
+            return
+
         if "amazonaws.com" not in flow.request.pretty_host:
             return
         if "invoke" not in flow.request.path:
@@ -35,14 +43,22 @@ class RequestHandler:
             logger.debug("[OK] Quota check passed")
 
         except QuotaExceededException as e:
+            error_body = {
+                "__type": "ServiceCostExceededException",
+                "message": f"Cost exceeded: ${e.used:.4f} used, ${e.remaining:.4f} remaining. Increase quota at your GRC dashboard to continue.",
+                "used": e.used,
+                "remaining": e.remaining
+            }
             flow.response = Response.make(
-                429,
-                json.dumps({"error": str(e), "used": e.used, "limit": e.limit}),
+                400,
+                json.dumps(error_body),
                 {"Content-Type": "application/json"},
             )
             logger.error(f"[BLOCKED] Quota exceeded: {e}")
+            return
         except Exception as e:
             logger.error(f"[ERROR] Pre-check failed: {e}", exc_info=True)
+            return
 
 
 class ResponseHandler:

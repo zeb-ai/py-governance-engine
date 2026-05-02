@@ -4,11 +4,14 @@ import json
 import signal
 import socket
 import hashlib
+import logging
 import subprocess
 from pathlib import Path
 from datetime import datetime
 
 import psutil
+
+logger = logging.getLogger(__name__)
 
 
 class Process:
@@ -29,6 +32,32 @@ class Process:
         return None
 
     @staticmethod
+    def _wait_for_port(pid, port, max_wait=30):
+        """Poll until port is listening, with exponential backoff."""
+        import time
+
+        deadline = time.time() + max_wait
+        delay = 0.1
+
+        logger.debug(f"Waiting for proxy PID:{pid} on port {port}")
+
+        while time.time() < deadline:
+            if not Process.alive(pid):
+                raise RuntimeError(f"Proxy process PID:{pid} crashed during startup")
+
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.settimeout(0.1)
+                if s.connect_ex(("127.0.0.1", port)) == 0:
+                    logger.debug(f"Proxy PID:{pid} is ready on port {port}")
+                    return
+
+            delay = min(delay * 1.5, 2.0)
+            logger.debug(f"Port {port} not ready yet, retrying in {delay:.1f}s")
+            time.sleep(delay)
+
+        raise RuntimeError(f"Proxy did not start on port {port} within {max_wait}s")
+
+    @staticmethod
     def spawn(api_key, port, verbose=False):
         """Spawn detached proxy process"""
         exe = sys.executable
@@ -39,8 +68,10 @@ class Process:
             cmd = [exe, "--detach", f"--api-key={api_key}", f"--port={port}"]
         else:
             # Python script: need to run the script with Python
-            script = str(Path(__file__).parent.parent / "proxy.main.py")
-            cmd = [exe, script, "--detach", f"--api-key={api_key}", f"--port={port}"]
+            script = Path(__file__).parent.parent / "proxy.main.py"
+            if not script.exists():
+                raise RuntimeError(f"proxy.main.py not found at: {script}")
+            cmd = [exe, str(script), "--detach", f"--api-key={api_key}", f"--port={port}"]
 
         if verbose:
             cmd.append("--verbose")
@@ -66,6 +97,8 @@ class Process:
         else:
             proc = subprocess.Popen(cmd, start_new_session=True, **kw)
 
+        logger.debug(f"Spawned proxy process PID:{proc.pid} on port {port}")
+        Process._wait_for_port(proc.pid, port)
         return proc.pid
 
     @staticmethod
@@ -91,6 +124,7 @@ class Process:
             except psutil.TimeoutExpired:
                 p.kill()
                 p.wait(timeout=2)
+            logger.debug(f"Killed process PID:{pid}")
             return True
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             return False
@@ -122,6 +156,7 @@ class Session:
             "started": datetime.utcnow().isoformat(),
         }
         self.path(api_key).write_text(json.dumps(data, indent=2))
+        logger.debug(f"Session saved port:{port} PID:{pid}")
 
     def load(self, api_key):
         """Load session"""
@@ -140,6 +175,7 @@ class Session:
         if s and Process.alive(s["pid"]):
             return s
         if s:
+            logger.debug("Stale session found, cleaning up")
             self.path(api_key).unlink(missing_ok=True)
         return None
 
@@ -152,6 +188,7 @@ class Session:
                 if Process.alive(s["pid"]):
                     active.append(s)
                 else:
+                    logger.debug(f"Removing stale session: {f.name}")
                     f.unlink(missing_ok=True)
             except (json.JSONDecodeError, IOError, KeyError):
                 f.unlink(missing_ok=True)
@@ -186,12 +223,11 @@ class Manager:
 
     def start(self, api_key, port=None, verbose=False):
         """Start or reuse proxy server"""
-        # Check existing
         s = self.session.get(api_key)
         if s:
+            logger.debug(f"Reusing existing session port:{s['port']} PID:{s['pid']}")
             return s["port"], s["pid"], False
 
-        # Find port
         if port is None:
             port = Process.find_port()
             if not port:

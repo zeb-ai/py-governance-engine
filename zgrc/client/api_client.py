@@ -23,7 +23,8 @@ class APIClient:
         """Send GET request to the specified endpoint with automatic retry on failure."""
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
         try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
+            # In mitmproxy setup for terminal, already http(s) proxy address, this overrides > trust_env=False
+            async with httpx.AsyncClient(timeout=self.timeout, trust_env=False) as client:
                 response = await client.get(url, params=params)
                 response.raise_for_status()
                 return response.json()
@@ -40,7 +41,8 @@ class APIClient:
         """Send POST request to the specified endpoint with automatic retry on failure."""
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
         try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
+            # In mitmproxy setup for terminal, already http(s) proxy address, this overrides > trust_env=False
+            async with httpx.AsyncClient(timeout=self.timeout, trust_env=False) as client:
                 response = await client.post(url, json=json)
                 response.raise_for_status()
                 return response.json()
@@ -57,7 +59,8 @@ class APIClient:
         """Send PUT request to the specified endpoint with automatic retry on failure."""
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
         try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
+            # In mitmproxy setup for terminal, already http(s) proxy address, this overrides > trust_env=False
+            async with httpx.AsyncClient(timeout=self.timeout, trust_env=False) as client:
                 response = await client.put(url, json=json)
                 response.raise_for_status()
                 return response.json()
@@ -72,7 +75,8 @@ class APIClient:
         """Send DELETE request to the specified endpoint with automatic retry on failure."""
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
         try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
+            # In mitmproxy setup for terminal, already http(s) proxy address, this overrides > trust_env=False
+            async with httpx.AsyncClient(timeout=self.timeout, trust_env=False) as client:
                 response = await client.delete(url)
                 response.raise_for_status()
                 return response.json() if response.content else {}

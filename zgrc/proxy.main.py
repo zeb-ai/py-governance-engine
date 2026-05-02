@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 GRC Proxy - Standalone HTTP proxy for LLM request interception (Claude Code).
 
