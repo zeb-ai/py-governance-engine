@@ -23,6 +23,14 @@ class RequestHandler:
         self.total_tokens = 0
 
     async def handle(self, flow):
+        if flow.request.path == "/__health":
+            flow.response = Response.make(
+                200,
+                json.dumps({"status":200}, indent=2),
+                {"Content-Type": "application/json"},
+            )
+            return
+
         if "amazonaws.com" not in flow.request.pretty_host:
             return
         if "invoke" not in flow.request.path:

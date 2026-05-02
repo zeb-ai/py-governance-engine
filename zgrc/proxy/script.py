@@ -175,7 +175,7 @@ class Session:
         if s and Process.alive(s["pid"]):
             return s
         if s:
-            logger.debug(f"Stale session found, cleaning up")
+            logger.debug("Stale session found, cleaning up")
             self.path(api_key).unlink(missing_ok=True)
         return None
 
