@@ -12,6 +12,8 @@ jobs:
             artifact_name: z-grc-proxy-macos-arm64
           - os: ubuntu-latest
             artifact_name: z-grc-proxy-linux-x86_64
+          - os: ubuntu-24.04-arm
+            artifact_name: z-grc-proxy-linux-arm64
           - os: windows-latest
             artifact_name: z-grc-proxy-windows-x64.exe
     runs-on: ${{ matrix.os }}
