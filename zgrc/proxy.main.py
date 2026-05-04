@@ -138,10 +138,34 @@ def main():
             return 1
 
     # Default: Foreground mode - run proxy directly
+    # Check for existing session with same API key
+    existing = mgr.session.get(args.api_key)
+    if existing:
+        print(
+            f"Error: Server already running on port {existing['port']} (PID:{existing['pid']})",
+            file=sys.stderr,
+        )
+        print("Use --kill-all to stop existing servers", file=sys.stderr)
+        return 1
+
+    # Determine port
     port = args.port if args.port else Process.find_port()
     if not port:
         print("Error: No available port", file=sys.stderr)
         return 1
+
+    # Check if port is already in use by another session
+    for session in mgr.session.all():
+        if session["port"] == port:
+            print(
+                f"Error: Port {port} already in use by another server (PID:{session['pid']})",
+                file=sys.stderr,
+            )
+            print(
+                "Use a different port or --kill-all to stop existing servers",
+                file=sys.stderr,
+            )
+            return 1
 
     print(f"Starting proxy on port {port}...", file=sys.stderr)
     asyncio.run(run_proxy(args.api_key, port, args.verbose))
