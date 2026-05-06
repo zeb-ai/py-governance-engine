@@ -52,6 +52,7 @@ from zgrc.proxy import ProxyAddon
 from zgrc.proxy.script import Manager, Process
 from zgrc.auth import AuthToken
 from zgrc.context import auth_ctx
+from zgrc.observability import instrument
 
 logger = logging.getLogger(__name__)
 
@@ -69,8 +70,6 @@ async def run_proxy(api_key, port, verbose):
 
     # Initialize OpenTelemetry observability
     try:
-        from zgrc.observability import instrument
-
         instrument(
             app_name="zgrc-proxy",
             environment="production",
