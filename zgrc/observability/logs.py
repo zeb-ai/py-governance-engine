@@ -70,8 +70,11 @@ class Logs(BaseTelemetry):
         span = trace.get_current_span()
         ctx = span.get_span_context()
 
+        # Capture timestamp as datetime object for OpenTelemetry
+        log_timestamp = datetime.now(timezone.utc)
+
         log_data = LogData(
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=log_timestamp.isoformat(),
             trace_id=format(ctx.trace_id, "032x") if ctx.is_valid else "unknown",
             span_id=format(ctx.span_id, "016x") if ctx.is_valid else "unknown",
             provider=config.provider,
@@ -83,8 +86,12 @@ class Logs(BaseTelemetry):
             **config.metadata if config.metadata else {},
         )
 
+        # Convert datetime to nanoseconds since epoch for OpenTelemetry
+        timestamp_ns = int(log_timestamp.timestamp() * 1_000_000_000)
+
         self._otel_logger.emit(
             body=json.dumps(log_data.model_dump()),
+            timestamp=timestamp_ns,
             severity_text="INFO",
             attributes={
                 "log.type": "llm_inference",
