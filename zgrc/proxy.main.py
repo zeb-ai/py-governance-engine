@@ -67,6 +67,19 @@ async def run_proxy(api_key, port, verbose):
     auth = AuthToken.decode(api_key)
     auth_ctx.set(auth)
 
+    # Initialize OpenTelemetry observability
+    try:
+        from zgrc.observability import instrument
+
+        instrument(
+            app_name="zgrc-proxy",
+            environment="production",
+            auto_instrument=False,
+        )
+        logger.info("OpenTelemetry observability initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize observability: {e}", exc_info=True)
+
     addon = ProxyAddon()
     logger.info(f"GRC Proxy running on PORT:{port}")
 

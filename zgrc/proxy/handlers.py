@@ -5,14 +5,32 @@ import struct
 from datetime import datetime
 from mitmproxy.http import Response
 
+from opentelemetry import context, trace
+
 from ..interceptors.models import TokenUsage
+from .. import observability
+from ..observability.logs import LogsConfig
 from ..policy.pre_checker import PreChecker
 from ..policy.post_checker import PostChecker
+from ..providers import Providers
 from ..utils.cost_calculator import calculate_cost_from_events
 from ..utils.exceptions import QuotaExceededException
 from ..utils.model_resolver import resolve_model_id_from_url
 
 logger = logging.getLogger(__name__)
+
+
+def _extract_operation_name(path: str) -> str:
+    """Extract Bedrock operation name from URL path"""
+    if "invoke-with-response-stream" in path:
+        return "InvokeModelWithResponseStream"
+    elif "converse-stream" in path:
+        return "ConverseStream"
+    elif "converse" in path:
+        return "Converse"
+    elif "invoke" in path:
+        return "InvokeModel"
+    return "unknown"
 
 
 class RequestHandler:
@@ -36,6 +54,28 @@ class RequestHandler:
         if "invoke" not in flow.request.path:
             return
 
+        # Create trace span for this request
+        span = None
+        token = None
+        operation_name = _extract_operation_name(flow.request.path)
+
+        if observability.traces and observability.traces.tracer:
+            span = observability.traces.tracer.start_span(
+                f"bedrock.proxy.{operation_name}",
+                attributes={
+                    "llm.provider": "bedrock",
+                    "llm.operation": operation_name,
+                    "http.url": flow.request.pretty_url,
+                    "http.method": flow.request.method,
+                },
+            )
+            ctx = trace.set_span_in_context(span)
+            token = context.attach(ctx)
+
+            # Store span context in flow for response handler
+            flow.metadata["trace_span"] = span
+            flow.metadata["trace_token"] = token
+
         logger.debug(f"{flow.request.pretty_url}")
 
         try:
@@ -43,6 +83,16 @@ class RequestHandler:
             logger.debug("[OK] Quota check passed")
 
         except QuotaExceededException as e:
+            if span:
+                span.set_status(trace.Status(trace.StatusCode.ERROR, "Quota exceeded"))
+                span.add_event(
+                    "quota_exceeded",
+                    {
+                        "used": str(e.used),
+                        "remaining": str(e.remaining),
+                    },
+                )
+
             error_body = {
                 "__type": "ServiceCostExceededException",
                 "message": f"Cost exceeded: ${e.used:.4f} used, ${e.remaining:.4f} remaining. Increase quota at your GRC dashboard to continue.",
@@ -55,9 +105,20 @@ class RequestHandler:
                 {"Content-Type": "application/json"},
             )
             logger.error(f"[BLOCKED] Quota exceeded: {e}")
+
+            # End span on error
+            if span:
+                span.end()
+                if token:
+                    context.detach(token)
             return
         except Exception as e:
             logger.error(f"[ERROR] Pre-check failed: {e}", exc_info=True)
+            if span:
+                span.set_status(trace.Status(trace.StatusCode.ERROR, str(e)))
+                span.end()
+                if token:
+                    context.detach(token)
             return
 
 
@@ -72,6 +133,10 @@ class ResponseHandler:
             return
         if "invoke" not in flow.request.path:
             return
+
+        # Retrieve span from request handler
+        span = flow.metadata.get("trace_span")
+        token = flow.metadata.get("trace_token")
 
         logger.info(f"{flow.response.status_code} {flow.request.pretty_url}")
 
@@ -120,6 +185,7 @@ class ResponseHandler:
 
             # Calculate cost using the new event-based method
             cost = 0.0
+            model_id = None
             if isinstance(response_data, dict) and "events" in response_data:
                 model_id = await resolve_model_id_from_url(flow.request.pretty_url)
                 if model_id:
@@ -142,6 +208,92 @@ class ResponseHandler:
 
                 self.post_checker.schedule_background_report(used, cost)
 
+                # Add token and cost attributes to span
+                if span:
+                    span.set_attributes(
+                        {
+                            "llm.tokens.input": total_usage.input_tokens,
+                            "llm.tokens.output": total_usage.output_tokens,
+                            "llm.tokens.total": total_usage.total_tokens,
+                            "llm.tokens.cache_read": total_usage.cache_read_input_tokens,
+                            "llm.tokens.cache_creation": total_usage.cache_creation_input_tokens,
+                            "llm.cost.total": cost,
+                            "llm.model": model_id or "unknown",
+                        }
+                    )
+
+                # Record metrics
+                if observability.metrics:
+                    observability.metrics.set_tokens(
+                        input_tokens=total_usage.input_tokens,
+                        output_tokens=total_usage.output_tokens,
+                        attributes={
+                            "model": model_id or "unknown",
+                            "provider": "bedrock",
+                            "operation": _extract_operation_name(flow.request.path),
+                            "cost": cost,
+                        },
+                    )
+
+                # Send structured logs to OpenTelemetry
+                if observability.logs and span:
+                    from threading import Thread
+
+                    logger.debug("Preparing to send logs to OpenTelemetry")
+
+                    # Parse request body
+                    try:
+                        req_body = json.loads(flow.request.content.decode("utf-8"))
+                    except Exception:
+                        req_body = {"_raw": flow.request.content.hex()[:200]}
+
+                    log_config = LogsConfig(
+                        provider=Providers.BEDROCK,
+                        model_id=model_id or "unknown",
+                        operation=_extract_operation_name(flow.request.path),
+                        request=req_body,
+                        response=response_data
+                        if isinstance(response_data, dict)
+                        else {},
+                        usage={
+                            "input_tokens": total_usage.input_tokens,
+                            "output_tokens": total_usage.output_tokens,
+                            "total_tokens": total_usage.total_tokens,
+                            "cache_read_input_tokens": total_usage.cache_read_input_tokens,
+                            "cache_creation_input_tokens": total_usage.cache_creation_input_tokens,
+                            "total_cost": cost,
+                        },
+                    )
+
+                    # Capture current context to propagate to thread
+                    current_context = context.get_current()
+
+                    def send_logs_with_context():
+                        """Send logs in background thread with propagated context"""
+                        token = context.attach(current_context)
+                        try:
+                            logger.debug("Sending logs to OpenTelemetry backend")
+                            observability.logs.send(log_config)
+                            logger.debug("Logs sent successfully")
+                        except Exception as e:
+                            logger.error(f"Failed to send logs: {e}", exc_info=True)
+                        finally:
+                            try:
+                                context.detach(token)
+                            except ValueError:
+                                # Context was created in different async context, ignore
+                                pass
+
+                    # Send logs in background thread with context propagation
+                    thread = Thread(target=send_logs_with_context, daemon=False)
+                    thread.start()
+                    logger.debug("Log send thread started")
+                elif not observability.logs:
+                    logger.warning("Logs module not initialized, skipping log send")
+                elif not span:
+                    logger.warning("No span available, skipping log send")
+
+                # Keep existing history logging
                 self._log_entry(
                     flow,
                     response_data,
@@ -151,6 +303,18 @@ class ResponseHandler:
 
         except Exception as e:
             logger.error(f"[ERROR] Response processing failed: {e}")
+            if span:
+                span.set_status(trace.Status(trace.StatusCode.ERROR, str(e)))
+        finally:
+            # Always end span and detach context
+            if span:
+                span.end()
+            if token:
+                try:
+                    context.detach(token)
+                except ValueError:
+                    # Context was created in different async context, ignore
+                    pass
 
     # noinspection PyBroadException
     def _parse_response(self, content):
