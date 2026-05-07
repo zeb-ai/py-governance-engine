@@ -51,4 +51,37 @@ function Install-Bundle($version) {
     # Move the inner folder contents into $InstallDir
     $extractedRoot = Join-Path $tmpDir $BundleSubdir
     if (-not (Test-Path $extractedRoot)) {
-        Write-Err "Bundle
+        Write-Err "Bundle structure unexpected - could not find $BundleSubdir inside archive"
+    }
+
+    Get-ChildItem -Path $extractedRoot | Move-Item -Destination $InstallDir -Force
+
+    Remove-Item $tmpZip -Force -ErrorAction SilentlyContinue
+    Remove-Item $tmpDir -Recurse -Force -ErrorAction SilentlyContinue
+
+    Write-Info "Installed to: $InstallDir"
+}
+
+# Add to PATH if not already there
+function Add-ToPath {
+    $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+    if ($userPath -notlike "*$InstallDir*") {
+        Write-Info "Adding $InstallDir to your PATH..."
+        [Environment]::SetEnvironmentVariable(
+            "Path",
+            "$userPath;$InstallDir",
+            "User"
+        )
+        $env:Path = "$env:Path;$InstallDir"
+        Write-Info "PATH updated. You may need to restart your shell."
+    } else {
+        Write-Info "Already in PATH."
+    }
+}
+
+# Main execution
+$version = Get-LatestVersion
+Write-Info "Installing Z-GRC Proxy $version..."
+Install-Bundle $version
+Add-ToPath
+Write-Info "Installation complete! Run 'z-grc-proxy --help' to get started."
