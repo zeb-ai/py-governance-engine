@@ -42,7 +42,14 @@ function Install-Bundle($version) {
     Write-Info "Extracting bundle..."
     if (Test-Path $tmpDir) { Remove-Item -Recurse -Force $tmpDir }
     New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null
-    Expand-Archive -Path $tmpZip -DestinationPath $tmpDir -Force
+
+    # Extract without overwriting to avoid Remove-Item errors inside the archive
+    try {
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        [System.IO.Compression.ZipFile]::ExtractToDirectory($tmpZip, $tmpDir)
+    } catch {
+        Write-Err "Extraction failed: $_"
+    }
 
     # Wipe any prior install so _internal\ doesn't accumulate stale files
     if (Test-Path $InstallDir) { Remove-Item -Recurse -Force $InstallDir }
