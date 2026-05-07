@@ -30,7 +30,8 @@ function Get-LatestVersion {
 function Install-Bundle($version) {
     $url     = "https://github.com/$Repo/releases/download/$version/$AssetName"
     $tmpZip  = Join-Path $env:TEMP "$AssetName"
-    $tmpDir  = Join-Path $env:TEMP "z-grc-extract-$([Guid]::NewGuid().ToString('N'))"
+    # Use C:\zgrc-tmp to avoid Windows MAX_PATH (260 char) issues with deeply nested files
+    $tmpDir  = "C:\zgrc-tmp"
 
     Write-Info "Downloading from $url"
     try {
