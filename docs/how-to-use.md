@@ -324,7 +324,7 @@ Launch proxy in background and automatically set environment variables, then run
 
     ```powershell
     # Step 1: Start proxy in background and set environment variables
-    Invoke-Expression (& z-grc-proxy --api-key=zgrc_your_api_key_here -d)
+    z-grc-proxy --api-key=zgrc_your_api_key_here -d | Out-String | Invoke-Expression
 
     # Step 2: Run Claude Code in the same terminal
     claude
@@ -380,10 +380,10 @@ Launch proxy in background and automatically set environment variables, then run
 
     ```powershell
     # Set HTTP proxy to point to Z-GRC proxy
-    $env:HTTPS_PROXY="http://127.0.0.1:8080"
+    $env:HTTPS_PROXY = "http://127.0.0.1:8080"
 
     # Set certificate for HTTPS interception
-    $env:NODE_EXTRA_CA_CERTS="$HOME\.mitmproxy\mitmproxy-ca-cert.pem"
+    $env:NODE_EXTRA_CA_CERTS = "$env:USERPROFILE\.mitmproxy\mitmproxy-ca-cert.pem"
 
     # Run Claude Code
     claude
@@ -395,19 +395,37 @@ Launch proxy in background and automatically set environment variables, then run
 
 ### Proxy Management Commands
 
-```bash
-# Check active proxy sessions
-z-grc-proxy --status
+=== "macOS / Linux"
 
-# Kill all running proxy servers
-z-grc-proxy --kill-all
+    ```bash
+    # Check active proxy sessions
+    z-grc-proxy --status
 
-# Run on specific port
-eval $(z-grc-proxy --api-key=your-key --port=8085 -d)
+    # Kill all running proxy servers
+    z-grc-proxy --kill-all
 
-# Enable verbose logging
-eval $(z-grc-proxy --api-key=your-key -d --verbose)
-```
+    # Run on specific port
+    eval $(z-grc-proxy --api-key=your-key --port=8085 -d)
+
+    # Enable verbose logging
+    eval $(z-grc-proxy --api-key=your-key -d --verbose)
+    ```
+
+=== "Windows (PowerShell)"
+
+    ```powershell
+    # Check active proxy sessions
+    z-grc-proxy --status
+
+    # Kill all running proxy servers
+    z-grc-proxy --kill-all
+
+    # Run on specific port
+    z-grc-proxy --api-key=your-key --port=8085 -d | Out-String | Invoke-Expression
+
+    # Enable verbose logging
+    z-grc-proxy --api-key=your-key -d --verbose | Out-String | Invoke-Expression
+    ```
 
 !!! info "Smart Session Management"
     - **Auto Port Detection**: Finds available port (8080-8090)

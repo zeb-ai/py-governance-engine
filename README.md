@@ -185,8 +185,15 @@ z-grc-proxy --api-key=your-key
 
 **Terminal 2** - Open another tab, set environment variables, and run Claude:
 ```bash
+# Mac & Linux
 export HTTPS_PROXY=http://127.0.0.1:8080
 export NODE_EXTRA_CA_CERTS=~/.mitmproxy/mitmproxy-ca-cert.pem
+
+# Windows
+$env:HTTPS_PROXY = "http://127.0.0.1:8080"
+$env:NODE_EXTRA_CA_CERTS = "$env:USERPROFILE\.mitmproxy\mitmproxy-ca-cert.pem"
+
+# then run any cli application
 claude
 ```
 
@@ -195,11 +202,16 @@ claude
 ### Proxy Commands
 
 ```bash
-# Start in background (auto port detection)
+# Mac & Linux Start in background (auto port detection)
 eval $(z-grc-proxy --api-key=your-key -d)
 
-# Start on specific port
+# Windows Start in background (auto port detection)
+z-grc-proxy --api-key=your-key -d | Out-String | Invoke-Expression
+
+# Mac & Linux Start on specific port
 eval $(z-grc-proxy --api-key=your-key --port=8085 -d)
+# Windows
+z-grc-proxy --api-key=your-key --port=8085 -d | Out-String | Invoke-Expression
 
 # Check active proxy sessions
 z-grc-proxy --status
