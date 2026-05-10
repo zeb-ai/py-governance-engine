@@ -54,10 +54,10 @@ class TokenUsage(BaseModel):
 
 
 class RequestData(BaseModel):
-    """Captured request data from Bedrock API call"""
+    """Captured request data from LLM API call"""
 
     operation: str
-    model_id: str
+    model_id: str  # Requested model (may be gateway route name)
     body: Dict[str, Any] = Field(default_factory=dict)
     headers: Dict[str, Any] = Field(default_factory=dict)
     url: str
@@ -65,10 +65,13 @@ class RequestData(BaseModel):
 
 
 class ResponseData(BaseModel):
-    """Captured response data from Bedrock API call"""
+    """Captured response data from LLM API call"""
 
     body: Dict[str, Any] = Field(default_factory=dict)
     usage: TokenUsage = Field(default_factory=TokenUsage)
+    actual_model_id: Optional[str] = (
+        None  # Actual model from response (for gateway scenarios)
+    )
     error: Optional[str] = None
     exception_type: Optional[str] = None
 
