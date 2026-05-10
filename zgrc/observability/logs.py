@@ -17,11 +17,14 @@ from .base_telemetry import BaseTelemetry
 
 class LogsConfig(BaseModel):
     provider: str
-    model_id: str
+    model_id: str  # Actual model used
     operation: str
     request: Dict[str, Any]
     response: Dict[str, Any]
     usage: Dict[str, Any]
+    requested_model_id: Optional[str] = (
+        None  # Requested model (may differ for gateways)
+    )
     metadata: Optional[Dict[str, Any]] = None
 
 
@@ -33,8 +36,9 @@ class LogData(BaseModel):
     response: Dict[str, Any]
     usage: Dict[str, Any]
     provider: str
-    model_id: str
+    model_id: str  # Actual model used
     operation: str
+    requested_model_id: Optional[str] = None  # Requested model (gateway route name)
 
     model_config = ConfigDict(extra="allow")
 
@@ -83,6 +87,7 @@ class Logs(BaseTelemetry):
             request=config.request,
             response=config.response,
             usage=config.usage,
+            requested_model_id=config.requested_model_id,
             **config.metadata if config.metadata else {},
         )
 

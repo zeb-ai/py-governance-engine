@@ -91,6 +91,35 @@ class LazyPatcher:
 
     def _hook_anthropic(self) -> None: ...
 
-    def _hook_openai(self) -> None: ...
+    def _hook_openai(self) -> None:
+        """
+        Hook OpenAI client initialization to detect OpenAI usage.
+
+        Wraps OpenAI.__init__() to intercept client creation and trigger activation
+        callback to initialize the OpenAI interceptor before the client is used.
+        """
+        try:
+            import openai
+
+            original_init = openai.OpenAI.__init__
+            activation_callback = self._activation_callback  # Capture in closure
+
+            @functools.wraps(original_init)
+            def hooked_init(openai_self, *args: Any, **kwargs: Any) -> None:
+                logger.debug("[HOOK] OpenAI.__init__() called")
+
+                # Call original init first
+                original_init(openai_self, *args, **kwargs)
+
+                # Activate interceptor
+                logger.debug("[HOOK] Detected OpenAI client - activating interceptor")
+                activation_callback(Providers.OPENAI)
+
+            openai.OpenAI.__init__ = hooked_init
+
+            logger.debug("Installed OpenAI.__init__() hook")
+
+        except ImportError:
+            logger.debug("openai not installed, skipping hook")
 
     def _hook_azure(self) -> None: ...

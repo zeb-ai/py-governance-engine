@@ -106,8 +106,10 @@ class GRC:
                     logger.debug(f"Successfully registered {provider} interceptor")
                 elif provider == Providers.ANTHROPIC:  # TODO: Not implemented yet
                     logger.debug(f"Skipping {provider} - not implemented yet")
-                elif provider == Providers.OPENAI:  # TODO: Not implemented yet
-                    logger.debug(f"Skipping {provider} - not implemented yet")
+                elif provider == Providers.OPENAI:
+                    import zgrc.interceptors.openai  # noqa: F401
+
+                    logger.debug(f"Successfully registered {provider} interceptor")
                 elif provider == Providers.AZURE:  # TODO: Not implemented yet
                     logger.debug(f"Skipping {provider} - not implemented yet")
                 else:
