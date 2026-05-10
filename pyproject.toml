@@ -1,6 +1,6 @@
 [project]
 name = "z-grc"
-version = "0.0.32"
+version = "0.0.33"
 description = "Governance Engine by zeb labs"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -15,7 +15,7 @@ classifiers = [
 authors = [
     { name = "Samrat Damodaran", email = "samrat.damodaran@zeb.co" },
     { name = "Shriyokesh Thangavel", email = "shriyokesh.thangavel@zeb.co" },
-    { name = "Sid V", email =    "sid@zeb.co" },
+    { name = "Sid V", email = "sid@zeb.co" },
     { name = "Madhavsrikrishna Sriram", email = "madhavsrikrishna.sriram@zeb.co" },
     { name = "Noor Shekumohamed", email = "noor.shekumohamed@zeb.co" },
     { name = "Arunachalam Gunasekaran", email = "Arun.Gunasekaran@zeb.co" }
@@ -26,11 +26,12 @@ maintainers = [
     { name = "Sid V", email = "sid@zeb.co" },
     { name = "Madhavsrikrishna Sriram", email = "madhavsrikrishna.sriram@zeb.co" },
     { name = "Noor Shekumohamed", email = "noor.shekumohamed@zeb.co" },
-    { name = "Arunachalam Gunasekaran", email = "Arun.Gunasekaran@zeb.co" },]
+    { name = "Arunachalam Gunasekaran", email = "Arun.Gunasekaran@zeb.co" },
+]
 keywords = ["governance", "llm", "quota", "policy", "telemetry", "observability"]
 dependencies = [
     "httpx>=0.28.1",
-    "litellm>=1.83.0",
+    "litellm==1.83.0",
     "mitmproxy>=11.1.3",
     "opentelemetry-api>=1.39.1",
     "opentelemetry-exporter-otlp-proto-http>=1.39.1",
@@ -55,7 +56,7 @@ Repository = "https://github.com/zeb-ai/z-grc"
 dev = [
     "ruff>=0.15.6",
     "boto3>=1.42.70",
-    "pydantic-ai>=1.70.0",
+    "pydantic-ai==1.70.0",
     "strands-agents>=1.30.0",
     "strands-agents-tools>=0.2.22",
     "pre-commit>=4.5.1",
