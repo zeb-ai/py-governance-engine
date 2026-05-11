@@ -137,12 +137,8 @@ def main():
             )
             # Where needed to store the creds in current terminal session, so getting the printing the creds and using
             # eval to run the command in terminal.
-            import os
-
-            is_windows = os.name == "nt" or sys.platform == "win32"
-
             for k, v in mgr.env(port).items():
-                if is_windows:
+                if sys.platform == "win32":
                     # PowerShell syntax for Windows
                     print(f"$env:{k}='{v}'")
                 else:
