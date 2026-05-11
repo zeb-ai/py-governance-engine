@@ -23,11 +23,28 @@ class Process:
         for port in range(start, end + 1):
             try:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                sock.bind(("127.0.0.1", port))
+                sock.settimeout(0.5)
+                result = sock.connect_ex(
+                    ("127.0.0.1", port)
+                )  # connect_ex works consistently across Windows, Linux and macOS
                 sock.close()
-                return port
-            except OSError:
+
+                # If connection refused (errno 111 on Linux, 61 on Mac, 10061 on Windows)
+                # the port is available
+                if result != 0:
+                    # Double-check by trying to bind
+                    try:
+                        test_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                        if sys.platform != "win32":
+                            test_sock.setsockopt(
+                                socket.SOL_SOCKET, socket.SO_REUSEADDR, 1
+                            )
+                        test_sock.bind(("127.0.0.1", port))
+                        test_sock.close()
+                        return port
+                    except OSError:
+                        continue
+            except Exception:
                 continue
         return None
 

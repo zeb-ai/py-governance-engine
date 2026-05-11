@@ -160,24 +160,29 @@ def main():
         print("Use --kill-all to stop existing servers", file=sys.stderr)
         return 1
 
-    # Determine port
-    port = args.port if args.port else Process.find_port()
-    if not port:
-        print("Error: No available port", file=sys.stderr)
-        return 1
+    # Determine port - auto-find available port even if user specifies one
+    if args.port:
+        # Check if user's requested port is available
+        port_in_use = False
+        for session in mgr.session.all():
+            if session["port"] == args.port:
+                port_in_use = True
+                break
 
-    # Check if port is already in use by another session
-    for session in mgr.session.all():
-        if session["port"] == port:
+        if port_in_use:
             print(
-                f"Error: Port {port} already in use by another server (PID:{session['pid']})",
+                f"Warning: Requested port {args.port} is in use, finding next available port...",
                 file=sys.stderr,
             )
-            print(
-                "Use a different port or --kill-all to stop existing servers",
-                file=sys.stderr,
-            )
-            return 1
+            port = Process.find_port()
+        else:
+            port = args.port
+    else:
+        port = Process.find_port()
+
+    if not port:
+        print("Error: No available port in range 8080-8090", file=sys.stderr)
+        return 1
 
     print(f"Starting proxy on port {port}...", file=sys.stderr)
     asyncio.run(run_proxy(args.api_key, port, args.verbose))
