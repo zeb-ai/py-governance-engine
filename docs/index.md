@@ -15,10 +15,10 @@ Z-GRC is a powerful Python package designed to streamline Governance, Risk, and 
 
 ## Key Features
 
-- **Flexible Integration**: Seamlessly works with both AWS Bedrock (via boto3) and Claude Code, adapting to your infrastructure
+- **Multi-Provider Support**: Seamlessly works with AWS Bedrock, OpenAI (including Azure OpenAI and Databricks), and Claude Code
 - **Effortless Deployment**: Zero complexity setup - configure once, integrate anywhere in your application with minimal overhead
 - **Unified Control Center**: Centralized dashboard for configuration management, real-time monitoring, and comprehensive audit logging
-- **All in One Place**: Both governance and obserability achieved using single framework
+- **All in One Place**: Both governance and observability achieved using single framework
 
 !!! success "Industry First"
     **The first open source GRC framework enabling enterprise grade governance and compliance controls for Claude Code, without requiring an enterprise subscription.**

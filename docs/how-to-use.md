@@ -4,12 +4,13 @@ This guide walks you through the complete setup process for integrating Z-GRC in
 
 ## Overview
 
-Z-GRC can be integrated in two ways depending on your use case:
+Z-GRC can be integrated in three ways depending on your use case:
 
-1. **For AWS Bedrock Model Calls** - Python SDK integration for programmatic LLM access
-2. **For Claude Code** - Proxy based integration for CLI applications
+1. **For AWS Bedrock Model Calls** - Python SDK integration for AWS Bedrock LLM access
+2. **For OpenAI Model Calls** - Python SDK integration for OpenAI, Azure OpenAI, Databricks, and OpenAI-compatible endpoints
+3. **For Claude Code** - Proxy based integration for CLI applications
 
-Both methods share a common prerequisite: **SSR Application Setup**.
+All methods share a common prerequisite: **SSR Application Setup**.
 
 ---
 
@@ -59,6 +60,9 @@ After configuring the user group and budget:
 ## 1. For AWS Bedrock Model Calls
 
 Use this method when you want to integrate Z-GRC into your Python applications that make programmatic calls to AWS Bedrock models.
+
+!!! note "Framework Compatibility"
+    Z-GRC seamlessly integrates with popular LLM frameworks and libraries including **PydanticAI**, **LangChain**, **Strands Agents**, and other AWS Bedrock-compatible frameworks. Simply initialize Z-GRC before using these frameworks, and governance will be automatically applied to all LLM interactions.
 
 ### Step 1: Install Z-GRC Python Package
 
@@ -253,12 +257,46 @@ After initialization, use your AWS Bedrock SDKs as you normally would. Z-GRC aut
       <img src="../assets/quota-exceeded.png" alt="Quota Exceeded Example" width="600">
     </p>
 
-!!! note "Framework Compatibility"
-    Z-GRC seamlessly integrates with popular LLM frameworks and libraries including **PydanticAI**, **LangChain**, **Strands Agents**, and other AWS Bedrock-compatible frameworks. Simply initialize Z-GRC before using these frameworks, and governance will be automatically applied to all LLM interactions.
+---
+
+## 2. For OpenAI Model Calls
+
+Use this method for OpenAI, Azure OpenAI, Databricks, or any OpenAI-compatible endpoint.
+
+### Installation & Setup
+
+```python
+import zgrc
+from openai import OpenAI
+
+# Initialize Z-GRC
+zgrc.init(api_key="zgrc_your_api_key_here")
+
+# Use OpenAI normally - works with OpenAI, Azure, Databricks
+client = OpenAI(api_key="your-openai-key")
+
+response = client.chat.completions.create(
+    model="gpt-4",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+!!! success "Wide Compatibility"
+    Works with OpenAI, Azure OpenAI, Databricks Model Serving, and any OpenAI-compatible API.
+
+!!! warning "Cost Tracking Requirement"
+    Z-GRC uses [litellm](https://docs.litellm.ai/docs/providers) for cost calculation. Unsupported models will fail with a professional error message - this is intentional for accurate governance.
+
+### Key Features
+
+- **Automatic token & cost tracking** via litellm
+- **Streaming support** with real-time tracking
+- **Fail-fast error handling** for critical failures
+- **Verbose logging** - set `verbose=True` in `zgrc.init()` for debug logs
 
 ---
 
-## 2. For Claude Code
+## 3. For Claude Code
 
 Use this method when you want to govern Claude Code CLI sessions through a proxy-based approach.
 

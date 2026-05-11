@@ -31,6 +31,8 @@ uv add z-grc[auto-instrument]
 
 ## Quick Start
 
+### AWS Bedrock Example
+
 ```python
 import zgrc
 import boto3
@@ -50,10 +52,28 @@ response = client.invoke_model(
         "messages": [{"role": "user", "content": "Hello!"}]
     })
 )
+```
+
+### OpenAI Example
+
+```python
+import zgrc
+from openai import OpenAI
+
+# Initialize GRC
+zgrc.init(api_key="your-zgrc-api-key")
+
+# Use OpenAI SDK normally
+client = OpenAI(api_key="your-openai-key")
+
+response = client.chat.completions.create(
+    model="gpt-4",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
 
 # Z-GRC automatically:
 # - Validates quota before requests
-# - Tracks token usage
+# - Tracks token usage and calculates costs
 # - Enforces policies
 # - Sends telemetry (traces, metrics, logs)
 ```
@@ -66,9 +86,8 @@ Drop-in solution requiring only `zgrc.init()`. Works with existing code without 
 ### Auto-Discovery
 Automatically detects and intercepts installed LLM SDKs:
 - AWS Bedrock (boto3)
+- OpenAI (including Azure OpenAI, Databricks, and OpenAI-compatible endpoints)
 - Anthropic (coming soon)
-- OpenAI (coming soon)
-- Azure OpenAI (coming soon)
 
 ### Policy Enforcement
 Real-time quota validation and cost limit enforcement. Blocks requests when quota is exceeded.
@@ -137,10 +156,10 @@ for event in response["stream"]:
 ```python
 zgrc.init(
     api_key: str,                  # Your Z-GRC API key (required)
+    verbose: bool = False,         # Enable debug logging (default: False)
     auto_instrument: bool = False, # Enable auto-instrumentation
     app_name: str = None,          # Application name for telemetry
-    environment: str = None,       # Environment (dev/staging/prod)
-    log_level: int = logging.ERROR # Z-GRC internal log level
+    environment: str = None        # Environment (dev/staging/prod)
 )
 ```
 
