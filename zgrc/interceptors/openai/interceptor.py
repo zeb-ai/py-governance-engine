@@ -8,7 +8,7 @@ from opentelemetry import context, trace
 
 from ...observability import logs, metrics, traces
 from ...observability.logs import LogsConfig
-from ...utils.exceptions import QuotaExceededException
+from ...utils.exceptions import CostCalculationException, QuotaExceededException
 from ..base_interceptor import BaseInterceptor
 from ..models import InterceptedCall, RequestData, ResponseData
 from .response_handlers import ResponseHandlerFactory, StreamingResponseWrapper
@@ -122,7 +122,7 @@ class OpenAIInterceptor(BaseInterceptor):
             # Use actual model from response if available
             resolved_model_id = actual_model_id or request_data.model_id
 
-            # Calculate cost using litellm
+            # Calculate cost using litellm - CRITICAL: cost tracking is mandatory
             total_cost = 0.0
             if usage.total_tokens > 0:
                 try:
@@ -143,7 +143,10 @@ class OpenAIInterceptor(BaseInterceptor):
                     usage.total_cost = total_cost
                     logger.debug(f"Calculated cost: ${total_cost:.6f}")
                 except Exception as e:
-                    logger.warning(f"Failed to calculate cost: {e}")
+                    # FAIL FAST: Cost calculation is mandatory for governance
+                    raise CostCalculationException(
+                        model_id=resolved_model_id, error=str(e)
+                    ) from e
 
             response_data = ResponseData(
                 body={"model": resolved_model_id},

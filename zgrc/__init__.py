@@ -35,7 +35,7 @@ class GRC:
         from .core import auto_manager
 
         # logging configuration
-        GRC._config_grc_logger(logging.ERROR)
+        GRC._config_grc_logger(logging.DEBUG)
 
         # api token decoding and storing in context vars
         auth_token = AuthToken.decode(api_key)
