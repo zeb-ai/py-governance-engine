@@ -19,6 +19,7 @@ class GRC:
     def init(
         self,
         api_key: str,
+        verbose: bool = False,
         auto_instrument: bool = False,
         app_name: Optional[str] = None,
         environment: Optional[str] = None,
@@ -28,6 +29,7 @@ class GRC:
 
         Args:
             api_key            :  GRC API key for authentication and authorization
+            verbose            :  Enable debug logging (DEBUG level) when True, ERROR level when False (default: False)
             auto_instrument    :  Enable automatic instrumentation of frameworks (default: False)
             app_name           :  Application name for resource attributes
             environment        :  Deployment environment (dev/staging/prod)
@@ -35,7 +37,7 @@ class GRC:
         from .core import auto_manager
 
         # logging configuration
-        GRC._config_grc_logger(logging.DEBUG)
+        GRC._config_grc_logger(logging.DEBUG if verbose else logging.ERROR)
 
         # api token decoding and storing in context vars
         auth_token = AuthToken.decode(api_key)

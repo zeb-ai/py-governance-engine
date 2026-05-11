@@ -35,7 +35,7 @@ while True:
 
     try:
         chat_completion = client.chat.completions.create(
-            model="zeb-demo-uk-ai-gateway", messages=messages, max_tokens=1024
+            model=os.getenv("DATABRICKS_MODELID"), messages=messages, max_tokens=1024
         )
 
         assistant_reply = chat_completion.choices[0].message.content
