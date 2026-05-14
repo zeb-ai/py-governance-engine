@@ -15,10 +15,15 @@ logger = logging.getLogger(__name__)
 class AutoManager:
     def __init__(self) -> None:
         self._active_interceptors: Dict[str, BaseInterceptor] = {}
-        self._patcher: LazyPatcher = LazyPatcher(activation_callback=self.activate)
+        self._patcher: LazyPatcher | None = None
 
     def initialize(self) -> None:
         """Scan for installed LLM providers and install detection hooks for lazy activation."""
+        # TODO: TESTING
+        # Create patcher HERE, after interceptors are registered
+        if self._patcher is None:
+            self._patcher = LazyPatcher(activation_callback=self.activate)
+
         installed_providers = Scanner.get_installed_providers()
 
         if not installed_providers:
@@ -36,8 +41,8 @@ class AutoManager:
             return
 
         try:
-            # Import here to avoid circular import
-            from . import interceptor_registry
+            # Late import to avoid circular dependency, but access the module-level singleton
+            from zgrc.core import interceptor_registry
 
             interceptor_class = interceptor_registry.get(provider)
 

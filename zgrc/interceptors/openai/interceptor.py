@@ -213,7 +213,8 @@ class OpenAIInterceptor(BaseInterceptor):
                     },
                     requested_model_id=request_data.model_id,  # Gateway route name
                 )
-                thread = Thread(target=logs.send, args=(log_config,), daemon=False)
+                # TODO: TESTING W daemon as TRUE
+                thread = Thread(target=logs.send, args=(log_config,), daemon=True)
                 thread.start()
 
         except Exception as e:
