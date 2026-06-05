@@ -1,0 +1,19 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.Users
+
+# cffi build artifacts
+zgrc/_native.c
+zgrc/_native.o
+zgrc/_native*.so
+
+# Vendored C sources (created during sdist build)
+csrc/

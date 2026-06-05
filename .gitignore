@@ -1,23 +1,32 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
+# Build outputs
 build/
-dist/
-wheels/
-*.egg-info
+*.o
+*.so
+*.dylib
+*.a
 
-# Virtual environments
-.venv
-.claude
+# IDE
 .idea/
+.vscode/
+*.swp
+*.swo
 
-.env
+# OS
 .DS_Store
-playground/
+Thumbs.db
 
-#dev pipeline
-azure-pipelines.yml
+# Env
+.env
+.env.*
 
-# MkDocs
-site/
-.cache/
+# Node.js
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+*.whl
+.venv/
+venv/

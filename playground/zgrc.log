@@ -1,0 +1,15 @@
+[2026-06-08 02:01:46] [DEBUG] request url=https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-sonnet-4-20250514-v1%3A0/converse
+[2026-06-08 02:01:47] [INFO] quota fetched: used=1.1080 remaining=0.3920
+[2026-06-08 02:01:47] [DEBUG] request allowed, model=
+[2026-06-08 02:01:48] [DEBUG] response url=https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-sonnet-4-20250514-v1%3A0/converse body={"metrics":{"latencyMs":1648},"output":{"message":{"content":[{"text":"Hello! How are you doing today? Is there anything I can help you with?"}],"role":"assistant"}},"stopReason":"end_turn","usage":{"cacheReadInputTokenCount":0,"cacheReadInputTokens":0,"cacheWriteInputTokenCount":0,"cacheWriteInputTokens":0,"inputTokens":8,"outputTokens":20,"serverToolUsage":{},"totalTokens":28}}
+[2026-06-08 02:01:48] [DEBUG] detected provider=bedrock
+[2026-06-08 02:01:48] [DEBUG] parsed: model=regional.anthropic.claude-sonnet-4-20250514-v1:0 input_tokens=8 output_tokens=20
+[2026-06-08 02:01:48] [INFO] cost=0.000324 (input=0.000024 output=0.000300)
+[2026-06-08 02:01:49] [INFO] quota updated: used=1.1084 remaining=0.3916
+[2026-06-08 02:01:56] [DEBUG] request url=https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-sonnet-4-20250514-v1%3A0/converse
+[2026-06-08 02:01:56] [DEBUG] request allowed, model=
+[2026-06-08 02:01:57] [DEBUG] response url=https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-sonnet-4-20250514-v1%3A0/converse body={"metrics":{"latencyMs":1018},"output":{"message":{"content":[{"text":"I'm doing well, thank you for asking! I'm here and ready to help with whatever you might need. How about you - how's your day going?"}],"role":"assistant"}},"stopReason":"end_turn","usage":{"cacheReadInputTokenCount":0,"cacheReadInputTokens":0,"cacheWriteInputTokenCount":0,"cacheWriteInputTokens":0,"inputTokens":34,"outputTokens":36,"serverToolUsage":{},"totalTokens":70}}
+[2026-06-08 02:01:57] [DEBUG] detected provider=bedrock
+[2026-06-08 02:01:57] [DEBUG] parsed: model=regional.anthropic.claude-sonnet-4-20250514-v1:0 input_tokens=34 output_tokens=36
+[2026-06-08 02:01:57] [INFO] cost=0.000642 (input=0.000102 output=0.000540)
+[2026-06-08 02:01:59] [INFO] quota updated: used=1.1090 remaining=0.3910

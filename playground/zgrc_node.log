@@ -1,0 +1,8 @@
+[2026-06-08 02:05:00] [DEBUG] request url=https://bedrock-runtime.us-east-1.amazonaws.com/model/arn%3Aaws%3Abedrock%3Aus-east-1%3A926251048803%3Aapplication-inference-profile%2F7j95b0rxjwhy/converse
+[2026-06-08 02:05:01] [INFO] quota fetched: used=1.1090 remaining=0.3910
+[2026-06-08 02:05:01] [DEBUG] request allowed, model=
+[2026-06-08 02:05:03] [DEBUG] response url=https://bedrock-runtime.us-east-1.amazonaws.com/model/regional.anthropic.claude-sonnet-4-5-20250929-v1:0/converse body={"metrics":{"latencyMs":1068},"output":{"message":{"content":[{"text":"Hello! How can I help you today?"}],"role":"assistant"}},"stopReason":"end_turn","usage":{"cacheReadInputTokenCount":0,"cacheReadInputTokens":0,"cacheWriteInputTokenCount":0,"cacheWriteInputTokens":0,"inputTokens":9,"outputTokens":12,"serverToolUsage":{},"totalTokens":21}}
+[2026-06-08 02:05:03] [DEBUG] detected provider=bedrock
+[2026-06-08 02:05:03] [DEBUG] parsed: model=regional.anthropic.claude-sonnet-4-5-20250929-v1:0 input_tokens=9 output_tokens=12
+[2026-06-08 02:05:03] [INFO] cost=0.000228 (input=0.000030 output=0.000198)
+[2026-06-08 02:05:05] [INFO] quota updated: used=1.1092 remaining=0.3908

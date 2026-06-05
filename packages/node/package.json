@@ -1,0 +1,24 @@
+{
+  "name": "@z-grc/node",
+  "version": "0.1.0",
+  "description": "Governance Engine by zeb labs",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "install": "node-gyp rebuild",
+    "build": "node-gyp rebuild",
+    "clean": "node-gyp clean"
+  },
+  "dependencies": {
+    "node-addon-api": "^8.0.0",
+    "node-gyp": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "lib/",
+    "src/",
+    "binding.gyp"
+  ]
+}
