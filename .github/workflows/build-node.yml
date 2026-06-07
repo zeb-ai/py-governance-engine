@@ -2,7 +2,9 @@ name: Build Node.js prebuilds
 
 on:
   push:
-    tags: ["node-v*"]
+    branches: [main]
+    paths:
+      - "packages/node/package.json"
   workflow_dispatch:
 
 jobs:

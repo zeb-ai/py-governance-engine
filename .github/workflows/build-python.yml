@@ -2,7 +2,9 @@ name: Build Python wheels
 
 on:
   push:
-    tags: ["python-v*"]
+    branches: [main]
+    paths:
+      - "packages/python/pyproject.toml"
   workflow_dispatch:
 
 jobs:
