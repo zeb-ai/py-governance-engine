@@ -1,12 +1,15 @@
 import os
 from dotenv import load_dotenv
-import zgrc
+
+from zgrc import init, enable_logging, LOG_DEBUG
 
 load_dotenv()
 
 api_key = os.getenv("API_KEY")
 
-zgrc.init(api_key)
+init(api_key)
+enable_logging(LOG_DEBUG, "./zgrc.log")
+
 # Now import pydantic-ai AFTER hooks are installed
 from pydantic_ai import Agent  # noqa: E402
 from pydantic_ai.models.bedrock import BedrockConverseModel  # noqa: E402

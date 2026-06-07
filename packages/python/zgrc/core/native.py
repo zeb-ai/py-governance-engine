@@ -8,6 +8,11 @@ _DEFAULT_PRICING = str(
 
 _ctx = None
 
+LOG_DEBUG = 0
+LOG_INFO = 1
+LOG_WARN = 2
+LOG_ERROR = 3
+
 
 def init(api_key: str):
     global _ctx
@@ -20,6 +25,12 @@ def init(api_key: str):
     if _ctx == ffi.NULL:
         _ctx = None
         raise RuntimeError("Failed to initialize z-grc")
+
+
+def enable_logging(level: int = LOG_DEBUG, path: str = "/tmp/zgrc.log"):
+    if _ctx is None:
+        raise RuntimeError("should be initialize first")
+    lib.interceptor_enable_logging(_ctx, level, path.encode())
 
 
 def request(url: str, body: str) -> RequestResult:

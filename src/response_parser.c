@@ -96,24 +96,32 @@ static ParsedResponse parse_bedrock(const char *body, size_t body_len) {
   yyjson_val *usage = yyjson_obj_get(root, "usage");
   if (usage) {
     yyjson_val *input = yyjson_obj_get(usage, "inputTokens");
+    if (!input)
+      input = yyjson_obj_get(usage, "input_tokens");
     yyjson_val *output = yyjson_obj_get(usage, "outputTokens");
+    if (!output)
+      output = yyjson_obj_get(usage, "output_tokens");
 
     if (input)
       result.usage.input_tokens = yyjson_get_int(input);
     if (output)
       result.usage.output_tokens = yyjson_get_int(output);
 
-    // cache read — Bedrock uses both field names
+    // cache read
     yyjson_val *cache_read = yyjson_obj_get(usage, "cacheReadInputTokens");
     if (!cache_read)
       cache_read = yyjson_obj_get(usage, "cacheReadInputTokenCount");
+    if (!cache_read)
+      cache_read = yyjson_obj_get(usage, "cache_read_input_tokens");
     if (cache_read)
       result.usage.cache_read_tokens = yyjson_get_int(cache_read);
 
-    // cache write — Bedrock uses both field names
+    // cache write
     yyjson_val *cache_write = yyjson_obj_get(usage, "cacheWriteInputTokens");
     if (!cache_write)
       cache_write = yyjson_obj_get(usage, "cacheWriteInputTokenCount");
+    if (!cache_write)
+      cache_write = yyjson_obj_get(usage, "cache_creation_input_tokens");
     if (cache_write)
       result.usage.cache_write_tokens = yyjson_get_int(cache_write);
 

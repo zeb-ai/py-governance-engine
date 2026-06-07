@@ -1,5 +1,15 @@
 from .core import Intercept
 
+# purely use for development, not compatible for the production use case
+# I didn't handle file size handling, may cause in the future.
+from .core.native import (
+    enable_logging as enable_logging,
+    LOG_DEBUG as LOG_DEBUG,
+    LOG_INFO as LOG_INFO,
+    LOG_WARN as LOG_WARN,
+    LOG_ERROR as LOG_ERROR,
+)
+
 _instance = None
 
 

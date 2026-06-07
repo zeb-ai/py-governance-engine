@@ -2,3 +2,8 @@ include core_build.py
 include setup.py
 graft csrc
 graft zgrc
+prune zgrc/__pycache__
+prune zgrc/core/__pycache__
+prune zgrc/utils/__pycache__
+global-exclude *.pyc
+global-exclude .DS_Store

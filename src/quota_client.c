@@ -76,10 +76,7 @@ Quota quota_client_get(QuotaClient *client) {
 
   CURLcode res = curl_easy_perform(curl);
 
-  printf("[quota_get] URL: %s\n", url);
-
   if (res == CURLE_OK && response.data) {
-    printf("[quota_get] %s\n", response.data);
 
     yyjson_doc *doc = yyjson_read(response.data, response.size, 0);
     if (doc) {
@@ -94,8 +91,6 @@ Quota quota_client_get(QuotaClient *client) {
 
       yyjson_doc_free(doc);
     }
-  } else {
-    printf("[quota_get] request failed: %s\n", curl_easy_strerror(res));
   }
 
   free(response.data);

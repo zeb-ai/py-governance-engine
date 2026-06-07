@@ -11,5 +11,6 @@ dev = [
     "pydantic-ai>=1.106.0",
     "python-dotenv>=1.2.2",
     "strands-agents>=1.42.0",
+    "strands-agents-tools>=0.8.0",
     "z-grc @/Users/samrat/Projects/c-z-grc/packages/python/dist/z_grc-0.1.0-cp312-cp312-macosx_11_0_arm64.whl",
 ]

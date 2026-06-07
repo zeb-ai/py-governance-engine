@@ -9,6 +9,7 @@ from .native import (
     destroy as c_destroy,
 )
 from ..utils import QuotaExceededError
+from ..utils.resolve_aws_arn import resolve_aws_arn
 
 
 class Intercept:
@@ -25,6 +26,7 @@ class Intercept:
         recv_buffers = {}
         sock_urls = {}
         sock_req_body = {}
+        sock_models = {}
         recv_meta = {}
 
         def patched_sendall(sock, data, flags=0):
@@ -51,15 +53,19 @@ class Intercept:
             body = body_bytes.decode("utf-8", errors="replace")
 
             if sid not in sock_urls:
-                # first sendall — always store url
                 host = Intercept._parse_host(sock)
                 if not host:
                     send_buffers.pop(sid, None)
                     return None
-                sock_urls[sid] = f"https://{host}{path}"
+                full_url = f"https://{host}{path}"
+                sock_urls[sid] = full_url
+
+                if "arn" in path and "/model/" in path:
+                    resolved = resolve_aws_arn(full_url)
+                    if resolved:
+                        sock_models[sid] = resolved
 
             full_url = sock_urls[sid]
-            print("<<<<< request >>>>>>", full_url, body)
 
             # only fire c_request when we have body
             if body.strip():
@@ -71,7 +77,6 @@ class Intercept:
                     )
                 if req_result.allowed == 1:
                     sock_req_body[sid] = True
-                print("<<<<< request >>>>>>", full_url, body)
 
         def patched_recv_into(sock, buffer, nbytes=0, flags=0):
             n = orig_recv_into(sock, buffer, nbytes, flags)
@@ -119,7 +124,7 @@ class Intercept:
             raw_body = Intercept._decompress(header_sec, raw_body)
 
             if eventstream:
-                body_str = Intercept._extract_json_from_eventstream(raw_body)
+                body_str = Intercept._build_usage_json_from_eventstream(raw_body)
             else:
                 body_str = raw_body.decode("utf-8", errors="replace")
 
@@ -127,24 +132,29 @@ class Intercept:
             if status == 0:
                 return n
 
-            resp_result = c_response(url, body_str)
-            if (
-                resp_result.cost == 0.0
-                and resp_result.input_tokens == 0
-                and sid in sock_req_body
-            ):
+            if sid not in sock_req_body:
+                recv_buffers.pop(sid, None)
+                recv_meta.pop(sid, None)
+                sock_urls.pop(sid, None)
+                sock_models.pop(sid, None)
+                return n
+
+            c_url = url
+            if sid in sock_models:
+                model = sock_models[sid]
+                c_url = re.sub(r"/model/[^/]+/", f"/model/regional.{model}/", url)
+
+            resp_result = c_response(c_url, body_str)
+            if resp_result.cost == 0.0 and resp_result.input_tokens == 0:
                 import warnings
 
                 warnings.warn(f"[z-grc] failed to report usage for {url}")
-            print("<<<<< response >>>>>>", url, body_str)
-            print(
-                f"[py c_response] cost={resp_result.cost}, in={resp_result.input_tokens}, out={resp_result.output_tokens}"
-            )
 
             recv_buffers.pop(sid, None)
             recv_meta.pop(sid, None)
             sock_urls.pop(sid, None)
             sock_req_body.pop(sid, None)
+            sock_models.pop(sid, None)
 
             return n
 
@@ -239,11 +249,19 @@ class Intercept:
         return body
 
     @staticmethod
-    def _extract_json_from_eventstream(data: bytes) -> str:
-        # eventstream frames contain JSON payloads — extract all JSON objects
+    def _build_usage_json_from_eventstream(data: bytes) -> str:
+        import json
+
         text = data.decode("utf-8", errors="replace")
-        jsons = re.findall(r"\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}", text)
-        return "\n".join(jsons)
+        lines = re.findall(r"\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}", text)
+        for line in reversed(lines):
+            try:
+                obj = json.loads(line)
+                if "inputTokens" in obj or "input_tokens" in obj:
+                    return json.dumps({"usage": obj})
+            except (json.JSONDecodeError, ValueError):
+                continue
+        return text
 
     @staticmethod
     def _parse_response_status(data: bytes) -> int:

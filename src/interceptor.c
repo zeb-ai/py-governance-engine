@@ -3,10 +3,10 @@
 //
 
 #include "../include/interceptor.h"
+#include "../include/logger.h"
 #include "../lib/yyjson/yyjson.h"
 #include <regex.h>
 #include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -49,13 +49,28 @@ Interceptor *interceptor_init(const char *api_key, const char *pricing_file) {
     return nullptr;
   }
 
+  Logger *logger = nullptr;
+
   ctx->auth = auth;
   ctx->calculator = calculator;
   ctx->quota = quota;
   ctx->parsers = parsers;
+  ctx->logger = logger;
   ctx->cached_used = -1;
   ctx->cached_remaining = -1;
+
+  logger_log(logger, LOG_INFO, "interceptor initialized (user=%s, group=%s)",
+             auth->user_id, auth->group_id);
   return ctx;
+}
+
+void interceptor_enable_logging(Interceptor *ctx, LogLevel level,
+                                const char *path) {
+  if (!ctx)
+    return;
+  if (ctx->logger)
+    logger_free(ctx->logger);
+  ctx->logger = logger_init(level, path);
 }
 
 RequestResult intercept_request(Interceptor *ctx, const char *url,
@@ -66,6 +81,8 @@ RequestResult intercept_request(Interceptor *ctx, const char *url,
     result.allowed = -1;
     return result;
   }
+
+  logger_log(ctx->logger, LOG_DEBUG, "request url=%s", url);
 
   // Match URL against api_patterns
   int matched = 0;
@@ -83,6 +100,7 @@ RequestResult intercept_request(Interceptor *ctx, const char *url,
   }
 
   if (!matched) {
+    logger_log(ctx->logger, LOG_DEBUG, "url not matched, skipping: %s", url);
     result.allowed = -1;
     return result;
   }
@@ -92,9 +110,14 @@ RequestResult intercept_request(Interceptor *ctx, const char *url,
     Quota quota = quota_client_get(ctx->quota);
     ctx->cached_used = quota.used_quota;
     ctx->cached_remaining = quota.remaining_quota;
+    logger_log(ctx->logger, LOG_INFO, "quota fetched: used=%.4f remaining=%.4f",
+               quota.used_quota, quota.remaining_quota);
   }
 
   if (ctx->cached_remaining <= 0) {
+    logger_log(ctx->logger, LOG_WARN,
+               "quota exceeded: used=%.4f remaining=%.4f", ctx->cached_used,
+               ctx->cached_remaining);
     result.allowed = 0;
     result.used_quota = ctx->cached_used;
     result.remaining_quota = ctx->cached_remaining;
@@ -113,6 +136,7 @@ RequestResult intercept_request(Interceptor *ctx, const char *url,
     }
   }
 
+  logger_log(ctx->logger, LOG_DEBUG, "request allowed, model=%s", result.model);
   result.allowed = 1;
   return result;
 }
@@ -123,6 +147,9 @@ ResponseResult intercept_response(Interceptor *ctx, const char *url,
   if (!ctx || !body || body_len == 0)
     return result;
 
+  logger_log(ctx->logger, LOG_DEBUG, "response url=%s body=%.*s", url,
+             (int)(body_len > 512 ? 512 : body_len), body);
+
   // Detect provider from URL
   const char *provider = nullptr;
   if (strstr(url, "openai.com"))
@@ -132,20 +159,21 @@ ResponseResult intercept_response(Interceptor *ctx, const char *url,
   else if (strstr(url, "bedrock-runtime"))
     provider = "bedrock";
 
-  if (!provider)
+  if (!provider) {
+    logger_log(ctx->logger, LOG_WARN, "unknown provider for url=%s", url);
     return result;
+  }
 
-  // Parse response to extract model + tokens
-  printf("[intercept_response] provider: %s, body_len: %zu\n", provider,
-         body_len);
-  fflush(stdout);
+  logger_log(ctx->logger, LOG_DEBUG, "detected provider=%s", provider);
+
   ParsedResponse parsed =
       parse_response(ctx->parsers, provider, body, body_len);
-  printf("[intercept_response] parsed.success: %d, input: %d, output: %d\n",
-         parsed.success, parsed.usage.input_tokens, parsed.usage.output_tokens);
-  fflush(stdout);
-  if (!parsed.success)
+  if (!parsed.success) {
+    logger_log(ctx->logger, LOG_ERROR,
+               "failed to parse response for provider=%s url=%s", provider,
+               url);
     return result;
+  }
 
   // Bedrock: model is in URL, not body. Extract from /model/<model_id>/
   if (strcmp(provider, "bedrock") == 0 && parsed.model[0] == '\0') {
@@ -178,17 +206,20 @@ ResponseResult intercept_response(Interceptor *ctx, const char *url,
     }
   }
 
-  // Calculate cost
-  printf("[intercept_response] model: '%s', input: %d, output: %d\n",
-         parsed.model, parsed.usage.input_tokens, parsed.usage.output_tokens);
-  fflush(stdout);
+  logger_log(ctx->logger, LOG_DEBUG,
+             "parsed: model=%s input_tokens=%d output_tokens=%d", parsed.model,
+             parsed.usage.input_tokens, parsed.usage.output_tokens);
+
   CostResult cost =
       cost_calculator_calculate(ctx->calculator, parsed.model, &parsed.usage);
   if (cost.error != COST_OK) {
-    printf("[intercept_response] cost error: %s\n", cost.error_message);
-    fflush(stdout);
+    logger_log(ctx->logger, LOG_ERROR, "cost calculation failed: %s",
+               cost.error_message);
     return result;
   }
+
+  logger_log(ctx->logger, LOG_INFO, "cost=%.6f (input=%.6f output=%.6f)",
+             cost.total_cost, cost.input_cost, cost.output_cost);
 
   // Report to quota server
   int total_tokens = parsed.usage.input_tokens + parsed.usage.output_tokens;
@@ -197,6 +228,9 @@ ResponseResult intercept_response(Interceptor *ctx, const char *url,
   // Update cache
   ctx->cached_used = quota.used_quota;
   ctx->cached_remaining = quota.remaining_quota;
+
+  logger_log(ctx->logger, LOG_INFO, "quota updated: used=%.4f remaining=%.4f",
+             quota.used_quota, quota.remaining_quota);
 
   // Fill result
   result.cost = cost.total_cost;
@@ -211,9 +245,11 @@ ResponseResult intercept_response(Interceptor *ctx, const char *url,
 void interceptor_free(Interceptor *ctx) {
   if (!ctx)
     return;
+  logger_log(ctx->logger, LOG_INFO, "interceptor shutting down");
   auth_token_free(ctx->auth);
   cost_calculator_free(ctx->calculator);
   quota_client_free(ctx->quota);
   parser_registry_free(ctx->parsers);
+  logger_free(ctx->logger);
   free(ctx);
 }

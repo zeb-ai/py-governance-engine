@@ -19,6 +19,9 @@ Thumbs.db
 .env
 .env.*
 
+# logs
+*.log
+
 # Node.js
 node_modules/
 
@@ -30,3 +33,16 @@ dist/
 *.whl
 .venv/
 venv/
+
+# Python CFFI build artifacts (compiled from monorepo root sources)
+packages/python/src/
+packages/python/lib/
+packages/python/csrc/
+
+# Prevent accidental copies of C sources into packages/
+packages/src/
+packages/lib/
+
+# Node native addon build output
+packages/node/build/
+packages/node/lib/

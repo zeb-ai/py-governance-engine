@@ -4,7 +4,7 @@ from typing import Dict, List
 
 import boto3
 from dotenv import load_dotenv
-import zgrc
+from zgrc import init, enable_logging, LOG_DEBUG
 
 # Load environment variables from .env file
 load_dotenv()
@@ -87,7 +87,8 @@ if __name__ == "__main__":
     #     environment="development",
     # )
     api_key = os.getenv("API_KEY")
-    zgrc.init(api_key)
+    init(api_key)
+    enable_logging(LOG_DEBUG, "./zgrc.log")
 
     try:
         repl = BedrockChatREPL(

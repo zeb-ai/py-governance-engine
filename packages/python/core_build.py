@@ -1,11 +1,8 @@
 """
 CFFI build script for zgrc._native
 
-Resolves C source paths in two scenarios:
-1. Development (in-tree): sources live at ../../src, ../../lib, ../../include
-2. sdist build: sources are vendored into ./csrc/ by setup.py
-
-Note: setuptools requires relative paths (from setup.py directory), never absolute.
+Sources are always resolved from csrc/ — setup.py vendors them there before
+any setuptools command runs, so paths never escape the package directory.
 """
 
 import os
@@ -16,17 +13,17 @@ ffibuilder = FFI()
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-# Determine where C sources live: vendored csrc/ (sdist) or monorepo root (dev)
-csrc_dir = os.path.join(HERE, "csrc")
-if os.path.isdir(csrc_dir):
-    # Building from sdist - sources are vendored
-    root = "csrc"
-else:
-    # Building from repo checkout - use relative path to monorepo root
-    root = os.path.relpath(os.path.join(HERE, "..", ".."), HERE)
+root = "csrc"
 
 ffibuilder.cdef(
     """
+    typedef enum {
+        LOG_DEBUG = 0,
+        LOG_INFO = 1,
+        LOG_WARN = 2,
+        LOG_ERROR = 3,
+    } LogLevel;
+
     typedef struct { ...; } Interceptor;
 
     typedef struct {
@@ -45,6 +42,7 @@ ffibuilder.cdef(
     } ResponseResult;
 
     Interceptor* interceptor_init(const char *api_key, const char *pricing_file);
+    void interceptor_enable_logging(Interceptor *ctx, LogLevel level, const char *path);
     RequestResult intercept_request(Interceptor *ctx, const char *url, const char *body, size_t body_len);
     ResponseResult intercept_response(Interceptor *ctx, const char *url, const char *body, size_t body_len);
     void interceptor_free(Interceptor *ctx);
@@ -53,6 +51,7 @@ ffibuilder.cdef(
 
 sources = [
     root + "/src/interceptor.c",
+    root + "/src/logger.c",
     root + "/src/cost_calculator.c",
     root + "/src/auth_token.c",
     root + "/src/quota_client.c",

@@ -20,6 +20,7 @@ py-modules = ["core_build"]
 
 [tool.setuptools.packages.find]
 include = ["zgrc*"]
+exclude = ["zgrc.__pycache__*", "zgrc.core.__pycache__*", "zgrc.utils.__pycache__*"]
 
 [tool.setuptools.package-data]
 "zgrc" = ["_native*.so", "_native*.pyd", "data/*.json"]
