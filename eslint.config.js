@@ -2,7 +2,10 @@ module.exports = [
   {
     files: ["**/*.js"],
     rules: {
-      "no-unused-vars": "warn",
+      "no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" },
+      ],
       "no-undef": "error",
     },
     languageOptions: {
@@ -18,6 +21,12 @@ module.exports = [
         process: "readonly",
         Buffer: "readonly",
       },
+    },
+  },
+  {
+    files: ["playground/**/*.js"],
+    languageOptions: {
+      sourceType: "module",
     },
   },
 ];

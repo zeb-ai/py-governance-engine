@@ -5,6 +5,7 @@
             "sources": [
                 "src/addon.c",
                 "../../src/interceptor.c",
+                "../../src/logger.c",
                 "../../src/auth_token.c",
                 "../../src/cost_calculator.c",
                 "../../src/quota_client.c",

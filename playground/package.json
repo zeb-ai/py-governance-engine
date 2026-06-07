@@ -1,0 +1,17 @@
+{
+  "name": "playground",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "samrat.damodaran@zeb.co",
+  "type": "module",
+  "main": "test_node.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock": "^3.1063.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.1063.0",
+    "@z-grc/node": "file:../packages/node"
+  }
+}

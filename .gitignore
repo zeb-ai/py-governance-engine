@@ -45,4 +45,4 @@ packages/lib/
 
 # Node native addon build output
 packages/node/build/
-packages/node/lib/
+packages/node/cmake-build-debug/

@@ -46,6 +46,33 @@ static napi_value napi_init(napi_env env, napi_callback_info info) {
   return result;
 }
 
+// grc.enableLogging(level: number, path: string): void
+static napi_value napi_enable_logging(napi_env env, napi_callback_info info) {
+  if (!g_interceptor)
+    return throw_error(env, "not initialized, call init() first");
+
+  size_t argc = 2;
+  napi_value argv[2];
+  napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
+
+  if (argc < 2)
+    return throw_error(env, "enableLogging requires (level, path)");
+
+  int32_t level;
+  if (napi_get_value_int32(env, argv[0], &level) != napi_ok)
+    return throw_error(env, "level must be a number");
+
+  char path[1024];
+  if (get_string(env, argv[1], path, sizeof(path)) != 0)
+    return throw_error(env, "path must be a string");
+
+  interceptor_enable_logging(g_interceptor, (LogLevel)level, path);
+
+  napi_value undefined;
+  napi_get_undefined(env, &undefined);
+  return undefined;
+}
+
 // grc.interceptRequest(url: string, body?: string): RequestResult
 static napi_value napi_intercept_request(napi_env env,
                                          napi_callback_info info) {
@@ -164,6 +191,8 @@ static napi_value napi_destroy(napi_env env, napi_callback_info info) {
 NAPI_MODULE_INIT() {
   napi_property_descriptor props[] = {
       {"init", NULL, napi_init, NULL, NULL, NULL, napi_default_method, NULL},
+      {"enableLogging", NULL, napi_enable_logging, NULL, NULL, NULL,
+       napi_default_method, NULL},
       {"interceptRequest", NULL, napi_intercept_request, NULL, NULL, NULL,
        napi_default_method, NULL},
       {"interceptResponse", NULL, napi_intercept_response, NULL, NULL, NULL,
