@@ -44,6 +44,7 @@ jobs:
           CIBW_ARCHS: ${{ matrix.cibw_archs }}
           CIBW_BUILD: "cp312-* cp313-*"
           CIBW_SKIP: "*-musllinux_*"
+          CIBW_BEFORE_BUILD: 'cd {package} && python -c "import setup; setup.vendor_c_sources()"'
 
           # Install static curl + zlib before building the wheel
           CIBW_BEFORE_ALL_LINUX: |

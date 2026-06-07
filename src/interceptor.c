@@ -5,10 +5,12 @@
 #include "../include/interceptor.h"
 #include "../include/logger.h"
 #include "../lib/yyjson/yyjson.h"
-#include <regex.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _WIN32
+#include <regex.h>
+#endif
 
 Interceptor *interceptor_init(const char *api_key, const char *pricing_file) {
   if (!api_key || !pricing_file)
@@ -87,6 +89,12 @@ RequestResult intercept_request(Interceptor *ctx, const char *url,
   // Match URL against api_patterns
   int matched = 0;
   for (int i = 0; i < ctx->calculator->pattern_count; i++) {
+#ifdef _WIN32
+    if (strstr(url, ctx->calculator->api_patterns[i]) != nullptr) {
+      matched = 1;
+      break;
+    }
+#else
     regex_t regex;
     if (regcomp(&regex, ctx->calculator->api_patterns[i],
                 REG_EXTENDED | REG_NOSUB) == 0) {
@@ -97,6 +105,7 @@ RequestResult intercept_request(Interceptor *ctx, const char *url,
       }
       regfree(&regex);
     }
+#endif
   }
 
   if (!matched) {
