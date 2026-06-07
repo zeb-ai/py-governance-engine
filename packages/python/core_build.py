@@ -93,7 +93,7 @@ if system == "Windows":
         "wldap32",
     ]
 elif system == "Darwin":
-    extra_compile_args = ["-std=c2x"]
+    extra_compile_args = ["-std=c23"]
     if static_curl:
         extra_link_args = [
             "/usr/local/lib/libcurl.a",
@@ -106,7 +106,7 @@ elif system == "Darwin":
     else:
         libraries = ["curl", "z"]
 else:
-    extra_compile_args = ["-std=c2x"]
+    extra_compile_args = ["-std=c23"]
     if static_curl:
         extra_link_args = [
             "/usr/local/lib/libcurl.a",
