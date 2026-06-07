@@ -47,8 +47,8 @@ jobs:
 
           # Install static curl + zlib before building the wheel
           CIBW_BEFORE_ALL_LINUX: |
-            unset LDFLAGS CFLAGS
-            yum install -y perl-IPC-Cmd || apt-get install -y perl
+            unset LDFLAGS CFLAGS LIBS CPPFLAGS
+            yum install -y gcc make perl-IPC-Cmd openssl-devel || apt-get update && apt-get install -y gcc make perl libssl-dev
             cd /tmp
             curl -sL https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz | tar xz
             cd zlib-1.3.1 && ./configure --static --prefix=/usr/local && make -j && make install
@@ -68,10 +68,10 @@ jobs:
             make -j && make install
 
           CIBW_BEFORE_ALL_MACOS: |
-            unset LDFLAGS CFLAGS
+            unset LDFLAGS CFLAGS LIBS CPPFLAGS
             cd /tmp
             curl -sL https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz | tar xz
-            cd zlib-1.3.1 && ./configure --static --prefix=/usr/local && make -j && make install
+            cd zlib-1.3.1 && ./configure --static --prefix=/usr/local && make -j && sudo make install
             cd /tmp
             curl -sL https://github.com/curl/curl/releases/download/curl-8_11_1/curl-8.11.1.tar.gz | tar xz
             cd curl-8.11.1
@@ -85,14 +85,21 @@ jobs:
               --without-libpsl --without-brotli --without-zstd \
               --without-libidn2 --without-nghttp2 \
               --with-ssl --with-zlib=/usr/local
-            make -j && make install
+            make -j && sudo make install
 
           CIBW_BEFORE_ALL_WINDOWS: >
+            cd /d %TEMP% &&
+            curl -sL https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz -o zlib.tar.gz &&
+            tar xzf zlib.tar.gz &&
+            cd zlib-1.3.1 &&
+            cmake -B build -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=C:/deps &&
+            cmake --build build --config Release &&
+            cmake --install build --config Release &&
             cd /d %TEMP% &&
             curl -sL https://github.com/curl/curl/releases/download/curl-8_11_1/curl-8.11.1.tar.gz -o curl.tar.gz &&
             tar xzf curl.tar.gz &&
             cd curl-8.11.1 &&
-            cmake -B build -DBUILD_SHARED_LIBS=OFF -DCURL_USE_SCHANNEL=ON -DHTTP_ONLY=ON &&
+            cmake -B build -DBUILD_SHARED_LIBS=OFF -DCURL_USE_SCHANNEL=ON -DHTTP_ONLY=ON -DZLIB_ROOT=C:/deps -DCMAKE_INSTALL_PREFIX=C:/deps &&
             cmake --build build --config Release &&
             cmake --install build --config Release
 
@@ -104,6 +111,8 @@ jobs:
             LDFLAGS="-L/usr/local/lib"
             LIBS="-lcurl -lssl -lcrypto -lz"
             CPPFLAGS="-I/usr/local/include"
+          CIBW_ENVIRONMENT_WINDOWS: >
+            ZGRC_DEPS_DIR="C:/deps"
 
         run: cibuildwheel --output-dir wheelhouse
 

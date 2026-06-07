@@ -75,8 +75,23 @@ extra_link_args = []
 static_curl = os.path.exists("/usr/local/lib/libcurl.a") or os.environ.get("LDFLAGS")
 
 if system == "Windows":
-    extra_compile_args = ["/std:c2x"]
-    libraries = ["ws2_32", "advapi32", "crypt32", "normaliz", "wldap32"]
+    extra_compile_args = []
+    deps_dir = os.environ.get("ZGRC_DEPS_DIR", "C:/deps")
+    deps_include = os.path.join(deps_dir, "include")
+    deps_lib = os.path.join(deps_dir, "lib")
+    if os.path.isdir(deps_include):
+        include_dirs.append(deps_include)
+    if os.path.isdir(deps_lib):
+        extra_link_args = ["/LIBPATH:" + deps_lib]
+    libraries = [
+        "libcurl",
+        "zlib",
+        "ws2_32",
+        "advapi32",
+        "crypt32",
+        "normaliz",
+        "wldap32",
+    ]
 elif system == "Darwin":
     extra_compile_args = ["-std=c2x"]
     if static_curl:
