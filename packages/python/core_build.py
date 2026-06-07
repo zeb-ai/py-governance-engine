@@ -75,7 +75,7 @@ extra_link_args = []
 static_curl = os.path.exists("/usr/local/lib/libcurl.a") or os.environ.get("LDFLAGS")
 
 if system == "Windows":
-    extra_compile_args = []
+    extra_compile_args = ["/Dnullptr=NULL", "/D_CRT_SECURE_NO_WARNINGS"]
     deps_dir = os.environ.get("ZGRC_DEPS_DIR", "C:/deps")
     deps_include = os.path.join(deps_dir, "include")
     deps_lib = os.path.join(deps_dir, "lib")
@@ -93,7 +93,7 @@ if system == "Windows":
         "wldap32",
     ]
 elif system == "Darwin":
-    extra_compile_args = ["-std=c23"]
+    extra_compile_args = ["-std=c11", "-Dnullptr=((void*)0)"]
     if static_curl:
         extra_link_args = [
             "/usr/local/lib/libcurl.a",
@@ -106,7 +106,7 @@ elif system == "Darwin":
     else:
         libraries = ["curl", "z"]
 else:
-    extra_compile_args = ["-std=c23"]
+    extra_compile_args = ["-std=c11", "-Dnullptr=((void*)0)"]
     if static_curl:
         extra_link_args = [
             "/usr/local/lib/libcurl.a",
