@@ -47,12 +47,13 @@ jobs:
 
           # Install static curl + zlib before building the wheel
           CIBW_BEFORE_ALL_LINUX: |
+            unset LDFLAGS CFLAGS
             yum install -y perl-IPC-Cmd || apt-get install -y perl
             cd /tmp
-            curl -sL https://zlib.net/zlib-1.3.1.tar.gz | tar xz
+            curl -sL https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz | tar xz
             cd zlib-1.3.1 && ./configure --static --prefix=/usr/local && make -j && make install
             cd /tmp
-            curl -sL https://curl.se/download/curl-8.11.1.tar.gz | tar xz
+            curl -sL https://github.com/curl/curl/releases/download/curl-8_11_1/curl-8.11.1.tar.gz | tar xz
             cd curl-8.11.1
             ./configure \
               --prefix=/usr/local \
@@ -67,11 +68,12 @@ jobs:
             make -j && make install
 
           CIBW_BEFORE_ALL_MACOS: |
+            unset LDFLAGS CFLAGS
             cd /tmp
-            curl -sL https://zlib.net/zlib-1.3.1.tar.gz | tar xz
+            curl -sL https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz | tar xz
             cd zlib-1.3.1 && ./configure --static --prefix=/usr/local && make -j && make install
             cd /tmp
-            curl -sL https://curl.se/download/curl-8.11.1.tar.gz | tar xz
+            curl -sL https://github.com/curl/curl/releases/download/curl-8_11_1/curl-8.11.1.tar.gz | tar xz
             cd curl-8.11.1
             ./configure \
               --prefix=/usr/local \
@@ -87,7 +89,7 @@ jobs:
 
           CIBW_BEFORE_ALL_WINDOWS: >
             cd /d %TEMP% &&
-            curl -sL https://curl.se/download/curl-8.11.1.tar.gz -o curl.tar.gz &&
+            curl -sL https://github.com/curl/curl/releases/download/curl-8_11_1/curl-8.11.1.tar.gz -o curl.tar.gz &&
             tar xzf curl.tar.gz &&
             cd curl-8.11.1 &&
             cmake -B build -DBUILD_SHARED_LIBS=OFF -DCURL_USE_SCHANNEL=ON -DHTTP_ONLY=ON &&
@@ -95,11 +97,13 @@ jobs:
             cmake --install build --config Release
 
           CIBW_ENVIRONMENT_LINUX: >
-            LDFLAGS="-L/usr/local/lib -lcurl -lssl -lcrypto -lz -static-libgcc"
-            CFLAGS="-I/usr/local/include"
+            LDFLAGS="-L/usr/local/lib"
+            LIBS="-lcurl -lssl -lcrypto -lz"
+            CPPFLAGS="-I/usr/local/include"
           CIBW_ENVIRONMENT_MACOS: >
-            LDFLAGS="-L/usr/local/lib -lcurl -lssl -lcrypto -lz"
-            CFLAGS="-I/usr/local/include"
+            LDFLAGS="-L/usr/local/lib"
+            LIBS="-lcurl -lssl -lcrypto -lz"
+            CPPFLAGS="-I/usr/local/include"
 
         run: cibuildwheel --output-dir wheelhouse
 
