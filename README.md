@@ -1,3 +1,5 @@
+# Note: This codebase has been completely rewritten from the ground up (v2). The old proxy-based architecture is replaced with a native C interceptor with Python and Node.js bindings. Documentation below is outdated and will be updated soon.
+
 <p align="center">
   <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=48&duration=1&pause=1000000&color=6366F1&center=true&vCenter=true&multiline=true&repeat=false&width=600&height=120&lines=Z-GRC" alt="Z-GRC">
 </p>
@@ -81,15 +83,19 @@ response = client.chat.completions.create(
 ## Features
 
 ### Zero-Code Integration
+
 Drop-in solution requiring only `zgrc.init()`. Works with existing code without modifications.
 
 ### Auto-Discovery
+
 Automatically detects and intercepts installed LLM SDKs:
+
 - AWS Bedrock (boto3)
 - OpenAI (including Azure OpenAI, Databricks, and OpenAI-compatible endpoints)
 - Anthropic (coming soon)
 
 ### Policy Enforcement
+
 Real-time quota validation and cost limit enforcement. Blocks requests when quota is exceeded.
 
 ```python
@@ -106,6 +112,7 @@ except QuotaExceededException as e:
 </p>
 
 ### Auto-Instrumentation
+
 Optional automatic instrumentation for HTTP clients, web frameworks, databases, and more:
 
 ```python
@@ -118,6 +125,7 @@ zgrc.init(
 ```
 
 ### Framework Agnostic
+
 Works with vanilla SDKs and popular frameworks:
 
 ```python
@@ -138,6 +146,7 @@ response = agent.execute("Your prompt")
 ```
 
 ### Streaming Support
+
 Fully supports streaming responses with automatic token tracking:
 
 ```python
@@ -192,6 +201,7 @@ claude
 **Foreground Mode:**
 
 **Terminal 1** - Start the proxy (shows logs):
+
 ```bash
 z-grc-proxy --api-key=your-key
 ```
@@ -203,6 +213,7 @@ z-grc-proxy --api-key=your-key
 </p>
 
 **Terminal 2** - Open another tab, set environment variables, and run Claude:
+
 ```bash
 # Mac & Linux
 export HTTPS_PROXY=http://127.0.0.1:8080
@@ -261,6 +272,7 @@ make grpc-proxy-build
 Output: `dist/z-grc-proxy`
 
 ### Test Binary
+
 ```bash
 # Background mode
 eval $(./dist/z-grc-proxy --api-key=your-key -d)
@@ -272,11 +284,13 @@ eval $(./dist/z-grc-proxy --api-key=your-key -d)
 ## Installing Executor
 
 ### macOS / Linux
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/zeb-ai/z-grc/main/install.sh | bash
 ```
 
 ### Windows (PowerShell)
+
 ```powershell
 irm https://raw.githubusercontent.com/zeb-ai/z-grc/main/install.ps1 | iex
 ```
