@@ -1,3 +1,8 @@
+"""
+i assume if user uses bedrock inference profile, they must have boto3, that's why didn't add as deps,
+in future version conflict may happen - samrat
+"""
+
 import os
 import re
 from urllib.parse import unquote
@@ -50,9 +55,9 @@ def resolve_aws_arn(url: str) -> str | None:
 
 if __name__ == "__main__":
     response = resolve_aws_arn(
-        "https://bedrock-runtime.us-east-1.amazonaws.com/model/arn%3Aaws%3Abedrock%3Aus-east-1%3A926251048803%3Aapplication-inference-profile%2F7j95b0rxjwhy/invokehttps://bedrock-runtime.us-east-1.amazonaws.com/model/arn%3Aaws%3Abedrock%3Aus-east-1%3A926251048803%3Aapplication-inference-profile%2F7j95b0rxjwhy/invoke"
+        "bedrock_url_with_arn"  # should be actual arn url / model calling api
     )
     print(response)
 
-    response = resolve_aws_arn("https://google.com")
+    response = resolve_aws_arn("https://google.com")  # should fail
     print(response)

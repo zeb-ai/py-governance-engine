@@ -15,4 +15,26 @@ merge_price:
 	@echo "Merging pricing data..."
 	./tools/merge_price data/genai_data.json data/litellm_data.json data/merged_pricing.json
 
-.PHONY: merge_price
+clean:
+	rm -rf build/
+	rm -rf packages/node/build/
+	rm -rf packages/node/csrc/
+	rm -rf packages/node/deps/
+	rm -rf packages/node/prebuilds/
+	rm -rf packages/node/data/
+	rm -rf packages/python/csrc/
+	rm -rf packages/python/build/
+	rm -rf packages/python/dist/
+	rm -rf packages/python/wheelhouse/
+	rm -rf packages/python/*.egg-info/
+	rm -rf packages/python/zgrc/_native*.so
+	rm -rf packages/python/zgrc/_native*.pyd
+	rm -rf playground/node_modules/
+	rm -f playground/package-lock.json
+	rm -f playground/uv.lock
+	rm -f tools/merge_price
+	find . -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+	find . -name "*.o" -delete 2>/dev/null || true
+	@echo "Clean complete."
+
+.PHONY: merge_price clean

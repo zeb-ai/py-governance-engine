@@ -4,25 +4,68 @@
             "target_name": "grc_interceptor",
             "sources": [
                 "src/addon.c",
-                "../../src/interceptor.c",
-                "../../src/logger.c",
-                "../../src/auth_token.c",
-                "../../src/cost_calculator.c",
-                "../../src/quota_client.c",
-                "../../src/response_parser.c",
-                "../../lib/yyjson/yyjson.c",
-                "../../lib/libb64/src/cdecode.c",
+                "csrc/src/interceptor.c",
+                "csrc/src/logger.c",
+                "csrc/src/auth_token.c",
+                "csrc/src/cost_calculator.c",
+                "csrc/src/quota_client.c",
+                "csrc/src/response_parser.c",
+                "csrc/lib/yyjson/yyjson.c",
+                "csrc/lib/libb64/src/cdecode.c",
             ],
             "include_dirs": [
-                "../../include",
-                "../../lib/yyjson",
-                "../../lib/libb64/include",
+                "csrc/include",
+                "csrc/lib/yyjson",
+                "csrc/lib/libb64/include",
                 "<!(node -p \"require('node-addon-api').include_dir\")",
             ],
-            "libraries": ["-lcurl", "-lz"],
             "defines": ["NAPI_VERSION=8", "NAPI_DISABLE_CPP_EXCEPTIONS"],
             "cflags": ["-std=c23", "-Wall"],
             "xcode_settings": {"OTHER_CFLAGS": ["-std=c23"]},
+            "conditions": [
+                [
+                    "OS=='win'",
+                    {
+                        "libraries": [
+                            "-lws2_32",
+                            "-ladvapi32",
+                            "-lcrypt32",
+                            "-lnormaliz",
+                            "-lwldap32",
+                        ],
+                        "conditions": [
+                            [
+                                "'<!(node -e \"process.stdout.write(require('fs').existsSync('deps/lib/libcurl.lib')?'1':'0')\")'=='1'",
+                                {
+                                    "include_dirs": ["deps/include"],
+                                    "libraries": [
+                                        "<(module_root_dir)/deps/lib/libcurl.lib",
+                                        "<(module_root_dir)/deps/lib/zlib.lib",
+                                    ],
+                                },
+                                {"libraries": ["-lcurl", "-lz"]},
+                            ]
+                        ],
+                    },
+                    {
+                        "conditions": [
+                            [
+                                "'<!(node -e \"process.stdout.write(require('fs').existsSync('deps/lib/libcurl.a')?'1':'0')\")'=='1'",
+                                {
+                                    "include_dirs": ["deps/include"],
+                                    "libraries": [
+                                        "<(module_root_dir)/deps/lib/libcurl.a",
+                                        "<(module_root_dir)/deps/lib/libssl.a",
+                                        "<(module_root_dir)/deps/lib/libcrypto.a",
+                                        "<(module_root_dir)/deps/lib/libz.a",
+                                    ],
+                                },
+                                {"libraries": ["-lcurl", "-lz"]},
+                            ]
+                        ]
+                    },
+                ]
+            ],
         }
     ]
 }

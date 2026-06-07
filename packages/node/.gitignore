@@ -1,0 +1,3 @@
+csrc/
+build/
+cmake-build-debug/

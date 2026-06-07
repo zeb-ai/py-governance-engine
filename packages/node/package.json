@@ -12,13 +12,15 @@
     }
   },
   "scripts": {
+    "preinstall": "node scripts/vendor.js",
     "install": "node-gyp rebuild",
-    "build": "node-gyp rebuild",
-    "clean": "node-gyp clean"
+    "build": "node scripts/vendor.js && node-gyp rebuild",
+    "clean": "node-gyp clean && rm -rf csrc"
   },
   "dependencies": {
     "node-addon-api": "^8.0.0",
-    "node-gyp": "^10.0.0"
+    "node-gyp": "^10.0.0",
+    "node-gyp-build": "^4.8.4"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -26,6 +28,9 @@
   "files": [
     "lib/",
     "src/",
+    "scripts/",
+    "prebuilds/",
+    "data/",
     "binding.gyp"
   ]
 }

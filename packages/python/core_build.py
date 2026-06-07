@@ -72,15 +72,37 @@ libraries = []
 extra_compile_args = []
 extra_link_args = []
 
+static_curl = os.path.exists("/usr/local/lib/libcurl.a") or os.environ.get("LDFLAGS")
+
 if system == "Windows":
     extra_compile_args = ["/std:c2x"]
     libraries = ["ws2_32", "advapi32", "crypt32", "normaliz", "wldap32"]
 elif system == "Darwin":
     extra_compile_args = ["-std=c2x"]
-    libraries = ["curl", "z"]
+    if static_curl:
+        extra_link_args = [
+            "/usr/local/lib/libcurl.a",
+            "/usr/local/lib/libz.a",
+            "-framework",
+            "Security",
+            "-framework",
+            "SystemConfiguration",
+        ]
+    else:
+        libraries = ["curl", "z"]
 else:
     extra_compile_args = ["-std=c2x"]
-    libraries = ["curl", "z"]
+    if static_curl:
+        extra_link_args = [
+            "/usr/local/lib/libcurl.a",
+            "/usr/local/lib/libssl.a",
+            "/usr/local/lib/libcrypto.a",
+            "/usr/local/lib/libz.a",
+            "-lpthread",
+            "-ldl",
+        ]
+    else:
+        libraries = ["curl", "z"]
 
 ffibuilder.set_source(
     "zgrc._native",

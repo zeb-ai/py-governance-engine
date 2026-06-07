@@ -1,7 +1,5 @@
 const path = require("path");
-const native = require(
-  path.join(__dirname, "..", "build", "Release", "grc_interceptor.node"),
-);
+const native = require("node-gyp-build")(path.join(__dirname, ".."));
 const { activate, deactivate } = require("./intercept");
 
 const LOG_DEBUG = 0;
@@ -11,8 +9,6 @@ const LOG_ERROR = 3;
 
 const DEFAULT_PRICING = path.join(
   __dirname,
-  "..",
-  "..",
   "..",
   "data",
   "merged_pricing.json",
