@@ -168,11 +168,7 @@ jobs:
       - name: Build prebuild (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: |
-          $DEPS_DIR = "$PWD\deps"
-          npx prebuildify --napi --strip --arch ${{ matrix.arch }} `
-            --cflags="/I$DEPS_DIR\include" `
-            --ldflags="/LIBPATH:$DEPS_DIR\lib libcurl.lib zlib.lib ws2_32.lib advapi32.lib crypt32.lib normaliz.lib wldap32.lib"
+        run: npx prebuildify --napi --strip --arch ${{ matrix.arch }}
 
       - uses: actions/upload-artifact@v4
         with:
