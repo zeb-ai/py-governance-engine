@@ -48,48 +48,10 @@ jobs:
           CIBW_BUILD: "cp312-* cp313-*"
           CIBW_SKIP: "*-musllinux_*"
 
-          # Install static curl + zlib before building the wheel
-          CIBW_BEFORE_ALL_LINUX: |
-            set -ex
-            yum install -y gcc make perl-IPC-Cmd openssl-devel || { apt-get update && apt-get install -y gcc make perl libssl-dev; }
-            cd /tmp
-            curl -sL https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz | tar xz
-            cd zlib-1.3.1 && ./configure --static --prefix=/usr/local && make -j$(nproc) && make install
-            cd /tmp
-            curl -sL https://github.com/curl/curl/releases/download/curl-8_11_1/curl-8.11.1.tar.gz | tar xz
-            cd curl-8.11.1
-            ./configure \
-              --prefix=/usr/local \
-              --disable-shared --enable-static \
-              --disable-ftp --disable-ldap --disable-dict \
-              --disable-telnet --disable-tftp --disable-pop3 \
-              --disable-imap --disable-smb --disable-smtp \
-              --disable-gopher --disable-rtsp --disable-mqtt \
-              --without-libpsl --without-brotli --without-zstd \
-              --without-libidn2 --without-nghttp2 \
-              --with-ssl --with-zlib=/usr/local
-            make -j$(nproc) && make install
-
-          CIBW_BEFORE_ALL_MACOS: |
-            set -ex
-            OPENSSL_PREFIX=$(brew --prefix openssl@3)
-            cd /tmp
-            curl -sL https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz | tar xz
-            cd zlib-1.3.1 && ./configure --static --prefix=/usr/local && make -j$(sysctl -n hw.ncpu) && sudo make install
-            cd /tmp
-            curl -sL https://github.com/curl/curl/releases/download/curl-8_11_1/curl-8.11.1.tar.gz | tar xz
-            cd curl-8.11.1
-            ./configure \
-              --prefix=/usr/local \
-              --disable-shared --enable-static \
-              --disable-ftp --disable-ldap --disable-dict \
-              --disable-telnet --disable-tftp --disable-pop3 \
-              --disable-imap --disable-smb --disable-smtp \
-              --disable-gopher --disable-rtsp --disable-mqtt \
-              --without-libpsl --without-brotli --without-zstd \
-              --without-libidn2 --without-nghttp2 \
-              --with-ssl=$OPENSSL_PREFIX --with-zlib=/usr/local
-            make -j$(sysctl -n hw.ncpu) && sudo make install
+          # Install curl dev headers so the C extension can compile
+          CIBW_BEFORE_ALL_LINUX: >
+            yum install -y libcurl-devel ||
+            apt-get install -y libcurl4-openssl-dev
 
           CIBW_BEFORE_ALL_WINDOWS: >
             cd /d %TEMP% &&
@@ -107,14 +69,6 @@ jobs:
             cmake --build build --config Release &&
             cmake --install build --config Release
 
-          CIBW_ENVIRONMENT_LINUX: >
-            LDFLAGS="-L/usr/local/lib"
-            LIBS="-lcurl -lssl -lcrypto -lz"
-            CPPFLAGS="-I/usr/local/include"
-          CIBW_ENVIRONMENT_MACOS: >
-            LDFLAGS="-L/usr/local/lib"
-            LIBS="-lcurl -lssl -lcrypto -lz"
-            CPPFLAGS="-I/usr/local/include"
           CIBW_ENVIRONMENT_WINDOWS: >
             ZGRC_DEPS_DIR="C:/deps"
 
