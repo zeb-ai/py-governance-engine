@@ -61,6 +61,11 @@ jobs:
           set -e
           DEPS_DIR=$PWD/deps
 
+          # Static libs linked into a .node shared object need PIC on Linux
+          if [ "$(uname)" = "Linux" ]; then
+            export CFLAGS="-fPIC"
+          fi
+
           # Build zlib static
           cd /tmp
           curl -sL https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz | tar xz
@@ -83,6 +88,7 @@ jobs:
           ./configure \
             --prefix=$DEPS_DIR \
             --disable-shared --enable-static \
+            --with-pic \
             --disable-ftp --disable-ldap --disable-dict \
             --disable-telnet --disable-tftp --disable-pop3 \
             --disable-imap --disable-smb --disable-smtp \

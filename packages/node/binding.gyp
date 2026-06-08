@@ -22,9 +22,7 @@
             "defines": ["NAPI_VERSION=8", "NAPI_DISABLE_CPP_EXCEPTIONS"],
             "cflags": ["-std=c2x", "-Wall"],
             "xcode_settings": {"OTHER_CFLAGS": ["-std=c2x"]},
-            "msvs_settings": {
-                "VCCLCompilerTool": {"AdditionalOptions": ["/std:clatest"]}
-            },
+            "msvs_settings": {},
             "conditions": [
                 [
                     "OS=='win'",
