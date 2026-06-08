@@ -20,13 +20,16 @@
                 "<!(node -p \"require('node-addon-api').include_dir\")",
             ],
             "defines": ["NAPI_VERSION=8", "NAPI_DISABLE_CPP_EXCEPTIONS"],
-            "cflags": ["-std=c23", "-Wall"],
-            "xcode_settings": {"OTHER_CFLAGS": ["-std=c23"]},
+            "cflags": ["-std=c2x", "-Wall"],
+            "xcode_settings": {"OTHER_CFLAGS": ["-std=c2x"]},
+            "msvs_settings": {
+                "VCCLCompilerTool": {"AdditionalOptions": ["/std:clatest"]}
+            },
             "conditions": [
                 [
                     "OS=='win'",
                     {
-                        "defines": ["CURL_STATICLIB"],
+                        "defines": ["CURL_STATICLIB", "nullptr=NULL"],
                         "libraries": [
                             "-lws2_32",
                             "-ladvapi32",

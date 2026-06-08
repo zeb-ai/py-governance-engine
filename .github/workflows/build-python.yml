@@ -23,6 +23,8 @@ jobs:
             cibw_archs: aarch64
           - os: windows-latest
             cibw_archs: AMD64
+          - os: windows-latest
+            cibw_archs: ARM64
 
     runs-on: ${{ matrix.os }}
     defaults:
@@ -59,20 +61,20 @@ jobs:
             curl -sL https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz -o zlib.tar.gz &&
             tar xzf zlib.tar.gz &&
             cd zlib-1.3.1 &&
-            cmake -B build -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=C:/deps &&
+            cmake -B build -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=C:/deps -A %CMAKE_ARCH% &&
             cmake --build build --config Release &&
             cmake --install build --config Release &&
             cd /d %TEMP% &&
             curl -sL https://github.com/curl/curl/releases/download/curl-8_11_1/curl-8.11.1.tar.gz -o curl.tar.gz &&
             tar xzf curl.tar.gz &&
             cd curl-8.11.1 &&
-            cmake -B build -DBUILD_SHARED_LIBS=OFF -DCURL_USE_SCHANNEL=ON -DHTTP_ONLY=ON -DZLIB_ROOT=C:/deps -DCMAKE_INSTALL_PREFIX=C:/deps &&
+            cmake -B build -DBUILD_SHARED_LIBS=OFF -DCURL_USE_SCHANNEL=ON -DHTTP_ONLY=ON -DZLIB_ROOT=C:/deps -DCMAKE_INSTALL_PREFIX=C:/deps -A %CMAKE_ARCH% &&
             cmake --build build --config Release &&
             cmake --install build --config Release &&
             dir C:\deps\lib\
 
           CIBW_ENVIRONMENT_WINDOWS: >
-            ZGRC_DEPS_DIR="C:/deps"
+            ZGRC_DEPS_DIR="C:/deps" CMAKE_ARCH="${{ matrix.cibw_archs == 'ARM64' && 'ARM64' || 'x64' }}"
 
         run: cibuildwheel --output-dir wheelhouse
 
