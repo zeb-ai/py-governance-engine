@@ -1,6 +1,6 @@
 {
   "name": "@zeb_labs/zgrc",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Governance Engine by zeb labs",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -12,8 +12,7 @@
     }
   },
   "scripts": {
-    "preinstall": "node scripts/vendor.js",
-    "install": "node-gyp rebuild",
+    "install": "node-gyp-build",
     "build": "node scripts/vendor.js && node-gyp rebuild",
     "clean": "node-gyp clean && rm -rf csrc"
   },
