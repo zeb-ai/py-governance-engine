@@ -1,5 +1,5 @@
 {
-  "name": "@z-grc/node",
+  "name": "@zeb_labs/zgrc",
   "version": "0.1.2",
   "description": "Governance Engine by zeb labs",
   "main": "lib/index.js",
