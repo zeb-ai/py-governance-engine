@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # fix: silence Node 20 deprecation warnings
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -28,7 +28,7 @@ jobs:
           - os: ubuntu-22.04-arm
             platform: linux
             arch: arm64
-          - os: windows-2022 # fix: pin instead of windows-latest (redirecting to windows-2025-vs2026 on Jun 15)
+          - os: windows-2022
             platform: win32
             arch: x64
 
@@ -45,7 +45,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --ignore-scripts # skip postinstall/prepare hooks; prebuildify runs explicitly below
 
       - name: Build static curl (Unix)
         if: runner.os != 'Windows'
@@ -63,7 +63,6 @@ jobs:
           make install
 
           # On macOS, Homebrew OpenSSL is not in pkg-config path by default.
-          # Pass the explicit prefix so curl's configure can find it.
           SSL_ARG="--with-ssl"
           if [ "$(uname)" = "Darwin" ]; then
             SSL_ARG="--with-ssl=$(brew --prefix openssl@3)"
