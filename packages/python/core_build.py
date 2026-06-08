@@ -72,7 +72,7 @@ libraries = []
 extra_compile_args = []
 extra_link_args = []
 
-static_curl = os.path.exists("/usr/local/lib/libcurl.a") or os.environ.get("LDFLAGS")
+static_curl = os.path.exists("/usr/local/include/curl/curl.h")
 
 if system == "Windows":
     extra_compile_args = ["/Dnullptr=NULL", "/D_CRT_SECURE_NO_WARNINGS"]
