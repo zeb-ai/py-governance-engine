@@ -79,6 +79,7 @@ function instrumentH2Stream(stream, origin, headers) {
   const reqChunks = [];
   const resChunks = [];
   let reqBodySent = false;
+  let isEventStream = false;
 
   // Start ARN resolution early, store the promise
   const arnPromise = isArnUrl(url) ? resolveAwsArn(url) : null;
@@ -109,6 +110,14 @@ function instrumentH2Stream(stream, origin, headers) {
 
     return origEnd(chunk, encoding, callback);
   };
+
+  stream.on("response", (responseHeaders) => {
+    if (!reqBodySent) return;
+    const contentType = responseHeaders["content-type"] || "";
+    if (contentType.includes("application/vnd.amazon.eventstream")) {
+      isEventStream = true;
+    }
+  });
 
   stream.on("data", (chunk) => {
     if (reqBodySent) {
@@ -142,9 +151,104 @@ function instrumentH2Stream(stream, origin, headers) {
         }
       }
 
-      native.interceptResponse(finalUrl, body.toString("utf-8"));
+      if (isEventStream) {
+        const metadata = parseAwsEventStreamMetadata(body);
+        if (metadata) {
+          native.interceptResponse(finalUrl, metadata);
+        }
+      } else {
+        native.interceptResponse(finalUrl, body.toString("utf-8"));
+      }
     } catch (_) {}
   });
+}
+
+// --- AWS Event Stream parsing (ConverseStream responses) ---
+
+function parseAwsEventStreamMetadata(buf) {
+  // AWS event-stream binary format:
+  // Each message: [4B total_len][4B headers_len][4B prelude_crc][headers][payload][4B msg_crc]
+  let offset = 0;
+  let metadataPayload = null;
+
+  while (offset + 12 <= buf.length) {
+    const totalLen = buf.readUInt32BE(offset);
+    if (totalLen < 16 || offset + totalLen > buf.length) break;
+
+    const headersLen = buf.readUInt32BE(offset + 4);
+    // skip prelude CRC (4 bytes at offset+8)
+
+    const headersStart = offset + 12;
+    const headersEnd = headersStart + headersLen;
+    const payloadStart = headersEnd;
+    const payloadEnd = offset + totalLen - 4; // minus message CRC
+
+    // Parse headers to find :event-type
+    const eventType = parseEventStreamHeaders(buf, headersStart, headersEnd);
+
+    if (eventType === "metadata") {
+      const payload = buf.slice(payloadStart, payloadEnd);
+      metadataPayload = payload.toString("utf-8");
+    }
+
+    offset += totalLen;
+  }
+
+  return metadataPayload;
+}
+
+function parseEventStreamHeaders(buf, start, end) {
+  let pos = start;
+  while (pos < end) {
+    const nameLen = buf.readUInt8(pos);
+    pos += 1;
+    if (pos + nameLen > end) break;
+    const name = buf.slice(pos, pos + nameLen).toString("utf-8");
+    pos += nameLen;
+
+    const headerType = buf.readUInt8(pos);
+    pos += 1;
+
+    if (headerType === 7) {
+      // String type: [2B value_len][value]
+      const valueLen = buf.readUInt16BE(pos);
+      pos += 2;
+      if (pos + valueLen > end) break;
+      const value = buf.slice(pos, pos + valueLen).toString("utf-8");
+      pos += valueLen;
+
+      if (name === ":event-type") return value;
+    } else if (headerType === 0) {
+      // Bool true - no value bytes
+    } else if (headerType === 1) {
+      // Bool false - no value bytes
+    } else if (headerType === 2) {
+      // Byte - 1 byte
+      pos += 1;
+    } else if (headerType === 3) {
+      // Short - 2 bytes
+      pos += 2;
+    } else if (headerType === 4) {
+      // Int - 4 bytes
+      pos += 4;
+    } else if (headerType === 5) {
+      // Long - 8 bytes
+      pos += 8;
+    } else if (headerType === 6) {
+      // Bytes: [2B len][bytes]
+      const bLen = buf.readUInt16BE(pos);
+      pos += 2 + bLen;
+    } else if (headerType === 8) {
+      // Timestamp - 8 bytes
+      pos += 8;
+    } else if (headerType === 9) {
+      // UUID - 16 bytes
+      pos += 16;
+    } else {
+      break;
+    }
+  }
+  return null;
 }
 
 // --- TLS interception for HTTP/1.1 traffic (axios, node-fetch, got) ---

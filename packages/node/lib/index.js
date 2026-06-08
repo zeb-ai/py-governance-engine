@@ -14,16 +14,28 @@ const DEFAULT_PRICING = path.join(
   "merged_pricing.json",
 );
 
+let initialized = false;
+
 function init(apiKey, pricingFile) {
+  if (!apiKey) {
+    throw new Error("init requires an API key");
+  }
   const file = pricingFile || DEFAULT_PRICING;
   const result = native.init(apiKey, file);
-  if (result) {
-    activate(native);
+  if (!result) {
+    throw new Error(
+      "init failed: native init returned false (token decode or pricing file error)",
+    );
   }
+  initialized = true;
+  activate(native);
   return result;
 }
 
 function enableLogging(level, logPath) {
+  if (!initialized) {
+    throw new Error("enableLogging() called before successful init()");
+  }
   native.enableLogging(level, logPath);
 }
 

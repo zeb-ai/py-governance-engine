@@ -1,18 +1,14 @@
 import grc from "@z-grc/node";
+
+grc.init(process.env.API_KEY);
+grc.enableLogging(grc.LOG_DEBUG, "./zgrc_node.log");
+
 import { join } from "path";
 import {
   SessionManager,
   createAgentSessionFromServices,
   createAgentSessionServices,
 } from "@mariozechner/pi-coding-agent";
-
-if (!process.env.GRC_API_KEY) {
-  console.error("Missing GRC_API_KEY env var");
-  process.exit(1);
-}
-const grcReady = grc.init(process.env.GRC_API_KEY);
-console.log("[grc] init result:", grcReady);
-grc.enableLogging(grc.LOG_DEBUG, "./zgrc_node.log");
 
 export async function callPiMono(userPrompt, options = {}) {
   const {
