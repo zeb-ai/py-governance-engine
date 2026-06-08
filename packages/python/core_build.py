@@ -95,6 +95,7 @@ if system == "Windows":
 elif system == "Darwin":
     extra_compile_args = ["-std=c11", "-Dnullptr=((void*)0)"]
     if static_curl:
+        include_dirs.append("/usr/local/include")
         extra_link_args = [
             "/usr/local/lib/libcurl.a",
             "/usr/local/lib/libz.a",
@@ -108,6 +109,7 @@ elif system == "Darwin":
 else:
     extra_compile_args = ["-std=c11", "-Dnullptr=((void*)0)"]
     if static_curl:
+        include_dirs.append("/usr/local/include")
         extra_link_args = [
             "/usr/local/lib/libcurl.a",
             "/usr/local/lib/libssl.a",
