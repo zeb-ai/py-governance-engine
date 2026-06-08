@@ -26,6 +26,7 @@
                 [
                     "OS=='win'",
                     {
+                        "defines": ["CURL_STATICLIB"],
                         "libraries": [
                             "-lws2_32",
                             "-ladvapi32",
@@ -40,7 +41,7 @@
                                     "include_dirs": ["deps/include"],
                                     "libraries": [
                                         "<(module_root_dir)/deps/lib/libcurl.lib",
-                                        "<(module_root_dir)/deps/lib/zlib.lib",
+                                        "<(module_root_dir)/deps/lib/zlibstatic.lib",
                                     ],
                                 },
                                 {"libraries": ["-lcurl", "-lz"]},

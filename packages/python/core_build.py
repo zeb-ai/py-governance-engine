@@ -75,7 +75,11 @@ extra_link_args = []
 static_curl = os.path.exists("/usr/local/include/curl/curl.h")
 
 if system == "Windows":
-    extra_compile_args = ["/Dnullptr=NULL", "/D_CRT_SECURE_NO_WARNINGS"]
+    extra_compile_args = [
+        "/Dnullptr=NULL",
+        "/D_CRT_SECURE_NO_WARNINGS",
+        "/DCURL_STATICLIB",
+    ]
     deps_dir = os.environ.get("ZGRC_DEPS_DIR", "C:/deps")
     deps_include = os.path.join(deps_dir, "include")
     deps_lib = os.path.join(deps_dir, "lib")
@@ -85,7 +89,7 @@ if system == "Windows":
         extra_link_args = ["/LIBPATH:" + deps_lib]
     libraries = [
         "libcurl",
-        "zlib",
+        "zlibstatic",
         "ws2_32",
         "advapi32",
         "crypt32",
