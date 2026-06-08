@@ -84,7 +84,8 @@ if system == "Windows":
     if os.path.isdir(deps_lib):
         extra_link_args = ["/LIBPATH:" + deps_lib]
     libraries = [
-        "libcurl_a",
+        "libcurl",
+        "zlib",
         "ws2_32",
         "advapi32",
         "crypt32",

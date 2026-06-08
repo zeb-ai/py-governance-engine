@@ -46,6 +46,7 @@ jobs:
         env:
           CIBW_ARCHS: ${{ matrix.cibw_archs }}
           CIBW_BUILD: "cp312-* cp313-*"
+          CIBW_BUILD_VERBOSITY: "3"
           CIBW_SKIP: "*-musllinux_*"
 
           # Install curl dev headers so the C extension can compile
@@ -67,7 +68,8 @@ jobs:
             cd curl-8.11.1 &&
             cmake -B build -DBUILD_SHARED_LIBS=OFF -DCURL_USE_SCHANNEL=ON -DHTTP_ONLY=ON -DZLIB_ROOT=C:/deps -DCMAKE_INSTALL_PREFIX=C:/deps &&
             cmake --build build --config Release &&
-            cmake --install build --config Release
+            cmake --install build --config Release &&
+            dir C:\deps\lib\
 
           CIBW_ENVIRONMENT_WINDOWS: >
             ZGRC_DEPS_DIR="C:/deps"
