@@ -40,7 +40,22 @@ jobs:
         run: pip install cibuildwheel==2.21.3
 
       - name: Vendor C sources
-        run: python -c "import sys; sys.path.insert(0, '.'); import setup; setup.vendor_c_sources()"
+        run: |
+          python - << 'PYEOF'
+          import os, shutil
+          ROOT   = os.path.abspath(os.path.join("..", ".."))
+          CSRC   = os.path.abspath("csrc")
+          DIRS   = ["src", "include", os.path.join("lib","yyjson"), os.path.join("lib","libb64")]
+          IGNORE = shutil.ignore_patterns("*.o","*.obj","*.d","build",".DS_Store","main.c")
+          if not os.path.isdir(CSRC):
+              for d in DIRS:
+                  s = os.path.join(ROOT, d)
+                  if os.path.isdir(s):
+                      shutil.copytree(s, os.path.join(CSRC, d), ignore=IGNORE)
+              print("C sources vendored into csrc/")
+          else:
+              print("csrc/ already present, skipping")
+          PYEOF
 
       - name: Build wheels
         env:
