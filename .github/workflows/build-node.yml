@@ -7,6 +7,9 @@ on:
       - "packages/node/package.json"
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # fix: silence Node 20 deprecation warnings
+
 jobs:
   build:
     strategy:
@@ -25,7 +28,7 @@ jobs:
           - os: ubuntu-22.04-arm
             platform: linux
             arch: arm64
-          - os: windows-latest
+          - os: windows-2022 # fix: pin instead of windows-latest (redirecting to windows-2025-vs2026 on Jun 15)
             platform: win32
             arch: x64
 
@@ -162,7 +165,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - uses: actions/download-artifact@v4
         with:
