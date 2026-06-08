@@ -59,6 +59,13 @@ jobs:
           make -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
           make install
 
+          # On macOS, Homebrew OpenSSL is not in pkg-config path by default.
+          # Pass the explicit prefix so curl's configure can find it.
+          SSL_ARG="--with-ssl"
+          if [ "$(uname)" = "Darwin" ]; then
+            SSL_ARG="--with-ssl=$(brew --prefix openssl@3)"
+          fi
+
           # Build curl static (minimal — HTTPS only)
           cd /tmp
           curl -sL https://github.com/curl/curl/releases/download/curl-8_11_1/curl-8.11.1.tar.gz | tar xz
@@ -72,7 +79,7 @@ jobs:
             --disable-gopher --disable-rtsp --disable-mqtt \
             --without-libpsl --without-brotli --without-zstd \
             --without-libidn2 --without-nghttp2 \
-            --with-ssl --with-zlib=$DEPS_DIR
+            $SSL_ARG --with-zlib=$DEPS_DIR
           make -j$(nproc 2>/dev/null || sysctl -n hw.ncpu)
           make install
 
@@ -109,8 +116,18 @@ jobs:
       - name: Vendor C sources
         run: node scripts/vendor.js
 
-      - name: Build prebuild (Unix)
-        if: runner.os != 'Windows'
+      - name: Build prebuild (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          DEPS_DIR: ${{ github.workspace }}/packages/node/deps
+        run: |
+          npx prebuildify --napi --strip \
+            --cflags="-I$DEPS_DIR/include" \
+            --ldflags="-L$DEPS_DIR/lib -lcurl -lssl -lcrypto -lz -framework Security -framework SystemConfiguration"
+
+      - name: Build prebuild (Linux)
+        if: runner.os == 'Linux'
         shell: bash
         env:
           DEPS_DIR: ${{ github.workspace }}/packages/node/deps
