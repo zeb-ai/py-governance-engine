@@ -9,6 +9,12 @@ export type LogLevel =
   | typeof LOG_WARN
   | typeof LOG_ERROR;
 
+export class QuotaExceededError extends Error {
+  name: "QuotaExceededError";
+  usedQuota: number;
+  remainingQuota: number;
+}
+
 export interface RequestResult {
   allowed: number;
   model: string;
@@ -24,7 +30,11 @@ export interface ResponseResult {
   remainingQuota: number;
 }
 
-export declare function init(apiKey: string, pricingFile?: string): boolean;
+/**
+ * Initialize the z-grc interceptor
+ * @throws {QuotaExceededError} When API quota is exceeded during subsequent requests
+ */
+export declare function init(apiKey: string, pricingFile?: string, appName?: string): boolean;
 export declare function enableLogging(level: LogLevel, path: string): void;
 export declare function interceptRequest(
   url: string,

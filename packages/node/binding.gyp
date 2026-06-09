@@ -10,6 +10,7 @@
                 "csrc/src/cost_calculator.c",
                 "csrc/src/quota_client.c",
                 "csrc/src/response_parser.c",
+                "csrc/src/otel_exporter.c",
                 "csrc/lib/yyjson/yyjson.c",
                 "csrc/lib/libb64/src/cdecode.c",
             ],

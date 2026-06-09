@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "last_updated": "2026-06-02",
+  "last_updated": "2026-06-09",
   "providers": {
     "anthropic": {
       "name": "Anthropic",
@@ -163,6 +163,39 @@
           "token_mappings": {
             "prompt_tokens": "input_tokens",
             "completion_tokens": "output_tokens"
+          }
+        }
+      ]
+    },
+    "doubleword": {
+      "name": "Doubleword",
+      "api_pattern": "https://api\\.doubleword\\.ai",
+      "pricing_url": "https://docs.doubleword.ai/inference-api/models",
+      "extractors": [
+        {
+          "api_flavor": "chat",
+          "usage_path": "usage",
+          "model_path": "model",
+          "token_mappings": {
+            "prompt_tokens": "input_tokens",
+            "completion_tokens": "output_tokens"
+          }
+        },
+        {
+          "api_flavor": "responses",
+          "usage_path": "usage",
+          "model_path": "model",
+          "token_mappings": {
+            "input_tokens": "input_tokens",
+            "output_tokens": "output_tokens"
+          }
+        },
+        {
+          "api_flavor": "embeddings",
+          "usage_path": "usage",
+          "model_path": "model",
+          "token_mappings": {
+            "prompt_tokens": "input_tokens"
           }
         }
       ]
@@ -1003,6 +1036,33 @@
       },
       "limits": {}
     },
+    "google.gemma-3-12b-it": {
+      "provider": "aws",
+      "name": "Gemma 3 12B IT",
+      "pricing": {
+        "input": 0.09,
+        "output": 0.29
+      },
+      "limits": {}
+    },
+    "google.gemma-3-27b-it": {
+      "provider": "aws",
+      "name": "Gemma 3 27B IT",
+      "pricing": {
+        "input": 0.23,
+        "output": 0.38
+      },
+      "limits": {}
+    },
+    "google.gemma-3-4b-it": {
+      "provider": "aws",
+      "name": "Gemma 3 4B IT",
+      "pricing": {
+        "input": 0.04,
+        "output": 0.08
+      },
+      "limits": {}
+    },
     "meta.llama3-1-70b-instruct-v1:0": {
       "provider": "aws",
       "name": "Llama 3.1 70B Instruct",
@@ -1102,6 +1162,51 @@
       },
       "limits": {}
     },
+    "mistral.devstral-2-123b": {
+      "provider": "aws",
+      "name": "Devstral 2 123B",
+      "pricing": {
+        "input": 0.4,
+        "output": 2.0
+      },
+      "limits": {}
+    },
+    "mistral.magistral-small-2509": {
+      "provider": "aws",
+      "name": "Magistral Small 2509",
+      "pricing": {
+        "input": 0.5,
+        "output": 1.5
+      },
+      "limits": {}
+    },
+    "mistral.ministral-3-14b-instruct": {
+      "provider": "aws",
+      "name": "Ministral 14B 3.0",
+      "pricing": {
+        "input": 0.2,
+        "output": 0.2
+      },
+      "limits": {}
+    },
+    "mistral.ministral-3-3b-instruct": {
+      "provider": "aws",
+      "name": "Ministral 3B 3.0",
+      "pricing": {
+        "input": 0.1,
+        "output": 0.1
+      },
+      "limits": {}
+    },
+    "mistral.ministral-3-8b-instruct": {
+      "provider": "aws",
+      "name": "Ministral 8B 3.0",
+      "pricing": {
+        "input": 0.15,
+        "output": 0.15
+      },
+      "limits": {}
+    },
     "mistral.mistral-7b-instruct-v0:2": {
       "provider": "aws",
       "name": "Mistral 7B Instruct",
@@ -1117,6 +1222,15 @@
       "pricing": {
         "input": 4.0,
         "output": 12.0
+      },
+      "limits": {}
+    },
+    "mistral.mistral-large-3-675b-instruct": {
+      "provider": "aws",
+      "name": "Mistral Large 3",
+      "pricing": {
+        "input": 0.5,
+        "output": 1.5
       },
       "limits": {}
     },
@@ -1144,6 +1258,24 @@
       "pricing": {
         "input": 2.0,
         "output": 6.0
+      },
+      "limits": {}
+    },
+    "mistral.voxtral-mini-3b-2507": {
+      "provider": "aws",
+      "name": "Voxtral Mini 3B 2507",
+      "pricing": {
+        "input": 0.04,
+        "output": 0.04
+      },
+      "limits": {}
+    },
+    "mistral.voxtral-small-24b-2507": {
+      "provider": "aws",
+      "name": "Voxtral Small 24B 2507",
+      "pricing": {
+        "input": 0.1,
+        "output": 0.3
       },
       "limits": {}
     },
@@ -1731,13 +1863,156 @@
       "name": "DeepSeek V4 Pro",
       "description": "DeepSeek-V4-Pro. Supports both non-thinking and thinking (default) modes, JSON output, tool calls, chat prefix completion, and FIM completion (non-thinking only).",
       "pricing": {
-        "input": 1.74,
-        "output": 3.48,
-        "cache_read": 0.0145
+        "input": 0.435,
+        "output": 0.87,
+        "cache_read": 0.003625
       },
       "limits": {
         "context_window": 1000000.0
       }
+    },
+    "Qwen/Qwen3-14B-FP8": {
+      "provider": "doubleword",
+      "name": "Qwen3 14B",
+      "pricing": {
+        "input": 0.05,
+        "output": 0.6
+      },
+      "limits": {}
+    },
+    "Qwen/Qwen3-Embedding-8B": {
+      "provider": "doubleword",
+      "name": "Qwen3 Embedding 8B",
+      "pricing": {
+        "input": 0.04
+      },
+      "limits": {}
+    },
+    "Qwen/Qwen3-VL-235B-A22B-Instruct-FP8": {
+      "provider": "doubleword",
+      "name": "Qwen3 VL 235B A22B Instruct",
+      "pricing": {
+        "input": 0.6,
+        "output": 1.2
+      },
+      "limits": {}
+    },
+    "Qwen/Qwen3-VL-30B-A3B-Instruct-FP8": {
+      "provider": "doubleword",
+      "name": "Qwen3 VL 30B A3B Instruct",
+      "pricing": {
+        "input": 0.16,
+        "output": 0.8
+      },
+      "limits": {}
+    },
+    "Qwen/Qwen3.5-35B-A3B-FP8": {
+      "provider": "doubleword",
+      "name": "Qwen3.5 35B A3B",
+      "pricing": {
+        "input": 0.25,
+        "output": 2.0
+      },
+      "limits": {}
+    },
+    "Qwen/Qwen3.5-397B-A17B": {
+      "provider": "doubleword",
+      "name": "Qwen3.5 397B A17B",
+      "pricing": {
+        "input": 0.6,
+        "output": 3.6
+      },
+      "limits": {}
+    },
+    "Qwen/Qwen3.5-9B": {
+      "provider": "doubleword",
+      "name": "Qwen3.5 9B",
+      "pricing": {
+        "input": 0.08,
+        "output": 0.7
+      },
+      "limits": {}
+    },
+    "Qwen/Qwen3.6-35B-A3B-FP8": {
+      "provider": "doubleword",
+      "name": "Qwen3.6 35B A3B",
+      "pricing": {
+        "input": 0.25,
+        "output": 2.0
+      },
+      "limits": {}
+    },
+    "deepseek-ai/DeepSeek-V4-Flash": {
+      "provider": "doubleword",
+      "name": "DeepSeek V4 Flash",
+      "pricing": {
+        "input": 0.14,
+        "output": 0.28
+      },
+      "limits": {}
+    },
+    "deepseek-ai/DeepSeek-V4-Pro": {
+      "provider": "doubleword",
+      "name": "DeepSeek V4 Pro",
+      "pricing": {
+        "input": 1.74,
+        "output": 3.48
+      },
+      "limits": {}
+    },
+    "google/gemma-4-31B-it": {
+      "provider": "doubleword",
+      "name": "Gemma 4 31B IT",
+      "pricing": {
+        "input": 0.14,
+        "output": 0.4
+      },
+      "limits": {}
+    },
+    "mistralai/Devstral-2-123B-Instruct-2512": {
+      "provider": "doubleword",
+      "name": "Devstral 2 123B Instruct 2512",
+      "pricing": {
+        "input": 0.4,
+        "output": 2.0
+      },
+      "limits": {}
+    },
+    "moonshotai/Kimi-K2.6": {
+      "provider": "doubleword",
+      "name": "Kimi K2.6",
+      "pricing": {
+        "input": 0.95,
+        "output": 4.0
+      },
+      "limits": {}
+    },
+    "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4": {
+      "provider": "doubleword",
+      "name": "Nemotron 3 Super 120B A12B",
+      "pricing": {
+        "input": 0.3,
+        "output": 0.75
+      },
+      "limits": {}
+    },
+    "openai/gpt-oss-20b": {
+      "provider": "doubleword",
+      "name": "GPT OSS 20B",
+      "pricing": {
+        "input": 0.04,
+        "output": 0.3
+      },
+      "limits": {}
+    },
+    "zai-org/GLM-5.1-FP8": {
+      "provider": "doubleword",
+      "name": "GLM 5.1",
+      "pricing": {
+        "input": 1.4,
+        "output": 4.4
+      },
+      "limits": {}
     },
     "deepseek-r1-0528": {
       "provider": "fireworks",
@@ -11525,8 +11800,8 @@
   },
   "model_aliases": {},
   "stats": {
-    "total_providers": 30,
-    "total_models": 1200,
+    "total_providers": 31,
+    "total_models": 1227,
     "total_aliases": 0
   }
 }

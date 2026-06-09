@@ -13,6 +13,6 @@
     "@aws-sdk/client-bedrock": "^3.1063.0",
     "@aws-sdk/client-bedrock-runtime": "^3.1063.0",
     "@mariozechner/pi-coding-agent": "^0.73.1",
-    "@z-grc/node": "file:../packages/node"
+    "@zeb_labs/zgrc": "file:../packages/node"
   }
 }

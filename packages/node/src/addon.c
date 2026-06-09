@@ -19,27 +19,34 @@ static int get_string(napi_env env, napi_value val, char *buf,
 }
 
 static napi_value napi_init(napi_env env, napi_callback_info info) {
-  size_t argc = 2;
-  napi_value argv[2];
+  size_t argc = 3;
+  napi_value argv[3];
   napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
 
   if (argc < 2)
-    return throw_error(env, "init requires (apiKey, pricingFile)");
+    return throw_error(env, "init requires (apiKey, pricingFile, appName?)");
 
   char api_key[2048];
   char pricing_file[1024];
+  char app_name[256] = {0};
 
   if (get_string(env, argv[0], api_key, sizeof(api_key)) != 0)
     return throw_error(env, "apiKey must be a string");
   if (get_string(env, argv[1], pricing_file, sizeof(pricing_file)) != 0)
     return throw_error(env, "pricingFile must be a string");
 
+  // Optional app_name parameter (defaults to env var or process title)
+  if (argc >= 3) {
+    get_string(env, argv[2], app_name, sizeof(app_name));
+  }
+
   if (g_interceptor) {
     interceptor_free(g_interceptor);
     g_interceptor = NULL;
   }
 
-  g_interceptor = interceptor_init(api_key, pricing_file);
+  g_interceptor =
+      interceptor_init(api_key, pricing_file, app_name[0] ? app_name : NULL);
 
   napi_value result;
   napi_get_boolean(env, g_interceptor != NULL, &result);

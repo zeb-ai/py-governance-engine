@@ -14,7 +14,8 @@ int main() {
       "D-hGYzbJQuTgAWvZa6vXWj_71PcnLlvqTpu7VJqWau__"
       "uvxGSpyQHUcUcQlDbMtoz5l88EIS4P4Cmt4qiw";
 
-  Interceptor *ctx = interceptor_init(api_key, "data/merged_pricing.json");
+  Interceptor *ctx = interceptor_init(api_key, "data/merged_pricing.json",
+                                      "test-interceptor-app");
   if (!ctx) {
     printf("Failed to init interceptor\n");
     return 1;

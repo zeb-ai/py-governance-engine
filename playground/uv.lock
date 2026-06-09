@@ -265,30 +265,30 @@ wheels = [
 
 [[package]]
 name = "boto3"
-version = "1.43.24"
+version = "1.43.25"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "botocore" },
     { name = "jmespath" },
     { name = "s3transfer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f3/8f/94dfa39ec618ecb2fe5b5b79428c95100e3ae3c1aa5083c283dd3cfb5ecd/boto3-1.43.24.tar.gz", hash = "sha256:ba5afa266bf7265e0c1a454fcfd48bffe5939cb16ed223bebc669c3dc8ee0bc8", size = 113154, upload-time = "2026-06-05T19:30:01.635Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/d0/9154ca8bd6051a55102a5c8bb077b15959681a5f4dcf614a423afaefdf83/boto3-1.43.25.tar.gz", hash = "sha256:91f3deb0dfc32403a187f57c19a78dc8e38d25ee2967a511fa8905acf00cc074", size = 113169, upload-time = "2026-06-08T19:49:27.877Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/b7/e66c9b37b96153aa371fe48d24194151293f6577dd3eaa1fc146c281456d/boto3-1.43.24-py3-none-any.whl", hash = "sha256:b18ef745274ef548a9660d733d985d4a971b16bd8a6af88165ea9d0e40913b86", size = 140536, upload-time = "2026-06-05T19:29:58.968Z" },
+    { url = "https://files.pythonhosted.org/packages/82/89/d27be8bb3dc72a6d1d1d8f9e039e89ae86827c05c47385d78a1d964571f4/boto3-1.43.25-py3-none-any.whl", hash = "sha256:e4e2515533a1593eb2302e9eda5baf4e1510abb219b41dd0db4696cc21bc5039", size = 140538, upload-time = "2026-06-08T19:49:25.427Z" },
 ]
 
 [[package]]
 name = "botocore"
-version = "1.43.24"
+version = "1.43.25"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jmespath" },
     { name = "python-dateutil" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/78/67/55d0611b341482bc9649d16df765f849a1862184ac3709356decf632279f/botocore-1.43.24.tar.gz", hash = "sha256:0c02f2b40e99419d496ece0ea2dcdedb5c45998c16fd1674276c7dbb30767a16", size = 15471690, upload-time = "2026-06-05T19:29:33.731Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ad/03/9dc102506c3ebc3758a9e8602e7dafb78789993bcac5daa82398b56ae884/botocore-1.43.25.tar.gz", hash = "sha256:faab543ca6ae6f8fdc5f6318240bebfb8c05cd25823715fe02aad7edf0c4b383", size = 15478403, upload-time = "2026-06-08T19:49:13.505Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c9/b7/360b5afe74c4d7cff871ea6e8f335e2e11de2945c9deb1eea6438f49faa2/botocore-1.43.24-py3-none-any.whl", hash = "sha256:42903b4bfafd8f15a735ed940473f28e4ba21b2ea67a9b9aaa11dfa7fcb19fd5", size = 15155182, upload-time = "2026-06-05T19:29:29.457Z" },
+    { url = "https://files.pythonhosted.org/packages/41/a5/6ceef332b18c348be9ec26aeff0da5b3f7ea046bf3fc654feecf6974c4d9/botocore-1.43.25-py3-none-any.whl", hash = "sha256:ef1d210ac9085ea0e5fc6ad2e63f0c7e97103c74f52156bf944289aaf6278d1b", size = 15161721, upload-time = "2026-06-08T19:49:08.751Z" },
 ]
 
 [[package]]
@@ -555,7 +555,7 @@ wheels = [
 
 [[package]]
 name = "cyclopts"
-version = "4.16.1"
+version = "4.17.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -563,9 +563,9 @@ dependencies = [
     { name = "rich" },
     { name = "rich-rst" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/34/07/bf61d13de86d96a4c46aff00c9ca0eced44bcc8c3e16280605c1253e5720/cyclopts-4.16.1.tar.gz", hash = "sha256:8aa47bf92a5fb33abca5af05e576eecdb0d2f79893ad29238046df78370fc4a8", size = 181196, upload-time = "2026-05-25T15:29:08.518Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/96/b7/2e64e26e7189c2f0f88cea467d068ec968f2fa24628b0ffb93132a0f2b14/cyclopts-4.17.0.tar.gz", hash = "sha256:6b3231f18b404879e978214ef26fa174e8b505bd0f2117290b4135560666004b", size = 181338, upload-time = "2026-06-09T13:41:26.801Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/00/8d/7f362c2fb8ef4decd2160bc24d4292c6ca658cc6d9a161b89ca5122bbdbf/cyclopts-4.16.1-py3-none-any.whl", hash = "sha256:617795392c4113a2c2cc7af716f20244900e87f23daa05442d1268d81472a592", size = 219020, upload-time = "2026-05-25T15:29:09.646Z" },
+    { url = "https://files.pythonhosted.org/packages/ec/26/1614f15b8ea89ee201a2484ea5bede7319a2b07c796c321ffdadd705559e/cyclopts-4.17.0-py3-none-any.whl", hash = "sha256:6ee947c9f3bbe9679b9fa9cea1bb327298db80b302df62d7f1d1bd82726508e0", size = 219147, upload-time = "2026-06-09T13:41:24.97Z" },
 ]
 
 [[package]]
@@ -1853,9 +1853,6 @@ wheels = [
 name = "playground"
 version = "0.1.0"
 source = { virtual = "." }
-dependencies = [
-    { name = "z-grc" },
-]
 
 [package.dev-dependencies]
 dev = [
@@ -1863,10 +1860,10 @@ dev = [
     { name = "python-dotenv" },
     { name = "strands-agents" },
     { name = "strands-agents-tools" },
+    { name = "z-grc" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "z-grc", specifier = ">=0.0.40" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -1874,6 +1871,7 @@ dev = [
     { name = "python-dotenv", specifier = ">=1.2.2" },
     { name = "strands-agents", specifier = ">=1.42.0" },
     { name = "strands-agents-tools", specifier = ">=0.8.0" },
+    { name = "z-grc", path = "/Users/samrat/Projects/c-z-grc/packages/python/dist/z_grc-0.0.41-cp312-cp312-macosx_11_0_arm64.whl" },
 ]
 
 [[package]]
@@ -2970,14 +2968,14 @@ wheels = [
 
 [[package]]
 name = "tqdm"
-version = "4.68.1"
+version = "4.68.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/06/b3/36c8ecf72e8925200671613332db156d84b99b3aee742a41c1938ebb0808/tqdm-4.68.1.tar.gz", hash = "sha256:fc163d96b287bd031e1aa24421ce4411b25559bd0a1be4fe649bdaa4d2c02bf5", size = 171236, upload-time = "2026-06-05T17:23:15.267Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/85/05/0d5260f1f1ca784f4a4a0def9cbe6affe587f5b4025328d446c3d67765f4/tqdm-4.68.2.tar.gz", hash = "sha256:89c230e8dbc67c7615c142487111222f878c77427ea09549960f62389e258add", size = 171923, upload-time = "2026-06-09T13:26:42.539Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/47/aa/218a0eb34de1f753c83e4d0d1c8e7c4cef27f20dcb8342e024f63a80dc86/tqdm-4.68.1-py3-none-any.whl", hash = "sha256:fea4a90e4023f764914569f7802a297277c5ab1a66be5144143e142e1a4031d8", size = 78354, upload-time = "2026-06-05T17:23:13.654Z" },
+    { url = "https://files.pythonhosted.org/packages/eb/75/1a0392bcc21c44dcdf87b3cf2d137e7829be2c083a1e38d44efca3d57a16/tqdm-4.68.2-py3-none-any.whl", hash = "sha256:d4240441fb5353290b87d6a85968c9decc131a99b8c7faa28269d829de669ede", size = 78578, upload-time = "2026-06-09T13:26:40.731Z" },
 ]
 
 [[package]]
@@ -3402,24 +3400,21 @@ wheels = [
 
 [[package]]
 name = "z-grc"
-version = "0.0.40"
-source = { registry = "https://pypi.org/simple" }
+version = "0.0.41"
+source = { path = "/Users/samrat/Projects/c-z-grc/packages/python/dist/z_grc-0.0.41-cp312-cp312-macosx_11_0_arm64.whl" }
 dependencies = [
     { name = "cffi" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a0/1a/2191741f64370c24f493f171e591ffddacb75272c7fc0922aef51f066543/z_grc-0.0.40.tar.gz", hash = "sha256:58c3c4843586e9cdba439e55b66761caa63d95f0047cc35e2b36d493660af3c5", size = 173613, upload-time = "2026-06-08T11:55:48.954Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/16/57/b64dfe6cc71668bd3c75dfb5344afaa7028889d0512d04a8f2482ef5ddac/z_grc-0.0.40-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:af3f789ed321a0992fed3b88435da7bb606689a5f029ae24b483b0f15571d297", size = 182689, upload-time = "2026-06-08T11:55:31.26Z" },
-    { url = "https://files.pythonhosted.org/packages/df/74/dc4608869959842c5b2b07b23c22fd67a257ce5b5b13f07a78ccc66d031a/z_grc-0.0.40-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:f525947e3f6a79c61be269d96e03d42ff46cf967419d496a554800d38aef8946", size = 164400, upload-time = "2026-06-08T11:55:32.913Z" },
-    { url = "https://files.pythonhosted.org/packages/47/56/9aa64279a99955d773303c68488ef56a5d17015bb503bf8f1be76b4fffd8/z_grc-0.0.40-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0d3ba9ef79d84175ba6adc3c798d9d329364e3a5a12d637469a643337e15320a", size = 4296776, upload-time = "2026-06-08T11:55:34.705Z" },
-    { url = "https://files.pythonhosted.org/packages/89/00/f00ce31f2a70bbd0a61921228522b768984cb4c558cf10f97e13c76c7762/z_grc-0.0.40-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:65e428cdc254546f04c316bee7857512480524e2f6f6ea194bf00d9a35d421e5", size = 4624787, upload-time = "2026-06-08T11:55:36.935Z" },
-    { url = "https://files.pythonhosted.org/packages/d2/28/bdc67ca9c1080e474dcfce726280991717dd5cc354850d69895d6115f75c/z_grc-0.0.40-cp312-cp312-win_amd64.whl", hash = "sha256:10398ac802bb5261013b7c2e0e926a0b721d7af6346871ef28e3093418396b34", size = 335974, upload-time = "2026-06-08T11:55:38.985Z" },
-    { url = "https://files.pythonhosted.org/packages/88/46/ed4d7c2661881acb800c5928050d706b912a8c97207808389fdb7fad4765/z_grc-0.0.40-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:3edd1dbbc53222969c14eabb67daf05967f40a2319831481aee341aa07ccfdde", size = 182688, upload-time = "2026-06-08T11:55:40.447Z" },
-    { url = "https://files.pythonhosted.org/packages/2a/5c/3be8d43cb0cc27af181241b930f5c0bf3b1daf7cd7f9f129a42866b2e340/z_grc-0.0.40-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:f00501c37188052bd46eb0ea6c3a735e7ebbcce5eedc88b266f97f35bb8d39ff", size = 164405, upload-time = "2026-06-08T11:55:41.868Z" },
-    { url = "https://files.pythonhosted.org/packages/58/99/ef952df78f2c0baaafb51c1d39da025a7eef0444a9480a15a4406ae58e8e/z_grc-0.0.40-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:de6b40563c8c154460ff65c2b2ae017d9498b223a109cbb1383dfebf1f9a997b", size = 4296681, upload-time = "2026-06-08T11:55:43.804Z" },
-    { url = "https://files.pythonhosted.org/packages/22/00/171136439c35e35d7017b6a2eb51bdb59b2a620b60b3f3814d9fa404cad6/z_grc-0.0.40-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bd5cfe125d8c13bf22261e78e466534fb63a7fee556aec3319133464534be99c", size = 4624675, upload-time = "2026-06-08T11:55:45.883Z" },
-    { url = "https://files.pythonhosted.org/packages/c2/42/ecc7685803bf6e5d3e6719b7b2b02de8d123582c4427267507a47c016aad/z_grc-0.0.40-cp313-cp313-win_amd64.whl", hash = "sha256:1e179089fb3cedfc9c0cc0dbebcef8d7bdad0f1ad2f133865b37112d7e53113f", size = 335973, upload-time = "2026-06-08T11:55:47.604Z" },
+    { filename = "z_grc-0.0.41-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:12e431d0d481296ae6afbff42eeb4978322a2c62dbb55dde9e62f44a5bfc0665" },
 ]
+
+[package.metadata]
+requires-dist = [
+    { name = "cffi", specifier = ">=2.0.0" },
+    { name = "setuptools", marker = "extra == 'dev'", specifier = ">=82.0.1" },
+]
+provides-extras = ["dev"]
 
 [[package]]
 name = "zipp"

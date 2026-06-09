@@ -13,11 +13,11 @@ from .core.native import (
 _instance = None
 
 
-def init(api_key: str):
+def init(api_key: str, app_name: str = None):
     global _instance
     if _instance is not None:
         return
-    _instance = Intercept(api_key)
+    _instance = Intercept(api_key, app_name)
 
 
 def free():

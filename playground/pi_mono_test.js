@@ -1,4 +1,4 @@
-import grc from "@z-grc/node";
+import grc from "@zeb_labs/zgrc";
 
 grc.init(process.env.API_KEY);
 grc.enableLogging(grc.LOG_DEBUG, "./zgrc_node.log");
@@ -94,7 +94,7 @@ callPiMono("Hello, what can you help me with?", {
   systemPrompt: "You are a helpful coding assistant.",
   onChunk: (chunk) => process.stdout.write(chunk),
 })
-  .then((response) => {
+  .then(() => {
     console.log("\n\nDone.");
   })
   .catch((err) => {

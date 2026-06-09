@@ -14,14 +14,19 @@ LOG_WARN = 2
 LOG_ERROR = 3
 
 
-def init(api_key: str):
+def init(api_key: str, app_name: str = None):
     global _ctx
     if _ctx is not None:
         return
 
     pricing_file = _DEFAULT_PRICING
 
-    _ctx = lib.interceptor_init(api_key.encode(), pricing_file.encode())
+    if app_name is None:
+        app_name = "python-app"
+
+    _ctx = lib.interceptor_init(
+        api_key.encode(), pricing_file.encode(), app_name.encode()
+    )
     if _ctx == ffi.NULL:
         _ctx = None
         raise RuntimeError("Failed to initialize z-grc")

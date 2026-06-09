@@ -1,3 +1,4 @@
+/* global setImmediate */
 const tls = require("tls");
 const http2 = require("http2");
 const zlib = require("zlib");
@@ -102,10 +103,27 @@ function instrumentH2Stream(stream, origin, headers) {
     if (native && body.trim()) {
       try {
         const result = native.interceptRequest(url, body);
+        if (result.allowed === 0) {
+          const err = new Error(
+            `Quota exceeded. Used: ${result.usedQuota.toFixed(4)}, Remaining: ${result.remainingQuota.toFixed(4)}`,
+          );
+          err.name = "QuotaExceededError";
+          err.usedQuota = result.usedQuota;
+          err.remainingQuota = result.remainingQuota;
+
+          // Destroy stream asynchronously to avoid corrupting Node.js internal state
+          setImmediate(() => {
+            stream.emit("error", err);
+            stream.destroy();
+          });
+          return;
+        }
         if (result.allowed === 1) {
           reqBodySent = true;
         }
-      } catch (_) {}
+      } catch (err) {
+        console.error("[z-grc] Error in interceptRequest:", err);
+      }
     }
 
     return origEnd(chunk, encoding, callback);
@@ -336,10 +354,27 @@ function handleTlsSend(socket, data) {
     sendBuffers.delete(sid);
     try {
       const reqResult = native.interceptRequest(fullUrl, body);
+      if (reqResult.allowed === 0) {
+        const err = new Error(
+          `Quota exceeded. Used: ${reqResult.usedQuota.toFixed(4)}, Remaining: ${reqResult.remainingQuota.toFixed(4)}`,
+        );
+        err.name = "QuotaExceededError";
+        err.usedQuota = reqResult.usedQuota;
+        err.remainingQuota = reqResult.remainingQuota;
+
+        // Destroy socket asynchronously to avoid corrupting Node.js internal state
+        setImmediate(() => {
+          socket.emit("error", err);
+          socket.destroy();
+        });
+        return;
+      }
       if (reqResult.allowed === 1) {
         sockReqBody.set(sid, true);
       }
-    } catch (_) {}
+    } catch (err) {
+      console.error("[z-grc] Error in interceptRequest:", err);
+    }
   }
 }
 

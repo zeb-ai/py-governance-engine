@@ -4,6 +4,7 @@
 
 #include "../include/interceptor.h"
 #include "../include/logger.h"
+#include "../include/otel.h"
 #include "../lib/yyjson/yyjson.h"
 #include <stddef.h>
 #include <stdlib.h>
@@ -12,7 +13,8 @@
 #include <regex.h>
 #endif
 
-Interceptor *interceptor_init(const char *api_key, const char *pricing_file) {
+Interceptor *interceptor_init(const char *api_key, const char *pricing_file,
+                              const char *app_name) {
   if (!api_key || !pricing_file)
     return nullptr;
 
@@ -53,11 +55,22 @@ Interceptor *interceptor_init(const char *api_key, const char *pricing_file) {
 
   Logger *logger = nullptr;
 
+  OtelExporter *otel = nullptr;
+  if (auth->opentelemetry[0] != '\0') {
+    const char *service_name = app_name ? app_name : "unknown-service";
+    otel = otel_exporter_init(auth->opentelemetry, service_name, app_name,
+                              auth->user_id, auth->group_id);
+  }
+
   ctx->auth = auth;
   ctx->calculator = calculator;
   ctx->quota = quota;
   ctx->parsers = parsers;
   ctx->logger = logger;
+  ctx->otel = otel;
+  ctx->current_trace_id[0] = '\0';
+  ctx->current_span_id[0] = '\0';
+  ctx->request_start_ns = 0;
   ctx->cached_used = -1;
   ctx->cached_remaining = -1;
 
@@ -114,8 +127,11 @@ RequestResult intercept_request(Interceptor *ctx, const char *url,
     return result;
   }
 
-  // Check quota (fetch from server only on first call)
-  if (ctx->cached_remaining < 0) {
+  // Check quota when there is no cache
+  // when the quota is exceeded, calling again coz need cost may be updated
+  // while application running bcoz we have cache for request checking when we
+  // get the response also return same structure of data (remaining)
+  if (ctx->cached_remaining < 0 || ctx->cached_remaining <= 0) {
     Quota quota = quota_client_get(ctx->quota);
     ctx->cached_used = quota.used_quota;
     ctx->cached_remaining = quota.remaining_quota;
@@ -143,6 +159,13 @@ RequestResult intercept_request(Interceptor *ctx, const char *url,
         strncpy(result.model, yyjson_get_str(model), sizeof(result.model) - 1);
       yyjson_doc_free(doc);
     }
+  }
+
+  // starting span tracking >>>
+  if (ctx->otel) {
+    otel_generate_trace_id(ctx->current_trace_id);
+    otel_generate_span_id(ctx->current_span_id);
+    ctx->request_start_ns = otel_now_ns();
   }
 
   logger_log(ctx->logger, LOG_DEBUG, "request allowed, model=%s", result.model);
@@ -248,6 +271,94 @@ ResponseResult intercept_response(Interceptor *ctx, const char *url,
   result.used_quota = quota.used_quota;
   result.remaining_quota = quota.remaining_quota;
 
+  if (ctx->otel && ctx->current_trace_id[0] != '\0') {
+    OtelSpan span = {0};
+    strncpy(span.trace_id, ctx->current_trace_id, sizeof(span.trace_id) - 1);
+    strncpy(span.span_id, ctx->current_span_id, sizeof(span.span_id) - 1);
+    strncpy(span.name, "llm.completion", sizeof(span.name) - 1);
+    span.kind = OTEL_SPAN_KIND_CLIENT;
+    span.start_time_ns = ctx->request_start_ns;
+    span.end_time_ns = otel_now_ns();
+    span.status_code = 1; // OK
+
+    // Add comprehensive LLM attributes
+    span.attribute_count = 17;
+    span.attributes = malloc(span.attribute_count * sizeof(OtelAttribute));
+    if (span.attributes) {
+      int idx = 0;
+
+      // Provider and model
+      strncpy(span.attributes[idx].key, "llm.provider", 63);
+      strncpy(span.attributes[idx++].value, provider, 255);
+
+      strncpy(span.attributes[idx].key, "llm.model", 63);
+      strncpy(span.attributes[idx++].value, parsed.model, 255);
+
+      // Token usage
+      strncpy(span.attributes[idx].key, "llm.input_tokens", 63);
+      snprintf(span.attributes[idx++].value, 255, "%d",
+               parsed.usage.input_tokens);
+
+      strncpy(span.attributes[idx].key, "llm.output_tokens", 63);
+      snprintf(span.attributes[idx++].value, 255, "%d",
+               parsed.usage.output_tokens);
+
+      strncpy(span.attributes[idx].key, "llm.total_tokens", 63);
+      snprintf(span.attributes[idx++].value, 255, "%d", total_tokens);
+
+      strncpy(span.attributes[idx].key, "llm.cache_read_tokens", 63);
+      snprintf(span.attributes[idx++].value, 255, "%d",
+               parsed.usage.cache_read_tokens);
+
+      strncpy(span.attributes[idx].key, "llm.cache_write_tokens", 63);
+      snprintf(span.attributes[idx++].value, 255, "%d",
+               parsed.usage.cache_write_tokens);
+
+      // Cost breakdown
+      strncpy(span.attributes[idx].key, "llm.cost.total", 63);
+      snprintf(span.attributes[idx++].value, 255, "%.6f", cost.total_cost);
+
+      strncpy(span.attributes[idx].key, "llm.cost.input", 63);
+      snprintf(span.attributes[idx++].value, 255, "%.6f", cost.input_cost);
+
+      strncpy(span.attributes[idx].key, "llm.cost.output", 63);
+      snprintf(span.attributes[idx++].value, 255, "%.6f", cost.output_cost);
+
+      strncpy(span.attributes[idx].key, "llm.cost.cache_read", 63);
+      snprintf(span.attributes[idx++].value, 255, "%.6f", cost.cache_read_cost);
+
+      strncpy(span.attributes[idx].key, "llm.cost.cache_write", 63);
+      snprintf(span.attributes[idx++].value, 255, "%.6f",
+               cost.cache_write_cost);
+
+      // Quota information
+      strncpy(span.attributes[idx].key, "quota.used", 63);
+      snprintf(span.attributes[idx++].value, 255, "%.4f", quota.used_quota);
+
+      strncpy(span.attributes[idx].key, "quota.remaining", 63);
+      snprintf(span.attributes[idx++].value, 255, "%.4f",
+               quota.remaining_quota);
+
+      // User identification
+      strncpy(span.attributes[idx].key, "user.id", 63);
+      strncpy(span.attributes[idx++].value, ctx->auth->user_id, 255);
+
+      strncpy(span.attributes[idx].key, "group.id", 63);
+      strncpy(span.attributes[idx++].value, ctx->auth->group_id, 255);
+
+      // Request URL
+      strncpy(span.attributes[idx].key, "http.url", 63);
+      strncpy(span.attributes[idx++].value, url, 255);
+
+      otel_export_span(ctx->otel, &span);
+    }
+
+    // Reset span tracking for next request
+    ctx->current_trace_id[0] = '\0';
+    ctx->current_span_id[0] = '\0';
+    ctx->request_start_ns = 0;
+  }
+
   return result;
 }
 
@@ -255,6 +366,8 @@ void interceptor_free(Interceptor *ctx) {
   if (!ctx)
     return;
   logger_log(ctx->logger, LOG_INFO, "interceptor shutting down");
+  if (ctx->otel)
+    otel_exporter_free(ctx->otel);
   auth_token_free(ctx->auth);
   cost_calculator_free(ctx->calculator);
   quota_client_free(ctx->quota);

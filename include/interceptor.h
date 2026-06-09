@@ -7,6 +7,7 @@
 #include "auth_token.h"
 #include "cost_calculation.h"
 #include "logger.h"
+#include "otel.h"
 #include "quota_client.h"
 #include "response_parser.h"
 
@@ -16,6 +17,10 @@ typedef struct {
   QuotaClient *quota;
   ParserRegistry *parsers;
   Logger *logger;
+  OtelExporter *otel;
+  char current_trace_id[33];
+  char current_span_id[17];
+  uint64_t request_start_ns;
   double cached_used;
   double cached_remaining;
 } Interceptor;
@@ -35,7 +40,8 @@ typedef struct {
   double remaining_quota;
 } ResponseResult;
 
-Interceptor *interceptor_init(const char *api_key, const char *pricing_file);
+Interceptor *interceptor_init(const char *api_key, const char *pricing_file,
+                              const char *app_name);
 // need to expose in dev only, not planned for production usage
 // not implemented file size control and duplication
 void interceptor_enable_logging(Interceptor *ctx, LogLevel level,

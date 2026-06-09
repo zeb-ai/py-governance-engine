@@ -15,6 +15,11 @@ dependencies = [
     "cffi>=2.0.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "setuptools>=82.0.1",
+]
+
 
 [tool.setuptools]
 py-modules = ["core_build"]

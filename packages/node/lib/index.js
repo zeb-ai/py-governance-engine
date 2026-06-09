@@ -16,12 +16,13 @@ const DEFAULT_PRICING = path.join(
 
 let initialized = false;
 
-function init(apiKey, pricingFile) {
+function init(apiKey, pricingFile, appName) {
   if (!apiKey) {
     throw new Error("init requires an API key");
   }
   const file = pricingFile || DEFAULT_PRICING;
-  const result = native.init(apiKey, file);
+  const app = appName || "node-app";
+  const result = native.init(apiKey, file, app);
   if (!result) {
     throw new Error(
       "init failed: native init returned false (token decode or pricing file error)",

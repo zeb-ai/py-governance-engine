@@ -13,8 +13,8 @@ from ..utils.resolve_aws_arn import resolve_aws_arn
 
 
 class Intercept:
-    def __init__(self, api_key: str):
-        c_init(api_key)
+    def __init__(self, api_key: str, app_name: str = None):
+        c_init(api_key, app_name)
 
         self._orig_sendall = ssl.SSLSocket.sendall
         self._orig_recv_into = ssl.SSLSocket.recv_into

@@ -28,6 +28,12 @@ add_executable(
   src/cost_calculator.c
   src/quota_client.c
   src/response_parser.c
+  src/logger.c
+  src/otel_exporter.c
   lib/yyjson/yyjson.c
   lib/libb64/src/cdecode.c)
 target_link_libraries(test_interceptor CURL::libcurl ZLIB::ZLIB m)
+
+add_executable(test_otel test/test_otel.c src/otel_exporter.c
+                         lib/yyjson/yyjson.c)
+target_link_libraries(test_otel CURL::libcurl m)

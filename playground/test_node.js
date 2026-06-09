@@ -1,4 +1,4 @@
-import grc from "@z-grc/node";
+import grc from "@zeb_labs/zgrc";
 
 grc.init(process.env.API_KEY);
 grc.enableLogging(grc.LOG_DEBUG, "./zgrc_node.log");

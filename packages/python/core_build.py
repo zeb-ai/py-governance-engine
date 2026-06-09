@@ -41,7 +41,7 @@ ffibuilder.cdef(
         double remaining_quota;
     } ResponseResult;
 
-    Interceptor* interceptor_init(const char *api_key, const char *pricing_file);
+    Interceptor* interceptor_init(const char *api_key, const char *pricing_file, const char *app_name);
     void interceptor_enable_logging(Interceptor *ctx, LogLevel level, const char *path);
     RequestResult intercept_request(Interceptor *ctx, const char *url, const char *body, size_t body_len);
     ResponseResult intercept_response(Interceptor *ctx, const char *url, const char *body, size_t body_len);
@@ -56,6 +56,7 @@ sources = [
     root + "/src/auth_token.c",
     root + "/src/quota_client.c",
     root + "/src/response_parser.c",
+    root + "/src/otel_exporter.c",
     root + "/lib/yyjson/yyjson.c",
     root + "/lib/libb64/src/cdecode.c",
 ]
