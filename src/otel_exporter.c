@@ -15,7 +15,7 @@
 
 uint64_t otel_now_ns(void) {
   struct timespec ts;
-  clock_gettime(CLOCK_REALTIME, &ts);
+  timespec_get(&ts, TIME_UTC);
   return (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec;
 }
 

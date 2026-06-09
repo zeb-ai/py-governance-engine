@@ -79,7 +79,7 @@ wheels = [
 
 [[package]]
 name = "z-grc"
-version = "0.0.41"
+version = "0.0.42"
 source = { editable = "." }
 dependencies = [
     { name = "cffi" },
