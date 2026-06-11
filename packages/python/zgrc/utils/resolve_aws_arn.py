@@ -38,6 +38,7 @@ def resolve_aws_arn(url: str) -> str | None:
         )
         if (raw_arn := _extract_arn_from_url(url)) is not None:
             profile = client.get_inference_profile(inferenceProfileIdentifier=raw_arn)
+            print(profile)
             model_arn = profile["models"][1]["modelArn"]
             match = re.search(r"foundation-model/(.+)$", model_arn)
             if (result := match.group(1) if match else None) is not None:
@@ -55,7 +56,7 @@ def resolve_aws_arn(url: str) -> str | None:
 
 if __name__ == "__main__":
     response = resolve_aws_arn(
-        "bedrock_url_with_arn"  # should be actual arn url / model calling api
+        "https://bedrock-runtime.us-east-1.amazonaws.com/model/arn%3Aaws%3Abedrock%3Aus-east-1%3A926251048803%3Aapplication-inference-profile%2F7j95b0rxjwhy/invokehttps://bedrock-runtime.us-east-1.amazonaws.com/model/arn%3Aaws%3Abedrock%3Aus-east-1%3A926251048803%3Aapplication-inference-profile%2F7j95b0rxjwhy/invoke"  # should be actual arn url / model calling api
     )
     print(response)
 

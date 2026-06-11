@@ -228,12 +228,25 @@ ResponseResult intercept_response(Interceptor *ctx, const char *url,
       }
       parsed.model[j] = '\0';
 
-      // us.anthropic.xxx → regional.anthropic.xxx for pricing lookup
-      const char *dot = strchr(parsed.model, '.');
-      if (dot) {
+      // Normalize to regional.<provider>.<model> for pricing lookup.
+      //   us.anthropic.xxx          -> regional.anthropic.xxx  (strip region)
+      //   anthropic.xxx             -> regional.anthropic.xxx  (just prepend)
+      static const char *region_prefixes[] = {"us.", "eu.",     "apac.",
+                                              "ap.", "us-gov.", nullptr};
+      const char *model_start = parsed.model;
+      for (int i = 0; region_prefixes[i]; i++) {
+        size_t plen = strlen(region_prefixes[i]);
+        if (strncmp(parsed.model, region_prefixes[i], plen) == 0) {
+          model_start = parsed.model + plen;
+          break;
+        }
+      }
+      if (strncmp(model_start, "regional.", 9) != 0) {
         char regional_model[256];
-        snprintf(regional_model, sizeof(regional_model), "regional%s", dot);
+        snprintf(regional_model, sizeof(regional_model), "regional.%s",
+                 model_start);
         strncpy(parsed.model, regional_model, sizeof(parsed.model) - 1);
+        parsed.model[sizeof(parsed.model) - 1] = '\0';
       }
     }
   }

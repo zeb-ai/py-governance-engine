@@ -1,449 +1,483 @@
 /* global setImmediate */
+"use strict";
+
 const tls = require("tls");
 const http2 = require("http2");
 const zlib = require("zlib");
-const { resolveAwsArn, isArnUrl } = require("./resolve-arn");
+const { resolveAwsArn } = require("./resolve-arn");
 
-let native = null;
-let origTlsConnect = null;
-let origH2Connect = null;
-let patched = false;
-
-function activate(nativeModule) {
-  native = nativeModule;
-  patch();
-}
-
-function deactivate() {
-  if (origTlsConnect) {
-    tls.connect = origTlsConnect;
-    origTlsConnect = null;
+class Util {
+  static toBuf(chunk) {
+    return Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
   }
-  if (origH2Connect) {
-    http2.connect = origH2Connect;
-    origH2Connect = null;
+
+  static quotaError(result) {
+    const used = Number(result.usedQuota || 0).toFixed(4);
+    const remaining = Number(result.remainingQuota || 0).toFixed(4);
+    const err = new Error(
+      `Quota exceeded. Used: ${used}, Remaining: ${remaining}`,
+    );
+    err.name = "QuotaExceededError";
+    err.usedQuota = result.usedQuota;
+    err.remainingQuota = result.remainingQuota;
+    return err;
   }
-  patched = false;
-  native = null;
+
+  static decompress(buf, encoding) {
+    if (!encoding) return buf;
+    try {
+      switch (String(encoding).toLowerCase()) {
+        case "gzip":
+          return zlib.gunzipSync(buf);
+        case "deflate":
+          return zlib.inflateSync(buf);
+        case "br":
+          return zlib.brotliDecompressSync(buf);
+        default:
+          return buf;
+      }
+    } catch {
+      return buf;
+    }
+  }
+
+  static mapModelUrl(url, model, prefix = "") {
+    if (!model) return url;
+    return url.replace(/\/model\/[^/]+\//, `/model/${prefix}${model}/`);
+  }
 }
 
-function patch() {
-  if (patched) return;
-  patched = true;
+class ArnResolver {
+  static ARN_PREFIX = "arn:aws:bedrock:";
+  // arn:aws:bedrock:<region>:<account?>:<resourceType>/<resourceId...>
+  static ARN_RE = /^arn:aws:bedrock:([a-z0-9-]+):\d*:([a-z-]+)\/(.+)$/i;
 
-  // Patch tls.connect for HTTP/1.1 traffic
-  origTlsConnect = tls.connect;
-  tls.connect = function (...args) {
-    const socket = origTlsConnect.apply(this, args);
-    instrumentTlsSocket(socket);
-    return socket;
-  };
+  constructor(bridge) {
+    this.bridge = bridge; // for logErr only
+    this.cache = new Map(); // arn -> Promise<string|null>
+    this.clients = new Map(); // region -> BedrockClient
+    this._sdk = undefined; // lazily resolved control-plane SDK (or null)
+    this._warnedNoSdk = false;
+  }
 
-  // Patch http2.connect for HTTP/2 traffic (AWS SDK v3)
-  origH2Connect = http2.connect;
-  http2.connect = function (...args) {
-    const session = origH2Connect.apply(this, args);
-    instrumentH2Session(session, args[0]);
-    return session;
-  };
+  static modelSegment(url) {
+    const m = String(url).match(/\/model\/([^/]+)\//);
+    if (!m) return null;
+    try {
+      return decodeURIComponent(m[1]);
+    } catch {
+      return m[1];
+    }
+  }
+
+  looksLikeArn(url) {
+    const seg = ArnResolver.modelSegment(url);
+    return !!seg && seg.startsWith(ArnResolver.ARN_PREFIX);
+  }
+
+  resolveModel(url) {
+    const arn = ArnResolver.modelSegment(url);
+    if (!arn || !arn.startsWith(ArnResolver.ARN_PREFIX))
+      return Promise.resolve(null);
+
+    if (!this.cache.has(arn)) {
+      const p = this._resolve(url, arn).then(
+        (model) => {
+          if (!model) this.cache.delete(arn);
+          return model;
+        },
+        (err) => {
+          this.bridge.logErr("arn.resolve", err);
+          this.cache.delete(arn);
+          return null;
+        },
+      );
+      this.cache.set(arn, p);
+    }
+    return this.cache.get(arn);
+  }
+
+  async _resolve(url, arn) {
+    try {
+      const fromModule = this._usable(await resolveAwsArn(url), arn);
+      // console.log(fromModule, ">>>>>>>")
+      if (fromModule) return fromModule;
+    } catch (err) {
+      this.bridge.logErr("arn.resolveAwsArn", err);
+    }
+    return this._resolveFromArn(arn);
+  }
+
+  _usable(model, arn) {
+    if (!model || typeof model !== "string") return null;
+    if (model === arn || model.startsWith(ArnResolver.ARN_PREFIX)) return null;
+    return model;
+  }
+
+  async _resolveFromArn(arn) {
+    const m = arn.match(ArnResolver.ARN_RE);
+    if (!m) return null;
+    const region = m[1];
+    const type = m[2];
+    const id = m[3];
+
+    if (type === "foundation-model") return id;
+    if (type === "inference-profile")
+      return id.replace(/^(us|eu|apac|us-gov)\./i, "");
+    if (type === "application-inference-profile")
+      return this._lookupProfile(arn, region);
+    return null;
+  }
+
+  async _lookupProfile(arn, region) {
+    const sdk = this._loadSdk();
+    if (!sdk) return null;
+
+    const out = await this._clientFor(region, sdk).send(
+      new sdk.GetInferenceProfileCommand({ inferenceProfileIdentifier: arn }),
+    );
+    const modelArn =
+      out && out.models && out.models[0] && out.models[0].modelArn;
+    if (!modelArn) return null;
+
+    const fm = modelArn.match(/foundation-model\/(.+)$/);
+    return fm ? fm[1] : modelArn;
+  }
+
+  _loadSdk() {
+    if (this._sdk !== undefined) return this._sdk;
+    try {
+      this._sdk = require("@aws-sdk/client-bedrock");
+    } catch {
+      this._sdk = null;
+      if (!this._warnedNoSdk) {
+        this._warnedNoSdk = true;
+        console.error(
+          "[z-grc] cannot resolve application-inference-profile ARNs: install " +
+            "@aws-sdk/client-bedrock and grant bedrock:GetInferenceProfile",
+        );
+      }
+    }
+    return this._sdk;
+  }
+
+  _clientFor(region, sdk) {
+    if (!this.clients.has(region))
+      this.clients.set(region, new sdk.BedrockClient({ region }));
+    return this.clients.get(region);
+  }
 }
 
-// --- HTTP/2 interception (AWS SDK v3, modern clients) ---
+class EventStreamParser {
+  static CONTENT_TYPE = "application/vnd.amazon.eventstream";
 
-function instrumentH2Session(session, authority) {
-  const origin =
-    typeof authority === "string" ? authority : authority.toString();
-
-  // Only instrument sessions to LLM provider hosts
-  if (!isLlmHost(origin)) return;
-
-  const origRequest = session.request.bind(session);
-  session.request = function (headers, options) {
-    const stream = origRequest(headers, options);
-    instrumentH2Stream(stream, origin, headers);
-    return stream;
+  static FIXED_HEADER_SIZES = {
+    0: 0,
+    1: 0,
+    2: 1,
+    3: 2,
+    4: 4,
+    5: 8,
+    8: 8,
+    9: 16,
   };
+  static TYPE_STRING = 7;
+  static TYPE_BYTES = 6;
+
+  static parseMetadata(buf) {
+    let offset = 0;
+    let metadataPayload = null;
+
+    while (offset + 12 <= buf.length) {
+      const totalLen = buf.readUInt32BE(offset);
+      if (totalLen < 16 || offset + totalLen > buf.length) break;
+
+      const headersLen = buf.readUInt32BE(offset + 4);
+      const headersStart = offset + 12;
+      const headersEnd = headersStart + headersLen;
+      const payloadStart = headersEnd;
+      const payloadEnd = offset + totalLen - 4; // exclude trailing message CRC
+
+      if (this._readEventType(buf, headersStart, headersEnd) === "metadata") {
+        metadataPayload = buf.slice(payloadStart, payloadEnd).toString("utf-8");
+      }
+
+      offset += totalLen;
+    }
+
+    return metadataPayload;
+  }
+
+  static _readEventType(buf, start, end) {
+    let pos = start;
+
+    while (pos < end) {
+      const nameLen = buf.readUInt8(pos);
+      pos += 1;
+      if (pos + nameLen > end) break;
+
+      const name = buf.slice(pos, pos + nameLen).toString("utf-8");
+      pos += nameLen;
+
+      const type = buf.readUInt8(pos);
+      pos += 1;
+
+      if (type === this.TYPE_STRING) {
+        const len = buf.readUInt16BE(pos);
+        pos += 2;
+        if (pos + len > end) break;
+        const value = buf.slice(pos, pos + len).toString("utf-8");
+        pos += len;
+        if (name === ":event-type") return value;
+      } else if (type === this.TYPE_BYTES) {
+        const len = buf.readUInt16BE(pos);
+        pos += 2 + len;
+      } else if (type in this.FIXED_HEADER_SIZES) {
+        pos += this.FIXED_HEADER_SIZES[type];
+      } else {
+        break; // unknown wire type
+      }
+    }
+
+    return null;
+  }
 }
 
-function isLlmHost(origin) {
-  return (
-    origin.includes("bedrock-runtime") ||
-    origin.includes("openai.com") ||
-    origin.includes("anthropic.com")
-  );
+class ChunkedDecoder {
+  static decode(data) {
+    const chunks = [];
+    let offset = 0;
+
+    while (offset < data.length) {
+      const crlf = data.indexOf("\r\n", offset);
+      if (crlf === -1) break;
+
+      const size = parseInt(
+        data.slice(offset, crlf).toString("utf-8").trim(),
+        16,
+      );
+      if (!size) break; // final chunk
+
+      const start = crlf + 2;
+      chunks.push(data.slice(start, start + size));
+      offset = start + size + 2; // skip trailing CRLF
+    }
+
+    return Buffer.concat(chunks);
+  }
 }
 
-function instrumentH2Stream(stream, origin, headers) {
-  const path = headers[":path"] || "/";
-  const url = origin.replace(/\/$/, "") + path;
+class InterceptorConfig {
+  constructor() {
+    /** Block requests when native reports quota exhausted (allowed === 0). */
+    this.enforceQuota = true;
+    /** A request is governed if its host contains any of these substrings. */
+    this.llmHosts = ["bedrock-runtime", "openai.com", "anthropic.com"];
+    /** Log swallowed internal errors to stderr. */
+    this.debug = false;
+    /**
+     * Prefix prepended to a resolved model id when rewriting an ARN url.
+     * Default "" sends the bare model id (matches Bedrock cost-table keys).
+     * Set to e.g. "regional." only if your native cost table is keyed that way.
+     */
+    this.arnModelPrefix = "";
+  }
 
-  const reqChunks = [];
-  const resChunks = [];
-  let reqBodySent = false;
-  let isEventStream = false;
+  isLlmHost(host) {
+    if (!host) return false;
+    return this.llmHosts.some((pattern) => host.includes(pattern));
+  }
+}
 
-  // Start ARN resolution early, store the promise
-  const arnPromise = isArnUrl(url) ? resolveAwsArn(url) : null;
+class NativeBridge {
+  static ALLOW = Object.freeze({ allowed: 1, usedQuota: 0, remainingQuota: 0 });
 
-  const origWrite = stream.write.bind(stream);
-  const origEnd = stream.end.bind(stream);
+  constructor(config) {
+    this.config = config;
+    this.native = null;
+  }
 
-  stream.write = function (chunk, encoding, callback) {
-    if (chunk)
-      reqChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-    return origWrite(chunk, encoding, callback);
-  };
+  set(native) {
+    this.native = native || null;
+  }
 
-  stream.end = function (chunk, encoding, callback) {
-    if (chunk)
-      reqChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  clear() {
+    this.native = null;
+  }
 
-    const body = Buffer.concat(reqChunks).toString("utf-8");
+  get active() {
+    return this.native != null;
+  }
 
-    if (native && body.trim()) {
-      try {
-        const result = native.interceptRequest(url, body);
-        if (result.allowed === 0) {
-          const err = new Error(
-            `Quota exceeded. Used: ${result.usedQuota.toFixed(4)}, Remaining: ${result.remainingQuota.toFixed(4)}`,
-          );
-          err.name = "QuotaExceededError";
-          err.usedQuota = result.usedQuota;
-          err.remainingQuota = result.remainingQuota;
+  logErr(where, err) {
+    if (this.config.debug) console.error(`[z-grc] ${where}:`, err);
+  }
 
-          // Destroy stream asynchronously to avoid corrupting Node.js internal state
-          setImmediate(() => {
-            stream.emit("error", err);
-            stream.destroy();
-          });
-          return;
+  /** @returns {{allowed:number, usedQuota:number, remainingQuota:number}} */
+  interceptRequest(url, body) {
+    if (!this.native) return NativeBridge.ALLOW;
+    try {
+      return this.native.interceptRequest(url, body) || NativeBridge.ALLOW;
+    } catch (err) {
+      this.logErr("interceptRequest", err);
+      return NativeBridge.ALLOW; // fail open
+    }
+  }
+
+  interceptResponse(url, body) {
+    if (!this.native) return;
+    try {
+      this.native.interceptResponse(url, body);
+    } catch (err) {
+      this.logErr("interceptResponse", err);
+    }
+  }
+}
+
+// Http2StreamTap — instruments ONE HTTP/2 request/response stream
+
+class Http2StreamTap {
+  /**
+   * @param {import("http2").ClientHttp2Stream} stream
+   * @param {string} origin   e.g. "https://bedrock-runtime.us-east-1.amazonaws.com"
+   * @param {object} headers  outbound request headers (incl. :path, :method)
+   * @param {{config: InterceptorConfig, bridge: NativeBridge, resolver: ArnResolver}} ctx
+   */
+  constructor(stream, origin, headers, ctx) {
+    this.stream = stream;
+    this.ctx = ctx;
+
+    const path = headers[":path"] || "/";
+    this.url = origin.replace(/\/$/, "") + path;
+
+    this.reqChunks = [];
+    this.resChunks = [];
+    this.allowed = false; // true once the request is mirrored & permitted
+    this.isEventStream = false;
+    this.resHeaders = null;
+    // Start ARN resolution early; awaited when the response finalizes.
+    this.modelPromise = ctx.resolver.looksLikeArn(this.url)
+      ? ctx.resolver.resolveModel(this.url)
+      : null;
+    this.finalized = false;
+  }
+
+  attach() {
+    this._tapRequest();
+    this._tapResponse();
+  }
+
+  // --- request: capture body, mirror to native, optionally enforce quota ---
+
+  _tapRequest() {
+    const origWrite = this.stream.write.bind(this.stream);
+    const origEnd = this.stream.end.bind(this.stream);
+
+    this.stream.write = (chunk, encoding, callback) => {
+      if (chunk) this.reqChunks.push(Util.toBuf(chunk));
+      return origWrite(chunk, encoding, callback);
+    };
+
+    this.stream.end = (chunk, encoding, callback) => {
+      // Normalize the overloaded end(...) signatures.
+      if (typeof chunk === "function") {
+        callback = chunk;
+        chunk = undefined;
+        encoding = undefined;
+      } else if (typeof encoding === "function") {
+        callback = encoding;
+        encoding = undefined;
+      }
+      if (chunk) this.reqChunks.push(Util.toBuf(chunk));
+
+      const body = Buffer.concat(this.reqChunks).toString("utf-8");
+      if (body.trim()) {
+        const result = this.ctx.bridge.interceptRequest(this.url, body);
+        if (this.ctx.config.enforceQuota && result && result.allowed === 0) {
+          this._reject(result); // block: do not send
+          return this.stream;
         }
-        if (result.allowed === 1) {
-          reqBodySent = true;
+        this.allowed = true;
+      }
+
+      return origEnd(chunk, encoding, callback);
+    };
+  }
+
+  // --- response: transparent observation via push(), finalize once on EOF ---
+
+  _tapResponse() {
+    // Listening to 'response' does not affect data flow.
+    this.stream.on("response", (resHeaders) => {
+      this.resHeaders = resHeaders;
+      const ct = resHeaders["content-type"] || "";
+      if (ct.includes(EventStreamParser.CONTENT_TYPE))
+        this.isEventStream = true;
+    });
+
+    // push() feeds incoming data into the readable side. Overriding it lets us
+    // copy every chunk while forwarding it unchanged, so the consumer keeps
+    // working in any read mode (data/pipe/async-iterator) and backpressure is
+    // preserved (we return the original push()'s boolean).
+    const origPush = this.stream.push.bind(this.stream);
+    this.stream.push = (chunk, encoding) => {
+      if (chunk === null) {
+        this._finalizeResponse(); // EOF
+      } else if (this.allowed) {
+        this.resChunks.push(Util.toBuf(chunk));
+      }
+      return origPush(chunk, encoding);
+    };
+  }
+
+  _finalizeResponse() {
+    if (this.finalized || !this.allowed || this.resChunks.length === 0) return;
+    this.finalized = true;
+
+    // Defer so we never delay the consumer's own 'end' event.
+    setImmediate(async () => {
+      try {
+        const encoding = this.resHeaders && this.resHeaders["content-encoding"];
+        const body = Util.decompress(Buffer.concat(this.resChunks), encoding);
+        const url = await this._resolveUrl();
+
+        if (this.isEventStream) {
+          const metadata = EventStreamParser.parseMetadata(body);
+          if (metadata) this.ctx.bridge.interceptResponse(url, metadata);
+        } else {
+          this.ctx.bridge.interceptResponse(url, body.toString("utf-8"));
         }
       } catch (err) {
-        console.error("[z-grc] Error in interceptRequest:", err);
+        this.ctx.bridge.logErr("h2.finalizeResponse", err);
       }
-    }
+    });
+  }
 
-    return origEnd(chunk, encoding, callback);
-  };
-
-  stream.on("response", (responseHeaders) => {
-    if (!reqBodySent) return;
-    const contentType = responseHeaders["content-type"] || "";
-    if (contentType.includes("application/vnd.amazon.eventstream")) {
-      isEventStream = true;
-    }
-  });
-
-  stream.on("data", (chunk) => {
-    if (reqBodySent) {
-      resChunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-    }
-  });
-
-  stream.on("end", async () => {
-    if (!reqBodySent || !native) return;
-
+  async _resolveUrl() {
+    if (!this.modelPromise) return this.url;
     try {
-      let body = Buffer.concat(resChunks);
-
-      const responseHeaders = stream.sentHeaders || {};
-      const encoding =
-        responseHeaders["content-encoding"] ||
-        (stream.headers && stream.headers["content-encoding"]);
-
-      if (encoding === "gzip") body = zlib.gunzipSync(body);
-      else if (encoding === "deflate") body = zlib.inflateSync(body);
-      else if (encoding === "br") body = zlib.brotliDecompressSync(body);
-
-      let finalUrl = url;
-      if (arnPromise) {
-        const resolvedModel = await arnPromise;
-        if (resolvedModel) {
-          finalUrl = url.replace(
-            /\/model\/[^/]+\//,
-            `/model/regional.${resolvedModel}/`,
-          );
-        }
-      }
-
-      if (isEventStream) {
-        const metadata = parseAwsEventStreamMetadata(body);
-        if (metadata) {
-          native.interceptResponse(finalUrl, metadata);
-        }
-      } else {
-        native.interceptResponse(finalUrl, body.toString("utf-8"));
-      }
-    } catch (_) {}
-  });
-}
-
-// --- AWS Event Stream parsing (ConverseStream responses) ---
-
-function parseAwsEventStreamMetadata(buf) {
-  // AWS event-stream binary format:
-  // Each message: [4B total_len][4B headers_len][4B prelude_crc][headers][payload][4B msg_crc]
-  let offset = 0;
-  let metadataPayload = null;
-
-  while (offset + 12 <= buf.length) {
-    const totalLen = buf.readUInt32BE(offset);
-    if (totalLen < 16 || offset + totalLen > buf.length) break;
-
-    const headersLen = buf.readUInt32BE(offset + 4);
-    // skip prelude CRC (4 bytes at offset+8)
-
-    const headersStart = offset + 12;
-    const headersEnd = headersStart + headersLen;
-    const payloadStart = headersEnd;
-    const payloadEnd = offset + totalLen - 4; // minus message CRC
-
-    // Parse headers to find :event-type
-    const eventType = parseEventStreamHeaders(buf, headersStart, headersEnd);
-
-    if (eventType === "metadata") {
-      const payload = buf.slice(payloadStart, payloadEnd);
-      metadataPayload = payload.toString("utf-8");
-    }
-
-    offset += totalLen;
-  }
-
-  return metadataPayload;
-}
-
-function parseEventStreamHeaders(buf, start, end) {
-  let pos = start;
-  while (pos < end) {
-    const nameLen = buf.readUInt8(pos);
-    pos += 1;
-    if (pos + nameLen > end) break;
-    const name = buf.slice(pos, pos + nameLen).toString("utf-8");
-    pos += nameLen;
-
-    const headerType = buf.readUInt8(pos);
-    pos += 1;
-
-    if (headerType === 7) {
-      // String type: [2B value_len][value]
-      const valueLen = buf.readUInt16BE(pos);
-      pos += 2;
-      if (pos + valueLen > end) break;
-      const value = buf.slice(pos, pos + valueLen).toString("utf-8");
-      pos += valueLen;
-
-      if (name === ":event-type") return value;
-    } else if (headerType === 0) {
-      // Bool true - no value bytes
-    } else if (headerType === 1) {
-      // Bool false - no value bytes
-    } else if (headerType === 2) {
-      // Byte - 1 byte
-      pos += 1;
-    } else if (headerType === 3) {
-      // Short - 2 bytes
-      pos += 2;
-    } else if (headerType === 4) {
-      // Int - 4 bytes
-      pos += 4;
-    } else if (headerType === 5) {
-      // Long - 8 bytes
-      pos += 8;
-    } else if (headerType === 6) {
-      // Bytes: [2B len][bytes]
-      const bLen = buf.readUInt16BE(pos);
-      pos += 2 + bLen;
-    } else if (headerType === 8) {
-      // Timestamp - 8 bytes
-      pos += 8;
-    } else if (headerType === 9) {
-      // UUID - 16 bytes
-      pos += 16;
-    } else {
-      break;
-    }
-  }
-  return null;
-}
-
-// --- TLS interception for HTTP/1.1 traffic (axios, node-fetch, got) ---
-
-const sendBuffers = new Map();
-const recvBuffers = new Map();
-const sockUrls = new Map();
-const sockReqBody = new Map();
-const sockModels = new Map();
-const recvMeta = new Map();
-
-let idCounter = 0;
-function socketId(socket) {
-  if (!socket._zgrcId) socket._zgrcId = ++idCounter;
-  return socket._zgrcId;
-}
-
-function instrumentTlsSocket(socket) {
-  const origWrite = socket.write;
-  const origPush = socket.push;
-
-  socket.write = function (data, encoding, callback) {
-    const result = origWrite.call(this, data, encoding, callback);
-    try {
-      handleTlsSend(socket, data);
-    } catch (_) {}
-    return result;
-  };
-
-  socket.push = function (chunk, encoding) {
-    if (chunk !== null) {
-      try {
-        handleTlsRecv(
-          socket,
-          Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk),
-        );
-      } catch (_) {}
-    }
-    return origPush.call(this, chunk, encoding);
-  };
-}
-
-function handleTlsSend(socket, data) {
-  if (!native) return;
-
-  const sid = socketId(socket);
-  const raw = Buffer.isBuffer(data) ? data : Buffer.from(data);
-  const buf = Buffer.concat([sendBuffers.get(sid) || Buffer.alloc(0), raw]);
-  sendBuffers.set(sid, buf);
-
-  if (!buf.includes("\r\n\r\n")) return;
-  if (!isHttpRequest(buf)) {
-    sendBuffers.delete(sid);
-    return;
-  }
-
-  const headerEnd = buf.indexOf("\r\n\r\n");
-  const headerSection = buf.slice(0, headerEnd).toString("utf-8");
-  const bodyBytes = buf.slice(headerEnd + 4);
-
-  const firstLine = headerSection.split("\r\n")[0];
-  const parts = firstLine.split(" ");
-  const path = parts[1] || "/";
-  const body = bodyBytes.toString("utf-8");
-
-  if (!sockUrls.has(sid)) {
-    const host = socket.servername || "";
-    if (!host) {
-      sendBuffers.delete(sid);
-      return;
-    }
-    const fullUrl = `https://${host}${path}`;
-    sockUrls.set(sid, fullUrl);
-
-    if (path.includes("arn") && path.includes("/model/")) {
-      resolveAwsArn(fullUrl).then((model) => {
-        if (model) sockModels.set(sid, model);
-      });
+      const model = await this.modelPromise;
+      return Util.mapModelUrl(this.url, model, this.ctx.config.arnModelPrefix);
+    } catch {
+      return this.url;
     }
   }
 
-  const fullUrl = sockUrls.get(sid);
-
-  if (body.trim()) {
-    sendBuffers.delete(sid);
-    try {
-      const reqResult = native.interceptRequest(fullUrl, body);
-      if (reqResult.allowed === 0) {
-        const err = new Error(
-          `Quota exceeded. Used: ${reqResult.usedQuota.toFixed(4)}, Remaining: ${reqResult.remainingQuota.toFixed(4)}`,
-        );
-        err.name = "QuotaExceededError";
-        err.usedQuota = reqResult.usedQuota;
-        err.remainingQuota = reqResult.remainingQuota;
-
-        // Destroy socket asynchronously to avoid corrupting Node.js internal state
-        setImmediate(() => {
-          socket.emit("error", err);
-          socket.destroy();
-        });
-        return;
-      }
-      if (reqResult.allowed === 1) {
-        sockReqBody.set(sid, true);
-      }
-    } catch (err) {
-      console.error("[z-grc] Error in interceptRequest:", err);
-    }
+  _reject(result) {
+    const err = Util.quotaError(result);
+    // Destroy asynchronously to avoid corrupting Node's internal stream state.
+    setImmediate(() => {
+      if (this.stream.destroyed) return;
+      this.stream.emit("error", err);
+      this.stream.destroy(err);
+    });
   }
 }
 
-function handleTlsRecv(socket, chunk) {
-  if (!native) return;
+// Http1SocketTap — instruments ONE TLS socket carrying HTTP/1.1 traffic
 
-  const sid = socketId(socket);
-  if (!sockUrls.has(sid)) return;
-  if (!sockReqBody.has(sid)) return;
-
-  const url = sockUrls.get(sid);
-  const buf = Buffer.concat([recvBuffers.get(sid) || Buffer.alloc(0), chunk]);
-  recvBuffers.set(sid, buf);
-
-  if (!buf.includes("\r\n\r\n")) return;
-
-  const headerEnd = buf.indexOf("\r\n\r\n");
-  const headerSection = buf.slice(0, headerEnd).toString("utf-8");
-  const bodyBytes = buf.slice(headerEnd + 4);
-
-  if (!recvMeta.has(sid)) {
-    const isChunked = /transfer-encoding:\s*chunked/i.test(headerSection);
-    const clMatch = headerSection.match(/content-length:\s*(\d+)/i);
-    const contentLength = clMatch ? parseInt(clMatch[1]) : -1;
-    recvMeta.set(sid, { isChunked, contentLength });
-  }
-
-  const { isChunked, contentLength } = recvMeta.get(sid);
-
-  let rawBody;
-  if (isChunked) {
-    if (!buf.slice(headerEnd + 4).includes("0\r\n\r\n")) return;
-    rawBody = decodeChunked(bodyBytes);
-  } else if (contentLength >= 0) {
-    if (bodyBytes.length < contentLength) return;
-    rawBody = bodyBytes.slice(0, contentLength);
-  } else {
-    return;
-  }
-
-  const ceMatch = headerSection.match(/content-encoding:\s*(\S+)/i);
-  if (ceMatch) {
-    const enc = ceMatch[1].toLowerCase();
-    try {
-      if (enc === "gzip") rawBody = zlib.gunzipSync(rawBody);
-      else if (enc === "deflate") rawBody = zlib.inflateSync(rawBody);
-      else if (enc === "br") rawBody = zlib.brotliDecompressSync(rawBody);
-    } catch (_) {}
-  }
-
-  let finalUrl = url;
-  if (sockModels.has(sid)) {
-    const model = sockModels.get(sid);
-    finalUrl = url.replace(/\/model\/[^/]+\//, `/model/regional.${model}/`);
-  }
-
-  try {
-    native.interceptResponse(finalUrl, rawBody.toString("utf-8"));
-  } catch (_) {}
-
-  recvBuffers.delete(sid);
-  recvMeta.delete(sid);
-  sockUrls.delete(sid);
-  sockReqBody.delete(sid);
-  sockModels.delete(sid);
-}
-
-function isHttpRequest(buf) {
-  const methods = [
+class Http1SocketTap {
+  static METHODS = [
     "GET ",
     "POST ",
     "PUT ",
@@ -452,26 +486,250 @@ function isHttpRequest(buf) {
     "HEAD ",
     "OPTIONS ",
   ];
-  const start = buf.slice(0, 10).toString("utf-8");
-  return methods.some((m) => start.startsWith(m));
-}
 
-function decodeChunked(data) {
-  const chunks = [];
-  let offset = 0;
-
-  while (offset < data.length) {
-    const crlfIdx = data.indexOf("\r\n", offset);
-    if (crlfIdx === -1) break;
-    const sizeStr = data.slice(offset, crlfIdx).toString("utf-8").trim();
-    const chunkSize = parseInt(sizeStr, 16);
-    if (chunkSize === 0) break;
-    const chunkStart = crlfIdx + 2;
-    chunks.push(data.slice(chunkStart, chunkStart + chunkSize));
-    offset = chunkStart + chunkSize + 2;
+  /**
+   * @param {import("tls").TLSSocket} socket
+   * @param {{config: InterceptorConfig, bridge: NativeBridge, resolver: ArnResolver}} ctx
+   */
+  constructor(socket, ctx) {
+    this.socket = socket;
+    this.ctx = ctx;
+    this._resetRequest();
   }
 
-  return Buffer.concat(chunks);
+  attach() {
+    // write() -> outgoing (request) plaintext; push() -> incoming (response).
+    // Originals are always forwarded, so the socket behaves exactly as before.
+    const origWrite = this.socket.write.bind(this.socket);
+    const origPush = this.socket.push.bind(this.socket);
+
+    this.socket.write = (data, encoding, callback) => {
+      const result = origWrite(data, encoding, callback);
+      try {
+        this._handleSend(data);
+      } catch (err) {
+        this.ctx.bridge.logErr("h1.send", err);
+      }
+      return result;
+    };
+
+    this.socket.push = (chunk, encoding) => {
+      if (chunk !== null) {
+        try {
+          this._handleRecv(Util.toBuf(chunk));
+        } catch (err) {
+          this.ctx.bridge.logErr("h1.recv", err);
+        }
+      }
+      return origPush(chunk, encoding);
+    };
+  }
+
+  _resetRequest() {
+    this.sendBuf = Buffer.alloc(0);
+    this.recvBuf = Buffer.alloc(0);
+    this.url = null;
+    this.allowed = false;
+    this.recvMeta = null;
+    this.model = null;
+  }
+
+  _isHttpRequest(buf) {
+    const start = buf.slice(0, 10).toString("utf-8");
+    return Http1SocketTap.METHODS.some((m) => start.startsWith(m));
+  }
+
+  // --- request side ---
+
+  _handleSend(data) {
+    const { bridge, config, resolver } = this.ctx;
+    if (!bridge.active) return;
+
+    this.sendBuf = Buffer.concat([this.sendBuf, Util.toBuf(data)]);
+
+    const headerEnd = this.sendBuf.indexOf("\r\n\r\n");
+    if (headerEnd === -1) return; // headers incomplete
+
+    if (!this._isHttpRequest(this.sendBuf)) {
+      this.sendBuf = Buffer.alloc(0);
+      return;
+    }
+
+    const headerSection = this.sendBuf.slice(0, headerEnd).toString("utf-8");
+    const bodyBytes = this.sendBuf.slice(headerEnd + 4);
+
+    if (!this.url) {
+      const host = this.socket.servername || "";
+      if (!host) {
+        this.sendBuf = Buffer.alloc(0);
+        return;
+      }
+      const path = headerSection.split("\r\n")[0].split(" ")[1] || "/";
+      this.url = `https://${host}${path}`;
+
+      if (resolver.looksLikeArn(this.url)) {
+        resolver
+          .resolveModel(this.url)
+          .then((model) => {
+            if (model) this.model = model;
+          })
+          .catch(() => {});
+      }
+    }
+
+    const body = bodyBytes.toString("utf-8");
+    if (!body.trim()) return; // wait for the body
+
+    this.sendBuf = Buffer.alloc(0);
+
+    const result = bridge.interceptRequest(this.url, body);
+    if (config.enforceQuota && result && result.allowed === 0) {
+      this._reject(result);
+      return;
+    }
+    this.allowed = true;
+  }
+
+  // --- response side ---
+
+  _handleRecv(chunk) {
+    const { bridge, config } = this.ctx;
+    if (!bridge.active) return;
+    if (!this.url || !this.allowed) return;
+
+    this.recvBuf = Buffer.concat([this.recvBuf, chunk]);
+
+    const headerEnd = this.recvBuf.indexOf("\r\n\r\n");
+    if (headerEnd === -1) return;
+
+    const headerSection = this.recvBuf.slice(0, headerEnd).toString("utf-8");
+    const bodyBytes = this.recvBuf.slice(headerEnd + 4);
+
+    if (!this.recvMeta) {
+      const cl = headerSection.match(/content-length:\s*(\d+)/i);
+      const ce = headerSection.match(/content-encoding:\s*(\S+)/i);
+      this.recvMeta = {
+        isChunked: /transfer-encoding:\s*chunked/i.test(headerSection),
+        contentLength: cl ? parseInt(cl[1], 10) : -1,
+        encoding: ce ? ce[1].toLowerCase() : null,
+      };
+    }
+
+    const { isChunked, contentLength, encoding } = this.recvMeta;
+
+    let rawBody;
+    if (isChunked) {
+      if (!bodyBytes.includes("0\r\n\r\n")) return; // wait for terminator
+      rawBody = ChunkedDecoder.decode(bodyBytes);
+    } else if (contentLength >= 0) {
+      if (bodyBytes.length < contentLength) return; // wait for full body
+      rawBody = bodyBytes.slice(0, contentLength);
+    } else {
+      return; // no length info; cannot safely delimit
+    }
+
+    rawBody = Util.decompress(rawBody, encoding);
+    const url = Util.mapModelUrl(this.url, this.model, config.arnModelPrefix);
+
+    bridge.interceptResponse(url, rawBody.toString("utf-8"));
+    this._resetRequest(); // ready for keep-alive reuse
+  }
+
+  _reject(result) {
+    const err = Util.quotaError(result);
+    setImmediate(() => {
+      if (this.socket.destroyed) return;
+      this.socket.emit("error", err);
+      this.socket.destroy(err);
+    });
+  }
 }
 
-module.exports = { activate, deactivate };
+// Interceptor — orchestrator: patches tls.connect + http2.connect
+
+class Interceptor {
+  constructor() {
+    this.config = new InterceptorConfig();
+    this.bridge = new NativeBridge(this.config);
+    this.resolver = new ArnResolver(this.bridge);
+    this._originals = null; // { tlsConnect, h2Connect }
+  }
+
+  /** Context handed to each per-connection tap. */
+  get _ctx() {
+    return {
+      config: this.config,
+      bridge: this.bridge,
+      resolver: this.resolver,
+    };
+  }
+
+  /**
+   * Start intercepting. Safe to call again to (re)bind the native module
+   * without re-patching.
+   */
+  activate(nativeModule) {
+    this.bridge.set(nativeModule);
+    if (this._originals) return this;
+
+    this._originals = { tlsConnect: tls.connect, h2Connect: http2.connect };
+
+    tls.connect = (...args) => {
+      const socket = this._originals.tlsConnect(...args);
+      try {
+        new Http1SocketTap(socket, this._ctx).attach();
+      } catch (err) {
+        this.bridge.logErr("patch.tls", err);
+      }
+      return socket;
+    };
+
+    http2.connect = (...args) => {
+      const session = this._originals.h2Connect(...args);
+      try {
+        this._instrumentSession(session, args[0]);
+      } catch (err) {
+        this.bridge.logErr("patch.http2", err);
+      }
+      return session;
+    };
+
+    return this;
+  }
+
+  /** Stop intercepting and restore the original tls/http2 entry points. */
+  deactivate() {
+    if (this._originals) {
+      tls.connect = this._originals.tlsConnect;
+      http2.connect = this._originals.h2Connect;
+      this._originals = null;
+    }
+    this.bridge.clear();
+    return this;
+  }
+
+  _instrumentSession(session, authority) {
+    const origin =
+      typeof authority === "string" ? authority : String(authority || "");
+    if (!this.config.isLlmHost(origin)) return;
+
+    const origRequest = session.request.bind(session);
+    session.request = (headers, options) => {
+      const stream = origRequest(headers, options);
+      try {
+        new Http2StreamTap(stream, origin, headers, this._ctx).attach();
+      } catch (err) {
+        this.bridge.logErr("h2.instrumentStream", err);
+      }
+      return stream;
+    };
+  }
+}
+
+const defaultInterceptor = new Interceptor();
+
+module.exports = {
+  activate: (native) => defaultInterceptor.activate(native),
+  deactivate: () => defaultInterceptor.deactivate(),
+  config: defaultInterceptor.config,
+};

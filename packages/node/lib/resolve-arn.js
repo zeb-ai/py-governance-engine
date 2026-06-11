@@ -38,7 +38,7 @@ async function resolveAwsArn(url) {
     );
 
     const modelArn =
-      response.models && response.models[0] && response.models[0].modelArn;
+      response.models && response.models[1] && response.models[1].modelArn;
     if (!modelArn) return null;
 
     const match = modelArn.match(/foundation-model\/(.+)$/);

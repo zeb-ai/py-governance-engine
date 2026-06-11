@@ -1,14 +1,12 @@
 import grc from "@zeb_labs/zgrc";
-
-grc.init(process.env.API_KEY);
-grc.enableLogging(grc.LOG_DEBUG, "./zgrc_node.log");
-
 import { join } from "path";
 import {
   SessionManager,
   createAgentSessionFromServices,
   createAgentSessionServices,
 } from "@mariozechner/pi-coding-agent";
+
+grc.init(process.env.API_KEY);
 
 export async function callPiMono(userPrompt, options = {}) {
   const {
@@ -86,17 +84,29 @@ export async function callPiMono(userPrompt, options = {}) {
 }
 
 // Run
-callPiMono("Hello, what can you help me with?", {
+const modelArn = process.env.MODEL_ARN || process.env.MODEL_ID;
+console.log("Starting Pi Mono test...");
+console.log("AWS_REGION:", process.env.AWS_REGION || "us-east-1");
+console.log("MODEL_ARN:", modelArn ? "set" : "NOT SET");
+console.log(
+  "AWS_ACCESS_KEY_ID:",
+  process.env.AWS_ACCESS_KEY_ID ? "set" : "NOT SET",
+);
+console.log("\nSending prompt: 'Hello, my name is samrat'\n");
+
+callPiMono("Hello, my name is samrat", {
   cwd: process.cwd(),
   region: process.env.AWS_REGION || "us-east-1",
-  modelArn: process.env.MODEL_ARN,
+  modelArn,
   awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
   systemPrompt: "You are a helpful coding assistant.",
   onChunk: (chunk) => process.stdout.write(chunk),
 })
-  .then(() => {
+  .then((result) => {
     console.log("\n\nDone.");
+    console.log("Full response:", result);
   })
   .catch((err) => {
     console.error("Error:", err);
+    console.error("Stack:", err.stack);
   });
