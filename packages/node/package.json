@@ -17,6 +17,7 @@
     "clean": "node-gyp clean && rm -rf csrc"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock": "^3.1066.0",
     "node-addon-api": "^8.0.0",
     "node-gyp": "^10.0.0",
     "node-gyp-build": "^4.8.4"

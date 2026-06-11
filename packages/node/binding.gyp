@@ -31,6 +31,7 @@
                         "defines": ["CURL_STATICLIB", "nullptr=NULL"],
                         "libraries": [
                             "-lws2_32",
+                            "-lbcrypt",
                             "-ladvapi32",
                             "-lcrypt32",
                             "-lnormaliz",
@@ -43,6 +44,7 @@
                                     "include_dirs": ["deps/include"],
                                     "libraries": [
                                         "<(module_root_dir)/deps/lib/libcurl.lib",
+                                        "<(module_root_dir)/deps/lib/zlibstatic.lib",
                                     ],
                                 },
                                 {"libraries": ["-lcurl"]},

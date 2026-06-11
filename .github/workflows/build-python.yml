@@ -51,9 +51,11 @@ jobs:
           CIBW_BUILD_VERBOSITY: "3"
           CIBW_SKIP: "*-musllinux_*"
 
-          # Install curl dev headers so the C extension can compile
+          # Install curl dev headers so the C extension can compile.
+          # manylinux2014 is CentOS 7 (EOL) where the EPEL metalink can fail;
+          # libcurl-devel is in base, so disable EPEL to avoid the failure.
           CIBW_BEFORE_ALL_LINUX: >
-            yum install -y libcurl-devel ||
+            yum install -y --disablerepo=epel libcurl-devel ||
             apt-get install -y libcurl4-openssl-dev
 
           CIBW_BEFORE_ALL_WINDOWS: >
