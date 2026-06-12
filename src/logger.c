@@ -8,16 +8,16 @@ static const char *level_strings[] = {"DEBUG", "INFO", "WARN", "ERROR"};
 Logger *logger_init(LogLevel level, const char *path) {
   Logger *logger = malloc(sizeof(Logger));
   if (!logger)
-    return nullptr;
+    return NULL;
 
   logger->level = level;
-  logger->file = nullptr;
+  logger->file = NULL;
 
   if (path) {
     logger->file = fopen(path, "w");
     if (!logger->file) {
       free(logger);
-      return nullptr;
+      return NULL;
     }
   }
 
@@ -28,7 +28,7 @@ void logger_log(Logger *logger, LogLevel level, const char *fmt, ...) {
   if (!logger || level < logger->level)
     return;
 
-  time_t now = time(nullptr);
+  time_t now = time(NULL);
   struct tm *tm = localtime(&now);
   char timestamp[32];
   strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", tm);

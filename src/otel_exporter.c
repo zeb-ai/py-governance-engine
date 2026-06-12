@@ -39,11 +39,11 @@ OtelExporter *otel_exporter_init(const char *endpoint, const char *service_name,
                                  const char *app_name, const char *user_id,
                                  const char *group_id) {
   if (!endpoint || !service_name)
-    return nullptr;
+    return NULL;
 
   OtelExporter *exporter = malloc(sizeof(OtelExporter));
   if (!exporter)
-    return nullptr;
+    return NULL;
 
   strncpy(exporter->endpoint, endpoint, sizeof(exporter->endpoint) - 1);
   strncpy(exporter->service_name, service_name,
@@ -65,10 +65,10 @@ OtelExporter *otel_exporter_init(const char *endpoint, const char *service_name,
     free(exporter->batch.spans);
     free(exporter->batch.logs);
     free(exporter);
-    return nullptr;
+    return NULL;
   }
 
-  srand((unsigned int)time(nullptr));
+  srand((unsigned int)time(NULL));
   return exporter;
 }
 
@@ -84,7 +84,7 @@ static void flush_spans(OtelExporter *exporter) {
   if (exporter->batch.span_count == 0)
     return;
 
-  yyjson_mut_doc *doc = yyjson_mut_doc_new(nullptr);
+  yyjson_mut_doc *doc = yyjson_mut_doc_new(NULL);
   yyjson_mut_val *root = yyjson_mut_obj(doc);
   yyjson_mut_doc_set_root(doc, root);
 
@@ -212,7 +212,7 @@ static void flush_spans(OtelExporter *exporter) {
     curl_easy_setopt(exporter->curl, CURLOPT_POSTFIELDSIZE, (long)json_len);
     curl_easy_setopt(exporter->curl, CURLOPT_WRITEFUNCTION, write_callback);
 
-    struct curl_slist *headers = nullptr;
+    struct curl_slist *headers = NULL;
     headers = curl_slist_append(headers, "Content-Type: application/json");
     curl_easy_setopt(exporter->curl, CURLOPT_HTTPHEADER, headers);
 
@@ -245,7 +245,7 @@ static void flush_logs(OtelExporter *exporter) {
   if (exporter->batch.log_count == 0)
     return;
 
-  yyjson_mut_doc *doc = yyjson_mut_doc_new(nullptr);
+  yyjson_mut_doc *doc = yyjson_mut_doc_new(NULL);
   yyjson_mut_val *root = yyjson_mut_obj(doc);
   yyjson_mut_doc_set_root(doc, root);
 
@@ -352,7 +352,7 @@ static void flush_logs(OtelExporter *exporter) {
     curl_easy_setopt(exporter->curl, CURLOPT_POSTFIELDSIZE, (long)json_len);
     curl_easy_setopt(exporter->curl, CURLOPT_WRITEFUNCTION, write_callback);
 
-    struct curl_slist *headers = nullptr;
+    struct curl_slist *headers = NULL;
     headers = curl_slist_append(headers, "Content-Type: application/json");
     curl_easy_setopt(exporter->curl, CURLOPT_HTTPHEADER, headers);
 

@@ -135,7 +135,7 @@ static ParsedResponse parse_bedrock(const char *body, size_t body_len) {
 ParserRegistry *parser_registry_init(void) {
   ParserRegistry *reg = malloc(sizeof(ParserRegistry));
   if (!reg)
-    return nullptr;
+    return NULL;
 
   reg->count = 0;
 
@@ -162,14 +162,14 @@ void parser_registry_register(ParserRegistry *reg, const char *provider,
 
 ParserFn parser_registry_get(ParserRegistry *reg, const char *provider) {
   if (!reg || !provider)
-    return nullptr;
+    return NULL;
 
   for (int i = 0; i < reg->count; i++) {
     if (strcmp(reg->entries[i].provider, provider) == 0) {
       return reg->entries[i].parse;
     }
   }
-  return nullptr;
+  return NULL;
 }
 
 void parser_registry_free(ParserRegistry *reg) {

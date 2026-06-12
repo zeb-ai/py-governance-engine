@@ -108,26 +108,26 @@ ModelPricing *hashmap_get(HashMap *map, const char *model_id) {
     current = current->next;
   }
 
-  return nullptr;
+  return NULL;
 }
 
 CostCalculator *cost_calculator_init(const char *pricing_file) {
   CostCalculator *calc = malloc(sizeof(CostCalculator));
   if (!calc)
-    return nullptr;
+    return NULL;
 
   yyjson_read_err err;
-  yyjson_doc *doc = yyjson_read_file(pricing_file, 0, nullptr, &err);
+  yyjson_doc *doc = yyjson_read_file(pricing_file, 0, NULL, &err);
   if (!doc) {
     free(calc);
-    return nullptr;
+    return NULL;
   }
 
   calc->models = hashmap_create(2048);
   if (!calc->models) {
     yyjson_doc_free(doc);
     free(calc);
-    return nullptr;
+    return NULL;
   }
 
   yyjson_val *root = yyjson_doc_get_root(doc);

@@ -28,7 +28,7 @@
                 [
                     "OS=='win'",
                     {
-                        "defines": ["CURL_STATICLIB", "nullptr=NULL"],
+                        "defines": ["CURL_STATICLIB"],
                         "libraries": [
                             "-lws2_32",
                             "-lbcrypt",

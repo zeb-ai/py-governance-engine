@@ -16,16 +16,16 @@
 Interceptor *interceptor_init(const char *api_key, const char *pricing_file,
                               const char *app_name) {
   if (!api_key || !pricing_file)
-    return nullptr;
+    return NULL;
 
   AuthToken *auth = auth_token_decode(api_key);
   if (!auth)
-    return nullptr;
+    return NULL;
 
   CostCalculator *calculator = cost_calculator_init(pricing_file);
   if (!calculator) {
     auth_token_free(auth);
-    return nullptr;
+    return NULL;
   }
 
   QuotaClient *quota =
@@ -33,7 +33,7 @@ Interceptor *interceptor_init(const char *api_key, const char *pricing_file,
   if (!quota) {
     cost_calculator_free(calculator);
     auth_token_free(auth);
-    return nullptr;
+    return NULL;
   }
 
   Interceptor *ctx = malloc(sizeof(Interceptor));
@@ -41,7 +41,7 @@ Interceptor *interceptor_init(const char *api_key, const char *pricing_file,
     quota_client_free(quota);
     cost_calculator_free(calculator);
     auth_token_free(auth);
-    return nullptr;
+    return NULL;
   }
 
   ParserRegistry *parsers = parser_registry_init();
@@ -50,12 +50,12 @@ Interceptor *interceptor_init(const char *api_key, const char *pricing_file,
     cost_calculator_free(calculator);
     auth_token_free(auth);
     free(ctx);
-    return nullptr;
+    return NULL;
   }
 
-  Logger *logger = nullptr;
+  Logger *logger = NULL;
 
-  OtelExporter *otel = nullptr;
+  OtelExporter *otel = NULL;
   if (auth->opentelemetry[0] != '\0') {
     const char *service_name = app_name ? app_name : "unknown-service";
     otel = otel_exporter_init(auth->opentelemetry, service_name, app_name,
@@ -103,7 +103,7 @@ RequestResult intercept_request(Interceptor *ctx, const char *url,
   int matched = 0;
   for (int i = 0; i < ctx->calculator->pattern_count; i++) {
 #ifdef _WIN32
-    if (strstr(url, ctx->calculator->api_patterns[i]) != nullptr) {
+    if (strstr(url, ctx->calculator->api_patterns[i]) != NULL) {
       matched = 1;
       break;
     }
@@ -111,7 +111,7 @@ RequestResult intercept_request(Interceptor *ctx, const char *url,
     regex_t regex;
     if (regcomp(&regex, ctx->calculator->api_patterns[i],
                 REG_EXTENDED | REG_NOSUB) == 0) {
-      if (regexec(&regex, url, 0, nullptr, 0) == 0) {
+      if (regexec(&regex, url, 0, NULL, 0) == 0) {
         matched = 1;
         regfree(&regex);
         break;
@@ -183,7 +183,7 @@ ResponseResult intercept_response(Interceptor *ctx, const char *url,
              (int)(body_len > 512 ? 512 : body_len), body);
 
   // Detect provider from URL
-  const char *provider = nullptr;
+  const char *provider = NULL;
   if (strstr(url, "openai.com"))
     provider = "openai";
   else if (strstr(url, "anthropic.com"))
@@ -220,7 +220,7 @@ ResponseResult intercept_response(Interceptor *ctx, const char *url,
       for (size_t i = 0; i < len && j < sizeof(parsed.model) - 1; i++) {
         if (m[i] == '%' && i + 2 < len) {
           char hex[3] = {m[i + 1], m[i + 2], '\0'};
-          parsed.model[j++] = (char)strtol(hex, nullptr, 16);
+          parsed.model[j++] = (char)strtol(hex, NULL, 16);
           i += 2;
         } else {
           parsed.model[j++] = m[i];
@@ -232,7 +232,7 @@ ResponseResult intercept_response(Interceptor *ctx, const char *url,
       //   us.anthropic.xxx          -> regional.anthropic.xxx  (strip region)
       //   anthropic.xxx             -> regional.anthropic.xxx  (just prepend)
       static const char *region_prefixes[] = {"us.", "eu.",     "apac.",
-                                              "ap.", "us-gov.", nullptr};
+                                              "ap.", "us-gov.", NULL};
       const char *model_start = parsed.model;
       for (int i = 0; region_prefixes[i]; i++) {
         size_t plen = strlen(region_prefixes[i]);

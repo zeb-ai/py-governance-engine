@@ -77,7 +77,6 @@ static_curl = os.path.exists("/usr/local/include/curl/curl.h")
 
 if system == "Windows":
     extra_compile_args = [
-        "/Dnullptr=NULL",
         "/D_CRT_SECURE_NO_WARNINGS",
         "/DCURL_STATICLIB",
     ]
@@ -98,7 +97,7 @@ if system == "Windows":
         "wldap32",
     ]
 elif system == "Darwin":
-    extra_compile_args = ["-std=c11", "-Dnullptr=((void*)0)"]
+    extra_compile_args = ["-std=c11"]
     if static_curl:
         include_dirs.append("/usr/local/include")
         extra_link_args = [
@@ -112,7 +111,7 @@ elif system == "Darwin":
     else:
         libraries = ["curl", "z"]
 else:
-    extra_compile_args = ["-std=c11", "-Dnullptr=((void*)0)"]
+    extra_compile_args = ["-std=c11"]
     if static_curl:
         include_dirs.append("/usr/local/include")
         extra_link_args = [
