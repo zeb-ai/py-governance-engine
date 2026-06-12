@@ -47,6 +47,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: Upgrade npm (for node-gyp 12.1.0+ with VS2026 support)
+        run: npm install -g npm@latest
+
       - name: Install dependencies
         run: npm install --ignore-scripts # skip postinstall/prepare hooks; prebuildify runs explicitly below
 
