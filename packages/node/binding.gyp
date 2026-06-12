@@ -46,6 +46,11 @@
                                         "<(module_root_dir)/deps/lib/libcurl.lib",
                                         "<(module_root_dir)/deps/lib/zlibstatic.lib",
                                     ],
+                                    "msvs_settings": {
+                                        "VCLinkerTool": {
+                                            "IgnoreSpecificDefaultLibraries": "zlibstatic.lib"
+                                        }
+                                    },
                                 },
                                 {"libraries": ["-lcurl"]},
                             ]
