@@ -51,7 +51,7 @@ jobs:
         run: npm install -g npm@latest
 
       - name: Install dependencies
-        run: npm install --ignore-scripts # skip postinstall/prepare hooks; prebuildify runs explicitly below
+        run: npm install --ignore-scripts
 
       - name: Install system deps (Linux)
         if: runner.os == 'Linux'
@@ -172,7 +172,7 @@ jobs:
       - name: Build prebuild (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: npx prebuildify --napi --strip --arch ${{ matrix.arch }}
+        run: npx prebuildify --napi --strip --arch ${{ matrix.arch }} --node-gyp "${{ github.workspace }}\packages\node\node_modules\.bin\node-gyp.cmd"
 
       - uses: actions/upload-artifact@v4
         with:
