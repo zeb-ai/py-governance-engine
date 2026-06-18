@@ -27,6 +27,12 @@ Built with a high-performance native C core and bindings for Python and Node.js,
 pip install z-grc
 ```
 
+Or with [uv](https://github.com/astral-sh/uv):
+
+```bash
+uv add z-grc
+```
+
 ### Node.js
 
 ```bash
@@ -183,31 +189,6 @@ response = agent.execute("Your prompt")
 | Custom OpenAI-compatible | Yes    | Yes     | Yes       |
 
 > **Note:** Older versions included a CLI proxy controller for environments where code modification isn't possible. This feature is currently WIP for the v2 rewrite.
-
-## Development
-
-### Building from Source
-
-```bash
-# Clone the repository
-git clone https://github.com/zeb-ai/z-grc.git
-cd z-grc
-
-# Build Python package
-cd packages/python
-pip install -e .
-
-# Build Node.js package
-cd packages/node
-npm install
-npm run build
-
-# Run tests (C core)
-mkdir build && cd build
-cmake ..
-make
-./test_interceptor
-```
 
 ## License
 
