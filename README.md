@@ -3,7 +3,7 @@
 </p>
 
 <h2 align="center"><strong>Governance, Risk, and Control Engine for LLMs</strong></h2>
-<p align="center">Built by <a href="https://zeb.ai">Zeb Labs</a></p>
+<p align="center">Built by <a href="https://zeb.co/research/">Zeb Labs</a></p>
 
 <p align="center">
   <a href="https://pypi.org/project/z-grc/"><img src="https://img.shields.io/pypi/v/z-grc?color=FFD700&label=PyPI&logo=pypi&logoColor=white" alt="PyPI"></a>
