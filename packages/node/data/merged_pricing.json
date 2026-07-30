@@ -13,8 +13,6 @@
           "model_path": "model",
           "token_mappings": {
             "input_tokens": "input_tokens",
-            "cache_creation_input_tokens": "input_tokens",
-            "cache_read_input_tokens": "input_tokens",
             "cache_creation_input_tokens": "cache_write_tokens",
             "cache_read_input_tokens": "cache_read_tokens",
             "output_tokens": "output_tokens"
@@ -58,8 +56,6 @@
           "model_path": "model",
           "token_mappings": {
             "input_tokens": "input_tokens",
-            "cache_creation_input_tokens": "input_tokens",
-            "cache_read_input_tokens": "input_tokens",
             "cache_creation_input_tokens": "cache_write_tokens",
             "cache_read_input_tokens": "cache_read_tokens",
             "output_tokens": "output_tokens"
@@ -104,8 +100,6 @@
           "model_path": "model",
           "token_mappings": {
             "input_tokens": "input_tokens",
-            "cache_creation_input_tokens": "input_tokens",
-            "cache_read_input_tokens": "input_tokens",
             "cache_creation_input_tokens": "cache_write_tokens",
             "cache_read_input_tokens": "cache_read_tokens",
             "output_tokens": "output_tokens"
@@ -239,8 +233,6 @@
           "model_path": "model",
           "token_mappings": {
             "input_tokens": "input_tokens",
-            "cache_creation_input_tokens": "input_tokens",
-            "cache_read_input_tokens": "input_tokens",
             "cache_creation_input_tokens": "cache_write_tokens",
             "cache_read_input_tokens": "cache_read_tokens",
             "output_tokens": "output_tokens"
@@ -593,16 +585,13 @@
   },
   "models": {
     "claude-2": {
-      "provider": "anthropic",
-      "name": "Claude 2.0 / 2.1",
-      "description": "Claude 2 is Anthropic's previous generation model, offering reliable performance for various tasks. This includes Claude 2.0 and Claude 2.1.\n",
+      "provider": "openrouter",
+      "name": "Claude v2",
       "pricing": {
         "input": 8.0,
         "output": 24.0
       },
-      "limits": {
-        "context_window": 200000.0
-      }
+      "limits": {}
     },
     "claude-3-5-haiku-latest": {
       "provider": "anthropic",
@@ -619,9 +608,7 @@
       }
     },
     "claude-3-5-sonnet": {
-      "provider": "anthropic",
-      "name": "Claude Sonnet 3.5",
-      "description": "Claude 3.5 Sonnet is an ideal balance of intelligence and speed for enterprise workloads. Maximum utility at a lower price, dependable, balanced for scaled deployments.",
+      "provider": "google",
       "pricing": {
         "input": 3.0,
         "output": 15.0,
@@ -647,18 +634,15 @@
       }
     },
     "claude-3-haiku": {
-      "provider": "anthropic",
-      "name": "Claude Haiku 3",
-      "description": "Fastest, most cost-effective model",
+      "provider": "openrouter",
+      "name": "Claude 3 Haiku",
       "pricing": {
         "input": 0.25,
         "output": 1.25,
         "cache_read": 0.03,
         "cache_write": 0.3
       },
-      "limits": {
-        "context_window": 200000.0
-      }
+      "limits": {}
     },
     "claude-3-opus-latest": {
       "provider": "anthropic",
@@ -675,18 +659,15 @@
       }
     },
     "claude-3-sonnet": {
-      "provider": "anthropic",
+      "provider": "openrouter",
       "name": "Claude 3 Sonnet",
-      "description": "Claude 3 Sonnet is an ideal balance of intelligence and speed for enterprise workloads. Maximum utility at a lower price, dependable, balanced for scaled deployments.",
       "pricing": {
         "input": 3.0,
         "output": 15.0,
         "cache_read": 0.3,
         "cache_write": 3.75
       },
-      "limits": {
-        "context_window": 200000.0
-      }
+      "limits": {}
     },
     "claude-haiku-4-5": {
       "provider": "anthropic",
@@ -745,9 +726,7 @@
       }
     },
     "claude-opus-4-6": {
-      "provider": "anthropic",
-      "name": "Claude Opus 4.6",
-      "description": "Our most intelligent model for building agents and coding",
+      "provider": "google",
       "pricing": {
         "input": 5.0,
         "output": 25.0,
@@ -759,9 +738,7 @@
       }
     },
     "claude-opus-4-7": {
-      "provider": "anthropic",
-      "name": "Claude Opus 4.7",
-      "description": "Our most capable model for complex reasoning and agentic coding",
+      "provider": "google",
       "pricing": {
         "input": 5.0,
         "output": 25.0,
@@ -773,9 +750,7 @@
       }
     },
     "claude-opus-4-8": {
-      "provider": "anthropic",
-      "name": "Claude Opus 4.8",
-      "description": "Our most capable model for complex reasoning and agentic coding",
+      "provider": "google",
       "pricing": {
         "input": 5.0,
         "output": 25.0,
@@ -1527,42 +1502,46 @@
       "limits": {}
     },
     "ada": {
-      "provider": "azure",
+      "provider": "openai",
       "pricing": {
-        "input": 0.1
+        "input": 0.4,
+        "output": 0.4
       },
       "limits": {}
     },
     "babbage": {
-      "provider": "azure",
+      "provider": "openai",
       "pricing": {
-        "input": 0.4
+        "input": 0.5,
+        "output": 0.5
       },
       "limits": {}
     },
     "curie": {
-      "provider": "azure",
+      "provider": "openai",
       "pricing": {
-        "input": 2.0
+        "input": 2.0,
+        "output": 2.0
       },
       "limits": {}
     },
     "davinci": {
-      "provider": "azure",
+      "provider": "openai",
       "pricing": {
-        "input": 2.0
+        "input": 20.0,
+        "output": 20.0
       },
       "limits": {}
     },
     "mai-ds-r1:free": {
-      "provider": "azure",
+      "provider": "openrouter",
       "name": "MAI DS R1 (free)",
-      "description": "MAI-DS-R1 is a post-trained variant of DeepSeek-R1 developed by the Microsoft AI team to improve the model's responsiveness on previously blocked topics while enhancing its safety profile. Built on top of DeepSeek-R1's reasoning foundation, it integrates 110k examples from the Tulu-3 SFT dataset and 350k internally curated multilingual safety-alignment samples. The model retains strong reasoning, coding, and problem-solving capabilities, while unblocking a wide range of prompts previously restricted in R1.",
       "pricing": {},
       "limits": {}
     },
     "o1": {
-      "provider": "azure",
+      "provider": "openrouter",
+      "name": "o1",
       "pricing": {
         "input": 15.0,
         "output": 60.0,
@@ -1571,7 +1550,8 @@
       "limits": {}
     },
     "o1-mini": {
-      "provider": "azure",
+      "provider": "openrouter",
+      "name": "o1-mini",
       "pricing": {
         "input": 1.1,
         "output": 4.4,
@@ -1589,7 +1569,8 @@
       "limits": {}
     },
     "o3-mini": {
-      "provider": "azure",
+      "provider": "openrouter",
+      "name": "o3 Mini",
       "pricing": {
         "input": 1.1,
         "output": 4.4,
@@ -1598,18 +1579,18 @@
       "limits": {}
     },
     "o4-mini": {
-      "provider": "azure",
+      "provider": "openrouter",
+      "name": "o4 Mini",
       "pricing": {
         "input": 1.1,
         "output": 4.4,
-        "cache_read": 0.28
+        "cache_read": 0.275
       },
       "limits": {}
     },
     "phi-3-medium-128k-instruct": {
-      "provider": "azure",
+      "provider": "openrouter",
       "name": "Phi-3 Medium 128K Instruct",
-      "description": "Phi-3 128K Medium is a powerful 14-billion parameter model designed for advanced language understanding, reasoning, and instruction following. Optimized through supervised fine-tuning and preference adjustments, it excels in tasks involving common sense, mathematics, logical reasoning, and code processing.",
       "pricing": {
         "input": 1.0,
         "output": 1.0
@@ -1617,9 +1598,8 @@
       "limits": {}
     },
     "phi-3-mini-128k-instruct": {
-      "provider": "azure",
+      "provider": "openrouter",
       "name": "Phi-3 Mini 128K Instruct",
-      "description": "Phi-3 Mini is a powerful 3.8B parameter model designed for advanced language understanding, reasoning, and instruction following. Optimized through supervised fine-tuning and preference adjustments, it excels in tasks involving common sense, mathematics, logical reasoning, and code processing.",
       "pricing": {
         "input": 0.1,
         "output": 0.1
@@ -1627,9 +1607,8 @@
       "limits": {}
     },
     "phi-3.5-mini-128k-instruct": {
-      "provider": "azure",
+      "provider": "openrouter",
       "name": "Phi-3.5 Mini 128K Instruct",
-      "description": "Phi-3.5 models are lightweight, state-of-the-art open models. These models were trained with Phi-3 datasets that include both synthetic data and the filtered, publicly available websites data, with a focus on high quality and reasoning-dense properties. Phi-3.5 Mini uses 3.8B parameters, and is a dense decoder-only transformer model using the same tokenizer as Phi-3 Mini.",
       "pricing": {
         "input": 0.1,
         "output": 0.1
@@ -1637,9 +1616,8 @@
       "limits": {}
     },
     "phi-4": {
-      "provider": "azure",
+      "provider": "openrouter",
       "name": "Phi 4",
-      "description": "Microsoft Research Phi-4 is designed to perform well in complex reasoning tasks and can operate efficiently in situations with limited memory or where quick responses are needed.",
       "pricing": {
         "input": 0.07,
         "output": 0.14
@@ -1647,9 +1625,8 @@
       "limits": {}
     },
     "phi-4-multimodal-instruct": {
-      "provider": "azure",
+      "provider": "openrouter",
       "name": "Phi 4 Multimodal Instruct",
-      "description": "Phi-4 Multimodal Instruct is a versatile 5.6B parameter foundation model that combines advanced reasoning and instruction-following capabilities across both text and visual inputs, providing accurate text outputs. The unified architecture enables efficient, low-latency inference, suitable for edge and mobile deployments. Phi-4 Multimodal Instruct supports text inputs in multiple languages including Arabic, Chinese, English, French, German, Japanese, Spanish, and more, with visual input optimized primarily for English. It delivers impressive performance on multimodal tasks involving mathematical, scientific, and document reasoning, providing developers and enterprises a powerful yet compact model for sophisticated interactive applications. For more information, see the Phi-4 Multimodal blog post.",
       "pricing": {
         "input": 0.05,
         "output": 0.1
@@ -1657,9 +1634,8 @@
       "limits": {}
     },
     "phi-4-reasoning-plus": {
-      "provider": "azure",
+      "provider": "openrouter",
       "name": "Phi 4 Reasoning Plus",
-      "description": "Phi-4-reasoning-plus is an enhanced 14B parameter model from Microsoft, fine-tuned from Phi-4 with additional reinforcement learning to boost accuracy on math, science, and code reasoning tasks. It uses the same dense decoder-only transformer architecture as Phi-4, but generates longer, more comprehensive outputs structured into a step-by-step reasoning trace and final answer.",
       "pricing": {
         "input": 0.07,
         "output": 0.35
@@ -1667,37 +1643,42 @@
       "limits": {}
     },
     "phi-4-reasoning-plus:free": {
-      "provider": "azure",
+      "provider": "openrouter",
       "name": "Phi 4 Reasoning Plus (free)",
-      "description": "Phi-4-reasoning-plus is an enhanced 14B parameter model from Microsoft, fine-tuned from Phi-4 with additional reinforcement learning to boost accuracy on math, science, and code reasoning tasks. It uses the same dense decoder-only transformer architecture as Phi-4, but generates longer, more comprehensive outputs structured into a step-by-step reasoning trace and final answer.",
       "pricing": {},
       "limits": {}
     },
     "phi-4-reasoning:free": {
-      "provider": "azure",
+      "provider": "openrouter",
       "name": "Phi 4 Reasoning (free)",
-      "description": "Phi-4-reasoning is a 14B parameter dense decoder-only transformer developed by Microsoft, fine-tuned from Phi-4 to enhance complex reasoning capabilities. It uses a combination of supervised fine-tuning on chain-of-thought traces and reinforcement learning, targeting math, science, and code reasoning tasks. With a 32k context window and high inference efficiency, it is optimized for structured responses in a two-part format: reasoning trace followed by a final solution.",
       "pricing": {},
       "limits": {}
     },
     "text-embedding-3-large": {
-      "provider": "azure",
+      "provider": "openai",
+      "name": "text embedding 3",
+      "description": "Text Embedding 3 is a model that offers a balance between cost and performance.",
       "pricing": {
         "input": 0.13
       },
-      "limits": {}
+      "limits": {
+        "context_window": 8192.0
+      }
     },
     "text-embedding-3-small": {
-      "provider": "azure",
+      "provider": "openai",
+      "name": "text embedding 3",
+      "description": "Text Embedding 3 is a model that offers a balance between cost and performance.",
       "pricing": {
         "input": 0.02
       },
-      "limits": {}
+      "limits": {
+        "context_window": 8192.0
+      }
     },
     "wizardlm-2-8x22b": {
-      "provider": "azure",
+      "provider": "openrouter",
       "name": "WizardLM-2 8x22B",
-      "description": "WizardLM-2 8x22B is Microsoft AI's most advanced Wizard model. It demonstrates highly competitive performance compared to leading proprietary models, and it consistently outperforms all existing state-of-the-art opensource models.",
       "pricing": {
         "input": 0.48,
         "output": 0.48
@@ -1705,12 +1686,11 @@
       "limits": {}
     },
     "gpt-oss-120b": {
-      "provider": "cerebras",
-      "name": "GPT-OSS 120B",
-      "description": "OpenAI's flagship open source model, built on a Mixture-of-Experts (MoE) architecture with 120 billion parameters and 128 experts. Delivers frontier reasoning capabilities with record-breaking inference speeds on Cerebras hardware (~3,000 tokens/second).",
+      "provider": "ovhcloud",
+      "name": "gpt-oss-120b",
       "pricing": {
-        "input": 0.35,
-        "output": 0.75
+        "input": 0.09,
+        "output": 0.47
       },
       "limits": {
         "context_window": 131072.0
@@ -1759,9 +1739,8 @@
       "limits": {}
     },
     "command": {
-      "provider": "cohere",
+      "provider": "openrouter",
       "name": "Command",
-      "description": "Command is an instruction-following conversational model that performs language tasks with high quality, more reliably and with a longer context than our base generative models.",
       "pricing": {
         "input": 1.0,
         "output": 2.0
@@ -1769,9 +1748,8 @@
       "limits": {}
     },
     "command-a": {
-      "provider": "cohere",
+      "provider": "openrouter",
       "name": "Command A",
-      "description": "Command A is an open-weights 111B parameter model with a 256k context window focused on delivering great performance across agentic, multilingual, and coding use cases.\nCompared to other leading proprietary and open-weights models Command A delivers maximum performance with minimum hardware costs, excelling on business-critical agentic and multilingual tasks.",
       "pricing": {
         "input": 2.5,
         "output": 10.0
@@ -1779,22 +1757,20 @@
       "limits": {}
     },
     "command-r": {
-      "provider": "cohere",
+      "provider": "openrouter",
       "name": "Command R",
-      "description": "Command-R is a 35B parameter model that performs conversational language tasks at a higher quality, more reliably, and with a longer context than previous models. It can be used for complex workflows like code generation, retrieval augmented generation (RAG), tool use, and agents.",
       "pricing": {
-        "input": 0.15,
-        "output": 0.6
+        "input": 0.5,
+        "output": 1.5
       },
       "limits": {}
     },
     "command-r-plus": {
-      "provider": "cohere",
+      "provider": "openrouter",
       "name": "Command R+",
-      "description": "Command R+ is a new, 104B-parameter LLM from Cohere. It's useful for roleplay, general consumer usecases, and Retrieval Augmented Generation (RAG).",
       "pricing": {
-        "input": 2.5,
-        "output": 10.0
+        "input": 3.0,
+        "output": 15.0
       },
       "limits": {}
     },
@@ -1820,17 +1796,13 @@
       }
     },
     "deepseek-chat": {
-      "provider": "deepseek",
-      "name": "DeepSeek Chat",
-      "description": "DeepSeek-V3 is the latest model from the DeepSeek team, building upon the instruction following and coding abilities of the previous versions. Pre-trained on nearly 15 trillion tokens, the reported evaluations reveal that the model outperforms other open-source models and rivals leading closed-source models.",
+      "provider": "openrouter",
+      "name": "DeepSeek V3",
       "pricing": {
-        "input": 0.27,
-        "output": 1.1,
-        "cache_read": 0.07
+        "input": 0.38,
+        "output": 0.89
       },
-      "limits": {
-        "context_window": 64000.0
-      }
+      "limits": {}
     },
     "deepseek-reasoner": {
       "provider": "deepseek",
@@ -1916,22 +1888,26 @@
       "limits": {}
     },
     "Qwen/Qwen3.5-397B-A17B": {
-      "provider": "doubleword",
-      "name": "Qwen3.5 397B A17B",
+      "provider": "huggingface_together",
+      "name": "Qwen3.5-397B-A17B",
       "pricing": {
         "input": 0.6,
         "output": 3.6
       },
-      "limits": {}
+      "limits": {
+        "context_window": 262144.0
+      }
     },
     "Qwen/Qwen3.5-9B": {
-      "provider": "doubleword",
-      "name": "Qwen3.5 9B",
+      "provider": "huggingface_together",
+      "name": "Qwen3.5-9B",
       "pricing": {
-        "input": 0.08,
-        "output": 0.7
+        "input": 0.1,
+        "output": 0.15
       },
-      "limits": {}
+      "limits": {
+        "context_window": 262144.0
+      }
     },
     "Qwen/Qwen3.6-35B-A3B-FP8": {
       "provider": "doubleword",
@@ -1997,11 +1973,10 @@
       "limits": {}
     },
     "openai/gpt-oss-20b": {
-      "provider": "doubleword",
-      "name": "GPT OSS 20B",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.04,
-        "output": 0.3
+        "input": 0.03,
+        "output": 0.14
       },
       "limits": {}
     },
@@ -2015,16 +1990,13 @@
       "limits": {}
     },
     "deepseek-r1-0528": {
-      "provider": "fireworks",
-      "name": "DeepSeek R1 0528",
-      "description": "The updated DeepSeek-R1-0528 model delivers major improvements in reasoning, inference, and accuracy through enhanced post-training optimization and greater computational resources. It now performs at a level approaching top-tier models like O3 and Gemini 2.5 Pro, with notable gains in complex tasks such as math and programming.",
+      "provider": "openrouter",
+      "name": "R1 0528",
       "pricing": {
-        "input": 3.0,
-        "output": 8.0
+        "input": 0.5,
+        "output": 2.15
       },
-      "limits": {
-        "context_window": 160000.0
-      }
+      "limits": {}
     },
     "deepseek-v3-0324": {
       "provider": "fireworks",
@@ -2052,15 +2024,13 @@
       }
     },
     "gemma-3-27b-it": {
-      "provider": "fireworks",
-      "name": "Gemma 3 27B Instruct",
+      "provider": "openrouter",
+      "name": "Gemma 3 27B",
       "pricing": {
         "input": 0.1,
-        "output": 0.1
+        "output": 0.2
       },
-      "limits": {
-        "context_window": 131000.0
-      }
+      "limits": {}
     },
     "glm-4p7": {
       "provider": "fireworks",
@@ -2074,27 +2044,12 @@
         "context_window": 202752.0
       }
     },
-    "gpt-oss-120b": {
-      "provider": "fireworks",
-      "name": "OpenAI gpt-oss-120b",
-      "description": "OpenAI's open-weight 117B parameter MoE model designed for production, general purpose, high reasoning use-cases. Features powerful reasoning, agentic tasks, and versatile developer use cases.",
-      "pricing": {
-        "input": 0.15,
-        "output": 0.6,
-        "cache_read": 0.07
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
     "gpt-oss-20b": {
-      "provider": "fireworks",
-      "name": "OpenAI gpt-oss-20b",
-      "description": "OpenAI's open-weight 21.5B parameter model designed for powerful reasoning, agentic tasks, and versatile developer use cases. Optimized for lower latency and local or specialized tasks.",
+      "provider": "ovhcloud",
+      "name": "gpt-oss-20b",
       "pricing": {
-        "input": 0.07,
-        "output": 0.3,
-        "cache_read": 0.04
+        "input": 0.05,
+        "output": 0.18
       },
       "limits": {
         "context_window": 131072.0
@@ -2162,16 +2117,13 @@
       }
     },
     "qwen3-235b-a22b": {
-      "provider": "fireworks",
-      "name": "Qwen3 235B-A22B",
-      "description": "Qwen3 is the latest evolution in the Qwen LLM series, featuring both dense and MoE models with major advancements in reasoning, agent capabilities, multilingual support, and instruction following. It uniquely allows seamless switching between \"thinking\" (for complex logic, math, coding) and \"non-thinking\" modes (for fast, general dialogue), delivering strong performance across tasks.",
+      "provider": "openrouter",
+      "name": "Qwen3 235B A22B",
       "pricing": {
-        "input": 0.22,
-        "output": 0.88
+        "input": 0.13,
+        "output": 0.6
       },
-      "limits": {
-        "context_window": 128000.0
-      }
+      "limits": {}
     },
     "claude-3-5-haiku": {
       "provider": "google",
@@ -2180,18 +2132,6 @@
         "output": 4.0,
         "cache_read": 0.08,
         "cache_write": 1.0
-      },
-      "limits": {
-        "context_window": 200000.0
-      }
-    },
-    "claude-3-5-sonnet": {
-      "provider": "google",
-      "pricing": {
-        "input": 3.0,
-        "output": 15.0,
-        "cache_read": 0.3,
-        "cache_write": 3.75
       },
       "limits": {
         "context_window": 200000.0
@@ -2209,20 +2149,9 @@
         "context_window": 200000.0
       }
     },
-    "claude-3-haiku": {
-      "provider": "google",
-      "pricing": {
-        "input": 0.25,
-        "output": 1.25,
-        "cache_read": 0.03,
-        "cache_write": 0.3
-      },
-      "limits": {
-        "context_window": 200000.0
-      }
-    },
     "claude-3-opus": {
-      "provider": "google",
+      "provider": "openrouter",
+      "name": "Claude 3 Opus",
       "pricing": {
         "input": 15.0,
         "output": 75.0,
@@ -2253,42 +2182,6 @@
       },
       "limits": {
         "context_window": 200000.0
-      }
-    },
-    "claude-opus-4-6": {
-      "provider": "google",
-      "pricing": {
-        "input": 5.0,
-        "output": 25.0,
-        "cache_read": 0.5,
-        "cache_write": 6.25
-      },
-      "limits": {
-        "context_window": 200000.0
-      }
-    },
-    "claude-opus-4-7": {
-      "provider": "google",
-      "pricing": {
-        "input": 5.0,
-        "output": 25.0,
-        "cache_read": 0.5,
-        "cache_write": 6.25
-      },
-      "limits": {
-        "context_window": 1000000.0
-      }
-    },
-    "claude-opus-4-8": {
-      "provider": "google",
-      "pricing": {
-        "input": 5.0,
-        "output": 25.0,
-        "cache_read": 0.5,
-        "cache_write": 6.25
-      },
-      "limits": {
-        "context_window": 1000000.0
       }
     },
     "gemini-1.0-pro-vision-001": {
@@ -2354,13 +2247,13 @@
       }
     },
     "gemini-2.5-flash": {
-      "provider": "google",
+      "provider": "openrouter",
       "name": "Gemini 2.5 Flash",
-      "description": "Gemini 2.5 Flash is Google's state-of-the-art workhorse model, specifically designed for advanced reasoning, coding, mathematics, and scientific tasks. It includes built-in \"thinking\" capabilities, enabling it to provide responses with greater accuracy and nuanced context handling.",
       "pricing": {
         "input": 0.3,
         "output": 2.5,
-        "cache_read": 0.03
+        "cache_read": 0.075,
+        "cache_write": 0.3833
       },
       "limits": {}
     },
@@ -2390,24 +2283,24 @@
       }
     },
     "gemini-2.5-flash-preview": {
-      "provider": "google",
-      "name": "Gemini 2.5 Flash Preview 05-20",
-      "description": "Gemini 2.5 Flash May 20th Checkpoint is Google's state-of-the-art workhorse model, specifically designed for advanced reasoning, coding, mathematics, and scientific tasks. It includes built-in \"thinking\" capabilities, enabling it to provide responses with greater accuracy and nuanced context handling.",
+      "provider": "openrouter",
+      "name": "Gemini 2.5 Flash Preview 04-17",
       "pricing": {
         "input": 0.15,
-        "output": 0.6
+        "output": 0.6,
+        "cache_read": 0.0375,
+        "cache_write": 0.2333
       },
-      "limits": {},
-      "deprecated": true
+      "limits": {}
     },
     "gemini-2.5-pro": {
-      "provider": "google",
+      "provider": "openrouter",
       "name": "Gemini 2.5 Pro",
-      "description": "Gemini 2.5 Pro is Google's state-of-the-art AI model designed for advanced reasoning, coding, mathematics, and scientific tasks. It employs \"thinking\" capabilities, enabling it to reason through responses with enhanced accuracy and nuanced context handling. Gemini 2.5 Pro achieves top-tier performance on multiple benchmarks, including first-place positioning on the LMArena leaderboard, reflecting superior human-preference alignment and complex problem-solving abilities.",
       "pricing": {
         "input": 1.25,
         "output": 10.0,
-        "cache_read": 0.125
+        "cache_read": 0.31,
+        "cache_write": 1.625
       },
       "limits": {}
     },
@@ -2504,28 +2397,26 @@
       "limits": {}
     },
     "gemini-flash-1.5": {
-      "provider": "google",
+      "provider": "openrouter",
       "name": "Gemini 1.5 Flash",
-      "description": "Gemini 1.5 Flash is a foundation model that performs well at a variety of multimodal tasks such as visual understanding, classification, summarization, and creating content from image, audio and video. It's adept at processing visual and text inputs such as photographs, documents, infographics, and screenshots.",
       "pricing": {
         "input": 0.075,
         "output": 0.3,
-        "cache_read": 0.01875
+        "cache_read": 0.01875,
+        "cache_write": 0.1583
       },
       "limits": {}
     },
     "gemini-flash-1.5-8b": {
-      "provider": "google",
-      "name": "gemini 1.5 flash",
-      "description": "A faster, more cost-effective variant of Gemini 1.5 that maintains strong capabilities while optimizing for performance and cost efficiency. Suitable for production deployments requiring high throughput.",
+      "provider": "openrouter",
+      "name": "Gemini 1.5 Flash 8B",
       "pricing": {
         "input": 0.0375,
         "output": 0.15,
-        "cache_read": 0.01
+        "cache_read": 0.01,
+        "cache_write": 0.0583
       },
-      "limits": {
-        "context_window": 1000000.0
-      }
+      "limits": {}
     },
     "gemini-live-2.5-flash-preview": {
       "provider": "google",
@@ -2548,17 +2439,13 @@
       }
     },
     "gemini-pro-1.5": {
-      "provider": "google",
+      "provider": "openrouter",
       "name": "Gemini 1.5 Pro",
-      "description": "Google's latest multimodal model, supports image and video[0] in text or chat prompts.",
       "pricing": {
         "input": 1.25,
-        "output": 5.0,
-        "cache_read": 0.3125
+        "output": 5.0
       },
-      "limits": {
-        "context_window": 2000000.0
-      }
+      "limits": {}
     },
     "gemma-3": {
       "provider": "google",
@@ -2575,15 +2462,13 @@
       "limits": {}
     },
     "deepseek-r1-distill-llama-70b": {
-      "provider": "groq",
-      "name": "DeepSeek R1 Distill Llama 70B",
+      "provider": "openrouter",
+      "name": "R1 Distill Llama 70B",
       "pricing": {
-        "input": 0.75,
-        "output": 0.99
+        "input": 0.1,
+        "output": 0.4
       },
-      "limits": {
-        "context_window": 131072.0
-      }
+      "limits": {}
     },
     "gemma-7b-it": {
       "provider": "groq",
@@ -2693,10 +2578,11 @@
       "limits": {}
     },
     "llama-guard-3-8b": {
-      "provider": "groq",
+      "provider": "openrouter",
+      "name": "Llama Guard 3 8B",
       "pricing": {
-        "input": 0.2,
-        "output": 0.2
+        "input": 0.02,
+        "output": 0.06
       },
       "limits": {}
     },
@@ -2800,28 +2686,12 @@
       }
     },
     "openai/gpt-oss-120b": {
-      "provider": "groq",
-      "description": "GPT-OSS 120B is OpenAI's flagship open source model, built on a Mixture-of-Experts (MoE) architecture with\n120 billion parameters and 128 experts.\n",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.15,
-        "output": 0.6,
-        "cache_read": 0.075
+        "input": 0.04,
+        "output": 0.2
       },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-20b": {
-      "provider": "groq",
-      "description": "GPT-OSS 20B is OpenAI's flagship open source model, built on a Mixture-of-Experts (MoE) architecture with\n20 billion parameters and 32 experts.\n",
-      "pricing": {
-        "input": 0.075,
-        "output": 0.3,
-        "cache_read": 0.0375
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
+      "limits": {}
     },
     "qwen/qwen3-32b": {
       "provider": "groq",
@@ -2833,108 +2703,52 @@
       "limits": {}
     },
     "meta-llama/Llama-3.1-8B-Instruct": {
-      "provider": "huggingface_cerebras",
+      "provider": "huggingface_sambanova",
       "name": "Llama-3.1-8B-Instruct",
       "pricing": {
         "input": 0.1,
-        "output": 0.1
+        "output": 0.2
       },
-      "limits": {}
+      "limits": {
+        "context_window": 16384.0
+      }
     },
     "meta-llama/Llama-3.3-70B-Instruct": {
-      "provider": "huggingface_fireworks-ai",
+      "provider": "huggingface_together",
       "name": "Llama-3.3-70B-Instruct",
       "pricing": {
-        "input": 0.9,
-        "output": 0.9
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-120b": {
-      "provider": "huggingface_fireworks-ai",
-      "name": "gpt-oss-120b",
-      "pricing": {
-        "input": 0.15,
-        "output": 0.6
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-20b": {
-      "provider": "huggingface_fireworks-ai",
-      "name": "gpt-oss-20b",
-      "pricing": {
-        "input": 0.05,
-        "output": 0.2
+        "input": 0.88,
+        "output": 0.88
       },
       "limits": {
         "context_window": 131072.0
       }
     },
     "Qwen/Qwen3-32B": {
-      "provider": "huggingface_groq",
+      "provider": "huggingface_sambanova",
       "name": "Qwen3-32B",
       "pricing": {
-        "input": 0.29,
-        "output": 0.59
+        "input": 0.4,
+        "output": 0.8
       },
       "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "meta-llama/Llama-3.3-70B-Instruct": {
-      "provider": "huggingface_groq",
-      "name": "Llama-3.3-70B-Instruct",
-      "pricing": {
-        "input": 0.59,
-        "output": 0.79
-      },
-      "limits": {
-        "context_window": 131072.0
+        "context_window": 32768.0
       }
     },
     "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
-      "provider": "huggingface_groq",
-      "name": "Llama-4-Scout-17B-16E-Instruct",
+      "provider": "together",
       "pricing": {
-        "input": 0.11,
-        "output": 0.34
+        "input": 0.18,
+        "output": 0.59
       },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-120b": {
-      "provider": "huggingface_groq",
-      "name": "gpt-oss-120b",
-      "pricing": {
-        "input": 0.15,
-        "output": 0.75
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-20b": {
-      "provider": "huggingface_groq",
-      "name": "gpt-oss-20b",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.5
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
+      "limits": {}
     },
     "Qwen/Qwen2.5-VL-72B-Instruct": {
-      "provider": "huggingface_hyperbolic",
+      "provider": "huggingface_ovhcloud",
       "name": "Qwen2.5-VL-72B-Instruct",
       "pricing": {
-        "input": 0.6,
-        "output": 0.6
+        "input": 1.01,
+        "output": 1.01
       },
       "limits": {
         "context_window": 32768.0
@@ -2952,18 +2766,18 @@
       }
     },
     "Qwen/Qwen3-235B-A22B-Instruct-2507": {
-      "provider": "huggingface_hyperbolic",
+      "provider": "huggingface_together",
       "name": "Qwen3-235B-A22B-Instruct-2507",
       "pricing": {
-        "input": 2.0,
-        "output": 2.0
+        "input": 0.2,
+        "output": 0.6
       },
       "limits": {
         "context_window": 262144.0
       }
     },
     "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
-      "provider": "huggingface_hyperbolic",
+      "provider": "huggingface_together",
       "name": "Qwen3-Coder-480B-A35B-Instruct",
       "pricing": {
         "input": 2.0,
@@ -2974,88 +2788,55 @@
       }
     },
     "Qwen/Qwen3-Next-80B-A3B-Instruct": {
-      "provider": "huggingface_hyperbolic",
+      "provider": "huggingface_together",
       "name": "Qwen3-Next-80B-A3B-Instruct",
       "pricing": {
-        "input": 0.3,
-        "output": 0.3
+        "input": 0.15,
+        "output": 1.5
       },
       "limits": {
         "context_window": 262144.0
       }
     },
     "Qwen/Qwen3-Next-80B-A3B-Thinking": {
-      "provider": "huggingface_hyperbolic",
+      "provider": "huggingface_novita",
       "name": "Qwen3-Next-80B-A3B-Thinking",
       "pricing": {
-        "input": 0.3,
-        "output": 0.3
+        "input": 0.15,
+        "output": 1.5
       },
       "limits": {
-        "context_window": 262144.0
+        "context_window": 131072.0
       }
     },
     "deepseek-ai/DeepSeek-R1": {
-      "provider": "huggingface_hyperbolic",
+      "provider": "huggingface_together",
       "name": "DeepSeek-R1",
       "pricing": {
-        "input": 2.0,
-        "output": 2.0
+        "input": 3.0,
+        "output": 7.0
       },
       "limits": {
         "context_window": 163840.0
       }
     },
     "deepseek-ai/DeepSeek-R1-0528": {
-      "provider": "huggingface_hyperbolic",
+      "provider": "huggingface_sambanova",
       "name": "DeepSeek-R1-0528",
       "pricing": {
-        "input": 3.0,
-        "output": 3.0
+        "input": 5.0,
+        "output": 7.0
       },
       "limits": {
-        "context_window": 163840.0
+        "context_window": 131072.0
       }
     },
     "deepseek-ai/DeepSeek-V3-0324": {
-      "provider": "huggingface_hyperbolic",
+      "provider": "huggingface_sambanova",
       "name": "DeepSeek-V3-0324",
       "pricing": {
-        "input": 1.25,
-        "output": 1.25
-      },
-      "limits": {
-        "context_window": 163840.0
-      }
-    },
-    "meta-llama/Llama-3.3-70B-Instruct": {
-      "provider": "huggingface_hyperbolic",
-      "name": "Llama-3.3-70B-Instruct",
-      "pricing": {
-        "input": 0.4,
-        "output": 0.4
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-120b": {
-      "provider": "huggingface_hyperbolic",
-      "name": "gpt-oss-120b",
-      "pricing": {
-        "input": 0.3,
-        "output": 0.3
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-20b": {
-      "provider": "huggingface_hyperbolic",
-      "name": "gpt-oss-20b",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.1
+        "input": 3.0,
+        "output": 4.5
       },
       "limits": {
         "context_window": 131072.0
@@ -3105,37 +2886,15 @@
         "context_window": 32768.0
       }
     },
-    "Qwen/Qwen2.5-VL-72B-Instruct": {
-      "provider": "huggingface_nebius",
-      "name": "Qwen2.5-VL-72B-Instruct",
-      "pricing": {
-        "input": 0.25,
-        "output": 0.75
-      },
-      "limits": {
-        "context_window": 32000.0
-      }
-    },
-    "Qwen/Qwen3-235B-A22B-Instruct-2507": {
-      "provider": "huggingface_nebius",
-      "name": "Qwen3-235B-A22B-Instruct-2507",
-      "pricing": {
-        "input": 0.2,
-        "output": 0.6
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
     "Qwen/Qwen3-235B-A22B-Thinking-2507": {
-      "provider": "huggingface_nebius",
+      "provider": "huggingface_novita",
       "name": "Qwen3-235B-A22B-Thinking-2507",
       "pricing": {
-        "input": 0.2,
-        "output": 0.8
+        "input": 0.3,
+        "output": 3.0
       },
       "limits": {
-        "context_window": 262144.0
+        "context_window": 131072.0
       }
     },
     "Qwen/Qwen3-30B-A3B-Instruct-2507": {
@@ -3160,59 +2919,15 @@
         "context_window": 262144.0
       }
     },
-    "Qwen/Qwen3-32B": {
-      "provider": "huggingface_nebius",
-      "name": "Qwen3-32B",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.3
-      },
-      "limits": {
-        "context_window": 40960.0
-      }
-    },
     "Qwen/Qwen3-Coder-30B-A3B-Instruct": {
-      "provider": "huggingface_nebius",
+      "provider": "huggingface_ovhcloud",
       "name": "Qwen3-Coder-30B-A3B-Instruct",
       "pricing": {
-        "input": 0.1,
-        "output": 0.3
+        "input": 0.07,
+        "output": 0.26
       },
       "limits": {
         "context_window": 262144.0
-      }
-    },
-    "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
-      "provider": "huggingface_nebius",
-      "name": "Qwen3-Coder-480B-A35B-Instruct",
-      "pricing": {
-        "input": 0.4,
-        "output": 1.8
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
-    "deepseek-ai/DeepSeek-R1-0528": {
-      "provider": "huggingface_nebius",
-      "name": "DeepSeek-R1-0528",
-      "pricing": {
-        "input": 0.8,
-        "output": 2.4
-      },
-      "limits": {
-        "context_window": 163840.0
-      }
-    },
-    "deepseek-ai/DeepSeek-V3-0324": {
-      "provider": "huggingface_nebius",
-      "name": "DeepSeek-V3-0324",
-      "pricing": {
-        "input": 0.75,
-        "output": 2.25
-      },
-      "limits": {
-        "context_window": 32768.0
       }
     },
     "google/gemma-2-2b-it": {
@@ -3227,62 +2942,34 @@
       }
     },
     "google/gemma-2-9b-it": {
-      "provider": "huggingface_nebius",
-      "name": "gemma-2-9b-it",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.03,
-        "output": 0.09
+        "input": 0.07,
+        "output": 0.07
       },
-      "limits": {
-        "context_window": 8192.0
-      }
+      "limits": {}
     },
     "google/gemma-3-27b-it": {
-      "provider": "huggingface_nebius",
-      "name": "gemma-3-27b-it",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.2,
-        "output": 0.6
+        "input": 0.1,
+        "output": 0.2
       },
-      "limits": {
-        "context_window": 110000.0
-      }
-    },
-    "meta-llama/Llama-3.1-8B-Instruct": {
-      "provider": "huggingface_nebius",
-      "name": "Llama-3.1-8B-Instruct",
-      "pricing": {
-        "input": 0.03,
-        "output": 0.09
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "meta-llama/Llama-3.3-70B-Instruct": {
-      "provider": "huggingface_nebius",
-      "name": "Llama-3.3-70B-Instruct",
-      "pricing": {
-        "input": 0.25,
-        "output": 0.75
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
+      "limits": {}
     },
     "moonshotai/Kimi-K2-Instruct": {
-      "provider": "huggingface_nebius",
+      "provider": "huggingface_novita",
       "name": "Kimi-K2-Instruct",
       "pricing": {
-        "input": 0.5,
-        "output": 2.4
+        "input": 0.57,
+        "output": 2.3
       },
       "limits": {
         "context_window": 131072.0
       }
     },
     "moonshotai/Kimi-K2-Thinking": {
-      "provider": "huggingface_nebius",
+      "provider": "huggingface_novita",
       "name": "Kimi-K2-Thinking",
       "pricing": {
         "input": 0.6,
@@ -3314,19 +3001,8 @@
         "context_window": 131072.0
       }
     },
-    "openai/gpt-oss-120b": {
-      "provider": "huggingface_nebius",
-      "name": "gpt-oss-120b",
-      "pricing": {
-        "input": 0.15,
-        "output": 0.6
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
     "zai-org/GLM-4.5": {
-      "provider": "huggingface_nebius",
+      "provider": "huggingface_novita",
       "name": "GLM-4.5",
       "pricing": {
         "input": 0.6,
@@ -3337,11 +3013,11 @@
       }
     },
     "zai-org/GLM-4.5-Air": {
-      "provider": "huggingface_nebius",
+      "provider": "huggingface_novita",
       "name": "GLM-4.5-Air",
       "pricing": {
-        "input": 0.2,
-        "output": 1.2
+        "input": 0.13,
+        "output": 0.85
       },
       "limits": {
         "context_window": 131072.0
@@ -3392,36 +3068,14 @@
       }
     },
     "Qwen/Qwen3-235B-A22B": {
-      "provider": "huggingface_novita",
+      "provider": "huggingface_nscale",
       "name": "Qwen3-235B-A22B",
       "pricing": {
         "input": 0.2,
-        "output": 0.8
+        "output": 0.6
       },
       "limits": {
-        "context_window": 40960.0
-      }
-    },
-    "Qwen/Qwen3-235B-A22B-Instruct-2507": {
-      "provider": "huggingface_novita",
-      "name": "Qwen3-235B-A22B-Instruct-2507",
-      "pricing": {
-        "input": 0.09,
-        "output": 0.58
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "Qwen/Qwen3-235B-A22B-Thinking-2507": {
-      "provider": "huggingface_novita",
-      "name": "Qwen3-235B-A22B-Thinking-2507",
-      "pricing": {
-        "input": 0.3,
-        "output": 3.0
-      },
-      "limits": {
-        "context_window": 131072.0
+        "context_window": 32000.0
       }
     },
     "Qwen/Qwen3-30B-A3B": {
@@ -3435,28 +3089,6 @@
         "context_window": 40960.0
       }
     },
-    "Qwen/Qwen3-32B": {
-      "provider": "huggingface_novita",
-      "name": "Qwen3-32B",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.45
-      },
-      "limits": {
-        "context_window": 40960.0
-      }
-    },
-    "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
-      "provider": "huggingface_novita",
-      "name": "Qwen3-Coder-480B-A35B-Instruct",
-      "pricing": {
-        "input": 0.3,
-        "output": 1.3
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
     "Qwen/Qwen3-Coder-Next": {
       "provider": "huggingface_novita",
       "name": "Qwen3-Coder-Next",
@@ -3466,28 +3098,6 @@
       },
       "limits": {
         "context_window": 262144.0
-      }
-    },
-    "Qwen/Qwen3-Next-80B-A3B-Instruct": {
-      "provider": "huggingface_novita",
-      "name": "Qwen3-Next-80B-A3B-Instruct",
-      "pricing": {
-        "input": 0.15,
-        "output": 1.5
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "Qwen/Qwen3-Next-80B-A3B-Thinking": {
-      "provider": "huggingface_novita",
-      "name": "Qwen3-Next-80B-A3B-Thinking",
-      "pricing": {
-        "input": 0.15,
-        "output": 1.5
-      },
-      "limits": {
-        "context_window": 131072.0
       }
     },
     "Qwen/Qwen3-VL-235B-A22B-Instruct": {
@@ -3535,14 +3145,14 @@
       }
     },
     "Qwen/Qwen3-VL-8B-Instruct": {
-      "provider": "huggingface_novita",
+      "provider": "huggingface_together",
       "name": "Qwen3-VL-8B-Instruct",
       "pricing": {
-        "input": 0.08,
-        "output": 0.5
+        "input": 0.18000000000000002,
+        "output": 0.68
       },
       "limits": {
-        "context_window": 131072.0
+        "context_window": 262144.0
       }
     },
     "Qwen/Qwen3.5-122B-A10B": {
@@ -3578,17 +3188,6 @@
         "context_window": 262144.0
       }
     },
-    "Qwen/Qwen3.5-397B-A17B": {
-      "provider": "huggingface_novita",
-      "name": "Qwen3.5-397B-A17B",
-      "pricing": {
-        "input": 0.6,
-        "output": 3.6
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
     "Sao10K/L3-70B-Euryale-v2.1": {
       "provider": "huggingface_novita",
       "name": "L3-70B-Euryale-v2.1",
@@ -3612,15 +3211,12 @@
       }
     },
     "Sao10K/L3-8B-Stheno-v3.2": {
-      "provider": "huggingface_novita",
-      "name": "L3-8B-Stheno-v3.2",
+      "provider": "novita",
       "pricing": {
         "input": 0.05,
         "output": 0.05
       },
-      "limits": {
-        "context_window": 8192.0
-      }
+      "limits": {}
     },
     "XiaomiMiMo/MiMo-V2-Flash": {
       "provider": "huggingface_novita",
@@ -3699,56 +3295,34 @@
         "context_window": 160000.0
       }
     },
-    "deepseek-ai/DeepSeek-R1": {
-      "provider": "huggingface_novita",
-      "name": "DeepSeek-R1",
-      "pricing": {
-        "input": 0.7,
-        "output": 2.5
-      },
-      "limits": {
-        "context_window": 64000.0
-      }
-    },
     "deepseek-ai/DeepSeek-R1-Distill-Llama-70B": {
-      "provider": "huggingface_novita",
+      "provider": "huggingface_sambanova",
       "name": "DeepSeek-R1-Distill-Llama-70B",
       "pricing": {
-        "input": 0.8,
-        "output": 0.8
+        "input": 0.7,
+        "output": 1.4
       },
       "limits": {
-        "context_window": 8192.0
+        "context_window": 131072.0
       }
     },
     "deepseek-ai/DeepSeek-V3": {
-      "provider": "huggingface_novita",
+      "provider": "huggingface_together",
       "name": "DeepSeek-V3",
       "pricing": {
-        "input": 0.4,
-        "output": 1.3
+        "input": 1.25,
+        "output": 1.25
       },
       "limits": {
-        "context_window": 64000.0
-      }
-    },
-    "deepseek-ai/DeepSeek-V3-0324": {
-      "provider": "huggingface_novita",
-      "name": "DeepSeek-V3-0324",
-      "pricing": {
-        "input": 0.27,
-        "output": 1.12
-      },
-      "limits": {
-        "context_window": 163840.0
+        "context_window": 131072.0
       }
     },
     "deepseek-ai/DeepSeek-V3.1": {
-      "provider": "huggingface_novita",
+      "provider": "huggingface_together",
       "name": "DeepSeek-V3.1",
       "pricing": {
-        "input": 0.27,
-        "output": 1.0
+        "input": 0.6,
+        "output": 1.7
       },
       "limits": {
         "context_window": 131072.0
@@ -3776,49 +3350,13 @@
         "context_window": 163840.0
       }
     },
-    "meta-llama/Llama-3.1-8B-Instruct": {
-      "provider": "huggingface_novita",
-      "name": "Llama-3.1-8B-Instruct",
-      "pricing": {
-        "input": 0.02,
-        "output": 0.05
-      },
-      "limits": {
-        "context_window": 16384.0
-      }
-    },
-    "meta-llama/Llama-3.3-70B-Instruct": {
-      "provider": "huggingface_novita",
-      "name": "Llama-3.3-70B-Instruct",
-      "pricing": {
-        "input": 0.135,
-        "output": 0.4
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
     "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8": {
-      "provider": "huggingface_novita",
-      "name": "Llama-4-Maverick-17B-128E-Instruct-FP8",
+      "provider": "together",
       "pricing": {
         "input": 0.27,
         "output": 0.85
       },
-      "limits": {
-        "context_window": 1048576.0
-      }
-    },
-    "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
-      "provider": "huggingface_novita",
-      "name": "Llama-4-Scout-17B-16E-Instruct",
-      "pricing": {
-        "input": 0.18,
-        "output": 0.59
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
+      "limits": {}
     },
     "meta-llama/Meta-Llama-3-70B-Instruct": {
       "provider": "huggingface_novita",
@@ -3842,17 +3380,6 @@
         "context_window": 8192.0
       }
     },
-    "moonshotai/Kimi-K2-Instruct": {
-      "provider": "huggingface_novita",
-      "name": "Kimi-K2-Instruct",
-      "pricing": {
-        "input": 0.57,
-        "output": 2.3
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
     "moonshotai/Kimi-K2-Instruct-0905": {
       "provider": "huggingface_novita",
       "name": "Kimi-K2-Instruct-0905",
@@ -3864,48 +3391,15 @@
         "context_window": 262144.0
       }
     },
-    "moonshotai/Kimi-K2-Thinking": {
-      "provider": "huggingface_novita",
-      "name": "Kimi-K2-Thinking",
-      "pricing": {
-        "input": 0.6,
-        "output": 2.5
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
     "moonshotai/Kimi-K2.5": {
-      "provider": "huggingface_novita",
+      "provider": "huggingface_together",
       "name": "Kimi-K2.5",
       "pricing": {
-        "input": 0.6,
-        "output": 3.0
+        "input": 0.5,
+        "output": 2.8
       },
       "limits": {
         "context_window": 262144.0
-      }
-    },
-    "openai/gpt-oss-120b": {
-      "provider": "huggingface_novita",
-      "name": "gpt-oss-120b",
-      "pricing": {
-        "input": 0.05,
-        "output": 0.25
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-20b": {
-      "provider": "huggingface_novita",
-      "name": "gpt-oss-20b",
-      "pricing": {
-        "input": 0.04,
-        "output": 0.15
-      },
-      "limits": {
-        "context_window": 131072.0
       }
     },
     "zai-org/AutoGLM-Phone-9B-Multilingual": {
@@ -3930,28 +3424,6 @@
         "context_window": 32000.0
       }
     },
-    "zai-org/GLM-4.5": {
-      "provider": "huggingface_novita",
-      "name": "GLM-4.5",
-      "pricing": {
-        "input": 0.6,
-        "output": 2.2
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "zai-org/GLM-4.5-Air": {
-      "provider": "huggingface_novita",
-      "name": "GLM-4.5-Air",
-      "pricing": {
-        "input": 0.13,
-        "output": 0.85
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
     "zai-org/GLM-4.5V": {
       "provider": "huggingface_novita",
       "name": "GLM-4.5V",
@@ -3964,14 +3436,14 @@
       }
     },
     "zai-org/GLM-4.6": {
-      "provider": "huggingface_novita",
+      "provider": "huggingface_together",
       "name": "GLM-4.6",
       "pricing": {
-        "input": 0.55,
+        "input": 0.6,
         "output": 2.2
       },
       "limits": {
-        "context_window": 204800.0
+        "context_window": 202752.0
       }
     },
     "zai-org/GLM-4.6V-Flash": {
@@ -4008,14 +3480,14 @@
       }
     },
     "zai-org/GLM-5": {
-      "provider": "huggingface_novita",
+      "provider": "huggingface_together",
       "name": "GLM-5",
       "pricing": {
         "input": 1.0,
         "output": 3.2
       },
       "limits": {
-        "context_window": 202800.0
+        "context_window": 202752.0
       }
     },
     "Qwen/QwQ-32B": {
@@ -4073,28 +3545,6 @@
         "context_window": 40960.0
       }
     },
-    "Qwen/Qwen3-235B-A22B": {
-      "provider": "huggingface_nscale",
-      "name": "Qwen3-235B-A22B",
-      "pricing": {
-        "input": 0.2,
-        "output": 0.6
-      },
-      "limits": {
-        "context_window": 32000.0
-      }
-    },
-    "Qwen/Qwen3-32B": {
-      "provider": "huggingface_nscale",
-      "name": "Qwen3-32B",
-      "pricing": {
-        "input": 0.08,
-        "output": 0.25
-      },
-      "limits": {
-        "context_window": 40960.0
-      }
-    },
     "Qwen/Qwen3-4B-Instruct-2507": {
       "provider": "huggingface_nscale",
       "name": "Qwen3-4B-Instruct-2507",
@@ -4126,17 +3576,6 @@
       },
       "limits": {
         "context_window": 40960.0
-      }
-    },
-    "deepseek-ai/DeepSeek-R1-Distill-Llama-70B": {
-      "provider": "huggingface_nscale",
-      "name": "DeepSeek-R1-Distill-Llama-70B",
-      "pricing": {
-        "input": 0.75,
-        "output": 0.75
-      },
-      "limits": {
-        "context_window": 131072.0
       }
     },
     "deepseek-ai/DeepSeek-R1-Distill-Llama-8B": {
@@ -4178,138 +3617,6 @@
       "pricing": {
         "input": 0.15,
         "output": 0.15
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "meta-llama/Llama-3.1-8B-Instruct": {
-      "provider": "huggingface_nscale",
-      "name": "Llama-3.1-8B-Instruct",
-      "pricing": {
-        "input": 0.06,
-        "output": 0.06
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "meta-llama/Llama-3.3-70B-Instruct": {
-      "provider": "huggingface_nscale",
-      "name": "Llama-3.3-70B-Instruct",
-      "pricing": {
-        "input": 0.4,
-        "output": 0.4
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
-      "provider": "huggingface_nscale",
-      "name": "Llama-4-Scout-17B-16E-Instruct",
-      "pricing": {
-        "input": 0.09,
-        "output": 0.29
-      },
-      "limits": {
-        "context_window": 890000.0
-      }
-    },
-    "openai/gpt-oss-120b": {
-      "provider": "huggingface_nscale",
-      "name": "gpt-oss-120b",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.4
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-20b": {
-      "provider": "huggingface_nscale",
-      "name": "gpt-oss-20b",
-      "pricing": {
-        "input": 0.05,
-        "output": 0.2
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "Qwen/Qwen2.5-VL-72B-Instruct": {
-      "provider": "huggingface_ovhcloud",
-      "name": "Qwen2.5-VL-72B-Instruct",
-      "pricing": {
-        "input": 1.01,
-        "output": 1.01
-      },
-      "limits": {
-        "context_window": 32768.0
-      }
-    },
-    "Qwen/Qwen3-32B": {
-      "provider": "huggingface_ovhcloud",
-      "name": "Qwen3-32B",
-      "pricing": {
-        "input": 0.09,
-        "output": 0.25
-      },
-      "limits": {
-        "context_window": 32768.0
-      }
-    },
-    "Qwen/Qwen3-Coder-30B-A3B-Instruct": {
-      "provider": "huggingface_ovhcloud",
-      "name": "Qwen3-Coder-30B-A3B-Instruct",
-      "pricing": {
-        "input": 0.07,
-        "output": 0.26
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
-    "meta-llama/Llama-3.1-8B-Instruct": {
-      "provider": "huggingface_ovhcloud",
-      "name": "Llama-3.1-8B-Instruct",
-      "pricing": {
-        "input": 0.11,
-        "output": 0.11
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "meta-llama/Llama-3.3-70B-Instruct": {
-      "provider": "huggingface_ovhcloud",
-      "name": "Llama-3.3-70B-Instruct",
-      "pricing": {
-        "input": 0.74,
-        "output": 0.74
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-120b": {
-      "provider": "huggingface_ovhcloud",
-      "name": "gpt-oss-120b",
-      "pricing": {
-        "input": 0.09,
-        "output": 0.47
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-20b": {
-      "provider": "huggingface_ovhcloud",
-      "name": "gpt-oss-20b",
-      "pricing": {
-        "input": 0.05,
-        "output": 0.18
       },
       "limits": {
         "context_window": 131072.0
@@ -4387,83 +3694,6 @@
       },
       "limits": {}
     },
-    "Qwen/Qwen3-32B": {
-      "provider": "huggingface_sambanova",
-      "name": "Qwen3-32B",
-      "pricing": {
-        "input": 0.4,
-        "output": 0.8
-      },
-      "limits": {
-        "context_window": 32768.0
-      }
-    },
-    "deepseek-ai/DeepSeek-R1-0528": {
-      "provider": "huggingface_sambanova",
-      "name": "DeepSeek-R1-0528",
-      "pricing": {
-        "input": 5.0,
-        "output": 7.0
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "deepseek-ai/DeepSeek-R1-Distill-Llama-70B": {
-      "provider": "huggingface_sambanova",
-      "name": "DeepSeek-R1-Distill-Llama-70B",
-      "pricing": {
-        "input": 0.7,
-        "output": 1.4
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "deepseek-ai/DeepSeek-V3-0324": {
-      "provider": "huggingface_sambanova",
-      "name": "DeepSeek-V3-0324",
-      "pricing": {
-        "input": 3.0,
-        "output": 4.5
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "meta-llama/Llama-3.1-8B-Instruct": {
-      "provider": "huggingface_sambanova",
-      "name": "Llama-3.1-8B-Instruct",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.2
-      },
-      "limits": {
-        "context_window": 16384.0
-      }
-    },
-    "meta-llama/Llama-3.3-70B-Instruct": {
-      "provider": "huggingface_sambanova",
-      "name": "Llama-3.3-70B-Instruct",
-      "pricing": {
-        "input": 0.6,
-        "output": 1.2
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-120b": {
-      "provider": "huggingface_sambanova",
-      "name": "gpt-oss-120b",
-      "pricing": {
-        "input": 0.22,
-        "output": 0.59
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
     "tokyotech-llm/Llama-3.3-Swallow-70B-Instruct-v0.4": {
       "provider": "huggingface_sambanova",
       "name": "Llama-3.3-Swallow-70B-Instruct-v0.4",
@@ -4497,78 +3727,12 @@
         "context_window": 32768.0
       }
     },
-    "Qwen/Qwen3-235B-A22B-Instruct-2507": {
-      "provider": "huggingface_together",
-      "name": "Qwen3-235B-A22B-Instruct-2507",
-      "pricing": {
-        "input": 0.2,
-        "output": 0.6
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
-    "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
-      "provider": "huggingface_together",
-      "name": "Qwen3-Coder-480B-A35B-Instruct",
-      "pricing": {
-        "input": 2.0,
-        "output": 2.0
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
     "Qwen/Qwen3-Coder-Next-FP8": {
       "provider": "huggingface_together",
       "name": "Qwen3-Coder-Next-FP8",
       "pricing": {
         "input": 0.5,
         "output": 1.2
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
-    "Qwen/Qwen3-Next-80B-A3B-Instruct": {
-      "provider": "huggingface_together",
-      "name": "Qwen3-Next-80B-A3B-Instruct",
-      "pricing": {
-        "input": 0.15,
-        "output": 1.5
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
-    "Qwen/Qwen3-VL-8B-Instruct": {
-      "provider": "huggingface_together",
-      "name": "Qwen3-VL-8B-Instruct",
-      "pricing": {
-        "input": 0.18000000000000002,
-        "output": 0.68
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
-    "Qwen/Qwen3.5-397B-A17B": {
-      "provider": "huggingface_together",
-      "name": "Qwen3.5-397B-A17B",
-      "pricing": {
-        "input": 0.6,
-        "output": 3.6
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
-    "Qwen/Qwen3.5-9B": {
-      "provider": "huggingface_together",
-      "name": "Qwen3.5-9B",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.15
       },
       "limits": {
         "context_window": 262144.0
@@ -4593,39 +3757,6 @@
         "context_window": 163840.0
       }
     },
-    "deepseek-ai/DeepSeek-R1": {
-      "provider": "huggingface_together",
-      "name": "DeepSeek-R1",
-      "pricing": {
-        "input": 3.0,
-        "output": 7.0
-      },
-      "limits": {
-        "context_window": 163840.0
-      }
-    },
-    "deepseek-ai/DeepSeek-V3": {
-      "provider": "huggingface_together",
-      "name": "DeepSeek-V3",
-      "pricing": {
-        "input": 1.25,
-        "output": 1.25
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "deepseek-ai/DeepSeek-V3.1": {
-      "provider": "huggingface_together",
-      "name": "DeepSeek-V3.1",
-      "pricing": {
-        "input": 0.6,
-        "output": 1.7
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
     "google/gemma-3n-E4B-it": {
       "provider": "huggingface_together",
       "name": "gemma-3n-E4B-it",
@@ -4635,61 +3766,6 @@
       },
       "limits": {
         "context_window": 32768.0
-      }
-    },
-    "meta-llama/Llama-3.3-70B-Instruct": {
-      "provider": "huggingface_together",
-      "name": "Llama-3.3-70B-Instruct",
-      "pricing": {
-        "input": 0.88,
-        "output": 0.88
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8": {
-      "provider": "huggingface_together",
-      "name": "Llama-4-Maverick-17B-128E-Instruct-FP8",
-      "pricing": {
-        "input": 0.27,
-        "output": 0.85
-      },
-      "limits": {
-        "context_window": 1048576.0
-      }
-    },
-    "moonshotai/Kimi-K2.5": {
-      "provider": "huggingface_together",
-      "name": "Kimi-K2.5",
-      "pricing": {
-        "input": 0.5,
-        "output": 2.8
-      },
-      "limits": {
-        "context_window": 262144.0
-      }
-    },
-    "openai/gpt-oss-120b": {
-      "provider": "huggingface_together",
-      "name": "gpt-oss-120b",
-      "pricing": {
-        "input": 0.15,
-        "output": 0.6
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "openai/gpt-oss-20b": {
-      "provider": "huggingface_together",
-      "name": "gpt-oss-20b",
-      "pricing": {
-        "input": 0.05,
-        "output": 0.2
-      },
-      "limits": {
-        "context_window": 131072.0
       }
     },
     "zai-org/GLM-4.5-Air-FP8": {
@@ -4703,34 +3779,12 @@
         "context_window": 131072.0
       }
     },
-    "zai-org/GLM-4.6": {
-      "provider": "huggingface_together",
-      "name": "GLM-4.6",
-      "pricing": {
-        "input": 0.6,
-        "output": 2.2
-      },
-      "limits": {
-        "context_window": 202752.0
-      }
-    },
     "zai-org/GLM-4.7-FP8": {
       "provider": "huggingface_together",
       "name": "GLM-4.7-FP8",
       "pricing": {
         "input": 0.45,
         "output": 2.0
-      },
-      "limits": {
-        "context_window": 202752.0
-      }
-    },
-    "zai-org/GLM-5": {
-      "provider": "huggingface_together",
-      "name": "GLM-5",
-      "pricing": {
-        "input": 1.0,
-        "output": 3.2
       },
       "limits": {
         "context_window": 202752.0
@@ -4747,9 +3801,8 @@
       "limits": {}
     },
     "devstral-small": {
-      "provider": "mistral",
+      "provider": "openrouter",
       "name": "Devstral Small",
-      "description": "Devstral-Small-2505 is a 24B parameter agentic LLM fine-tuned from Mistral-Small-3.1, jointly developed by Mistral AI and All Hands AI for advanced software engineering tasks. It is optimized for codebase exploration, multi-file editing, and integration into coding agents, achieving state-of-the-art results on SWE-Bench Verified (46.8%).",
       "pricing": {
         "input": 0.06,
         "output": 0.12
@@ -4757,16 +3810,15 @@
       "limits": {}
     },
     "devstral-small:free": {
-      "provider": "mistral",
+      "provider": "openrouter",
       "name": "Devstral Small (free)",
-      "description": "Devstral-Small-2505 is a 24B parameter agentic LLM fine-tuned from Mistral-Small-3.1, jointly developed by Mistral AI and All Hands AI for advanced software engineering tasks. It is optimized for codebase exploration, multi-file editing, and integration into coding agents, achieving state-of-the-art results on SWE-Bench Verified (46.8%).",
       "pricing": {},
       "limits": {}
     },
     "magistral-medium": {
       "provider": "mistral",
       "name": "Magistral Medium",
-      "description": "Magistral is Mistral's first reasoning model. It is ideal for general purpose use requiring longer thought processing and better accuracy than with non-reasoning LLMs. From legal research and financial forecasting to software development and creative storytelling — this model solves multi-step challenges where transparency and precision are critical.",
+      "description": "Magistral is Mistral's first reasoning model. It is ideal for general purpose use requiring longer thought processing and better accuracy than with non-reasoning LLMs. From legal research and financial forecasting to software development and creative storytelling \u2014 this model solves multi-step challenges where transparency and precision are critical.",
       "pricing": {
         "input": 2.0,
         "output": 5.0
@@ -4784,9 +3836,8 @@
       "limits": {}
     },
     "ministral-3b": {
-      "provider": "mistral",
+      "provider": "openrouter",
       "name": "Ministral 3B",
-      "description": "Ministral 3B is a 3B parameter model optimized for on-device and edge computing. It excels in knowledge, commonsense reasoning, and function-calling, outperforming larger models like Mistral 7B on most benchmarks. Supporting up to 128k context length, it's ideal for orchestrating agentic workflows and specialist tasks with efficient inference.",
       "pricing": {
         "input": 0.04,
         "output": 0.04
@@ -4794,12 +3845,11 @@
       "limits": {}
     },
     "ministral-8b": {
-      "provider": "mistral",
-      "name": "Ministral 8B 24.10",
-      "description": "Ministral 8B is an 8B parameter model featuring a unique interleaved sliding-window attention pattern for faster, memory-efficient inference. Designed for edge use cases, it supports up to 128k context length and excels in knowledge and reasoning tasks. It outperforms peers in the sub-10B category, making it perfect for low-latency, privacy-first applications.",
+      "provider": "openrouter",
+      "name": "Ministral 8B",
       "pricing": {
         "input": 0.1,
-        "output": 1.0
+        "output": 0.1
       },
       "limits": {}
     },
@@ -4821,9 +3871,8 @@
       "limits": {}
     },
     "mistral-large": {
-      "provider": "mistral",
+      "provider": "openrouter",
       "name": "Mistral Large",
-      "description": "This is Mistral AI's flagship model, Mistral Large 2 (version `mistral-large-2407`). It's a proprietary weights-available model and excels at reasoning, code, JSON, chat, and more. Read the launch announcement here.",
       "pricing": {
         "input": 2.0,
         "output": 6.0
@@ -4831,9 +3880,8 @@
       "limits": {}
     },
     "mistral-medium-3": {
-      "provider": "mistral",
+      "provider": "openrouter",
       "name": "Mistral Medium 3",
-      "description": "Mistral Medium 3 is a high-performance enterprise-grade language model designed to deliver frontier-level capabilities at significantly reduced operational cost. It balances state-of-the-art reasoning and multimodal performance with 8× lower cost compared to traditional large models, making it suitable for scalable deployments across professional and industrial use cases.",
       "pricing": {
         "input": 0.4,
         "output": 2.0
@@ -4841,26 +3889,23 @@
       "limits": {}
     },
     "mistral-nemo": {
-      "provider": "mistral",
-      "name": "Mistral NeMo",
-      "description": "A 12B parameter model with a 128k token context length built by Mistral in collaboration with NVIDIA.",
+      "provider": "openrouter",
+      "name": "Mistral Nemo",
       "pricing": {
-        "input": 0.15,
-        "output": 0.15
+        "input": 0.01,
+        "output": 0.019
       },
       "limits": {}
     },
     "mistral-nemo:free": {
-      "provider": "mistral",
+      "provider": "openrouter",
       "name": "Mistral Nemo (free)",
-      "description": "A 12B parameter model with a 128k token context length built by Mistral in collaboration with NVIDIA.",
       "pricing": {},
       "limits": {}
     },
     "mistral-saba": {
-      "provider": "mistral",
-      "name": "Mistral Saba",
-      "description": "Mistral Saba is a 24B-parameter language model specifically designed for the Middle East and South Asia, delivering accurate and contextually relevant responses while maintaining efficient performance. Trained on curated regional datasets, it supports multiple Indian-origin languages—including Tamil and Malayalam—alongside Arabic. This makes it a versatile option for a range of regional and multilingual applications. Read more at the blog post here",
+      "provider": "openrouter",
+      "name": "Saba",
       "pricing": {
         "input": 0.2,
         "output": 0.6
@@ -4868,19 +3913,17 @@
       "limits": {}
     },
     "mistral-small-24b-instruct-2501": {
-      "provider": "mistral",
+      "provider": "openrouter",
       "name": "Mistral Small 3",
-      "description": "Mistral Small 3 is a 24B-parameter language model optimized for low-latency performance across common AI tasks. Released under the Apache 2.0 license, it features both pre-trained and instruction-tuned versions designed for efficient local deployment.",
       "pricing": {
         "input": 0.05,
-        "output": 0.08
+        "output": 0.09
       },
       "limits": {}
     },
     "mistral-small-24b-instruct-2501:free": {
-      "provider": "mistral",
+      "provider": "openrouter",
       "name": "Mistral Small 3 (free)",
-      "description": "Mistral Small 3 is a 24B-parameter language model optimized for low-latency performance across common AI tasks. Released under the Apache 2.0 license, it features both pre-trained and instruction-tuned versions designed for efficient local deployment.",
       "pricing": {},
       "limits": {}
     },
@@ -4895,20 +3938,17 @@
       "limits": {}
     },
     "mistral-tiny": {
-      "provider": "mistral",
+      "provider": "openrouter",
       "name": "Mistral Tiny",
-      "description": "Note: This model is being deprecated. Recommended replacement is the newer Ministral 8B",
       "pricing": {
         "input": 0.25,
         "output": 0.25
       },
-      "limits": {},
-      "deprecated": true
+      "limits": {}
     },
     "mixtral-8x22b-instruct": {
-      "provider": "mistral",
+      "provider": "openrouter",
       "name": "Mixtral 8x22B Instruct",
-      "description": "Mistral's official instruct fine-tuned version of Mixtral 8x22B. It uses 39B active parameters out of 141B, offering unparalleled cost efficiency for its size. Its strengths include:\n- strong math, coding, and reasoning\n- large context length (64k)\n- fluency in English, French, Italian, German, and Spanish",
       "pricing": {
         "input": 0.9,
         "output": 0.9
@@ -4925,12 +3965,11 @@
       "limits": {}
     },
     "pixtral-12b": {
-      "provider": "mistral",
+      "provider": "openrouter",
       "name": "Pixtral 12B",
-      "description": "The first multi-modal, text+image-to-text model from Mistral AI. Its weights were launched via torrent: https://x.com/mistralai/status/1833758285167722836.",
       "pricing": {
-        "input": 0.15,
-        "output": 0.15
+        "input": 0.1,
+        "output": 0.1
       },
       "limits": {}
     },
@@ -5055,16 +4094,8 @@
         "context_window": 8192.0
       }
     },
-    "Sao10K/L3-8B-Stheno-v3.2": {
-      "provider": "novita",
-      "pricing": {
-        "input": 0.05,
-        "output": 0.05
-      },
-      "limits": {}
-    },
     "cognitivecomputations/dolphin-mixtral-8x22b": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
         "input": 0.9,
         "output": 0.9
@@ -5072,23 +4103,23 @@
       "limits": {}
     },
     "deepseek/deepseek-r1": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 4.0,
-        "output": 4.0
+        "input": 0.5,
+        "output": 3.0
       },
       "limits": {}
     },
     "deepseek/deepseek-r1-distill-llama-70b": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.8,
-        "output": 0.8
+        "input": 0.1,
+        "output": 0.4
       },
       "limits": {}
     },
     "deepseek/deepseek-r1-distill-llama-8b": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
         "input": 0.04,
         "output": 0.04
@@ -5096,7 +4127,7 @@
       "limits": {}
     },
     "deepseek/deepseek-r1-distill-qwen-14b": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
         "input": 0.15,
         "output": 0.15
@@ -5104,10 +4135,10 @@
       "limits": {}
     },
     "deepseek/deepseek-r1-distill-qwen-32b": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.3,
-        "output": 0.3
+        "input": 0.12,
+        "output": 0.18
       },
       "limits": {}
     },
@@ -5119,24 +4150,16 @@
       },
       "limits": {}
     },
-    "google/gemma-2-9b-it": {
-      "provider": "novita",
-      "pricing": {
-        "input": 0.08,
-        "output": 0.08
-      },
-      "limits": {}
-    },
     "gryphe/mythomax-l2-13b": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.09,
-        "output": 0.09
+        "input": 0.065,
+        "output": 0.065
       },
       "limits": {}
     },
     "jondurbin/airoboros-l2-70b": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
         "input": 0.5,
         "output": 0.5
@@ -5144,34 +4167,34 @@
       "limits": {}
     },
     "meta-llama/llama-3-70b-instruct": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.51,
-        "output": 0.74
+        "input": 0.3,
+        "output": 0.4
       },
       "limits": {}
     },
     "meta-llama/llama-3-8b-instruct": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.04,
-        "output": 0.04
+        "input": 0.03,
+        "output": 0.06
       },
       "limits": {}
     },
     "meta-llama/llama-3.1-70b-instruct": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.34,
+        "input": 0.119,
         "output": 0.39
       },
       "limits": {}
     },
     "meta-llama/llama-3.1-8b-instruct": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.05,
-        "output": 0.05
+        "input": 0.02,
+        "output": 0.03
       },
       "limits": {}
     },
@@ -5184,82 +4207,82 @@
       "limits": {}
     },
     "meta-llama/llama-3.2-11b-vision-instruct": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.06,
-        "output": 0.06
+        "input": 0.049,
+        "output": 0.049
       },
       "limits": {}
     },
     "meta-llama/llama-3.2-1b-instruct": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.02,
-        "output": 0.02
+        "input": 0.01,
+        "output": 0.01
       },
       "limits": {}
     },
     "meta-llama/llama-3.2-3b-instruct": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.03,
-        "output": 0.05
+        "input": 0.015,
+        "output": 0.025
       },
       "limits": {}
     },
     "meta-llama/llama-3.3-70b-instruct": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.39,
-        "output": 0.39
+        "input": 0.1,
+        "output": 0.25
       },
       "limits": {}
     },
     "microsoft/wizardlm-2-8x22b": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.62,
-        "output": 0.62
+        "input": 0.5,
+        "output": 0.5
       },
       "limits": {}
     },
     "mistralai/mistral-7b-instruct": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.059,
+        "input": 0.029,
         "output": 0.059
       },
       "limits": {}
     },
     "mistralai/mistral-nemo": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.17,
-        "output": 0.17
+        "input": 0.035,
+        "output": 0.08
       },
       "limits": {}
     },
     "nousresearch/hermes-2-pro-llama-3-8b": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.14,
-        "output": 0.14
+        "input": 0.025,
+        "output": 0.04
       },
       "limits": {}
     },
     "nousresearch/nous-hermes-llama2-13b": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.17,
-        "output": 0.17
+        "input": 0.18,
+        "output": 0.18
       },
       "limits": {}
     },
     "openchat/openchat-7b": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.06,
-        "output": 0.06
+        "input": 0.07,
+        "output": 0.07
       },
       "limits": {}
     },
@@ -5280,10 +4303,10 @@
       "limits": {}
     },
     "qwen/qwen-2.5-72b-instruct": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
-        "input": 0.38,
-        "output": 0.4
+        "input": 0.12,
+        "output": 0.39
       },
       "limits": {}
     },
@@ -5312,7 +4335,7 @@
       "limits": {}
     },
     "sophosympatheia/midnight-rose-70b": {
-      "provider": "novita",
+      "provider": "openrouter",
       "pricing": {
         "input": 0.8,
         "output": 0.8
@@ -5327,26 +4350,9 @@
       },
       "limits": {}
     },
-    "ada": {
-      "provider": "openai",
-      "pricing": {
-        "input": 0.4,
-        "output": 0.4
-      },
-      "limits": {}
-    },
-    "babbage": {
-      "provider": "openai",
-      "pricing": {
-        "input": 0.5,
-        "output": 0.5
-      },
-      "limits": {}
-    },
     "chatgpt-4o-latest": {
-      "provider": "openai",
+      "provider": "openrouter",
       "name": "ChatGPT-4o",
-      "description": "OpenAI ChatGPT 4o is continually updated by OpenAI to point to the current version of GPT-4o used by ChatGPT. It therefore differs slightly from the API version of GPT-4o in that it has additional RLHF. It is intended for research and evaluation.",
       "pricing": {
         "input": 5.0,
         "output": 15.0
@@ -5354,9 +4360,8 @@
       "limits": {}
     },
     "codex-mini": {
-      "provider": "openai",
+      "provider": "openrouter",
       "name": "Codex Mini",
-      "description": "codex-mini-latest is a fine-tuned version of o4-mini specifically for use in Codex CLI. For direct use in the API, we recommend starting with gpt-4.1.",
       "pricing": {
         "input": 1.5,
         "output": 6.0,
@@ -5370,22 +4375,6 @@
       "pricing": {
         "input": 3.0,
         "output": 12.0
-      },
-      "limits": {}
-    },
-    "curie": {
-      "provider": "openai",
-      "pricing": {
-        "input": 2.0,
-        "output": 2.0
-      },
-      "limits": {}
-    },
-    "davinci": {
-      "provider": "openai",
-      "pricing": {
-        "input": 20.0,
-        "output": 20.0
       },
       "limits": {}
     },
@@ -5425,72 +4414,58 @@
       "limits": {}
     },
     "gpt-3.5-turbo": {
-      "provider": "openai",
-      "name": "gpt 3.5 turbo",
-      "description": "GPT-3.5 Turbo offers a balance between cost and performance.",
+      "provider": "openrouter",
+      "name": "GPT-3.5 Turbo",
       "pricing": {
         "input": 0.5,
         "output": 1.5
       },
-      "limits": {
-        "context_window": 16385.0
-      }
+      "limits": {}
     },
     "gpt-3.5-turbo-0613": {
-      "provider": "openai",
-      "pricing": {
-        "input": 1.5,
-        "output": 2.0
-      },
-      "limits": {
-        "context_window": 16385.0
-      }
-    },
-    "gpt-3.5-turbo-1106": {
-      "provider": "openai",
+      "provider": "openrouter",
+      "name": "GPT-3.5 Turbo (older v0613)",
       "pricing": {
         "input": 1.0,
         "output": 2.0
       },
-      "limits": {
-        "context_window": 16385.0
-      }
+      "limits": {}
+    },
+    "gpt-3.5-turbo-1106": {
+      "provider": "openrouter",
+      "name": "GPT-3.5 Turbo 16k (older v1106)",
+      "pricing": {
+        "input": 1.0,
+        "output": 2.0
+      },
+      "limits": {}
     },
     "gpt-3.5-turbo-16k": {
-      "provider": "openai",
+      "provider": "openrouter",
       "name": "GPT-3.5 Turbo 16k",
-      "description": "This model offers four times the context length of gpt-3.5-turbo, allowing it to support approximately 20 pages of text in a single request at a higher cost. Training data: up to Sep 2021.",
       "pricing": {
         "input": 3.0,
         "output": 4.0
       },
-      "limits": {
-        "context_window": 16385.0
-      }
+      "limits": {}
     },
     "gpt-3.5-turbo-instruct": {
-      "provider": "openai",
-      "name": "gpt 3.5 turbo instruct",
-      "description": "GPT-3.5 Turbo offers a balance between cost and performance.",
+      "provider": "openrouter",
+      "name": "GPT-3.5 Turbo Instruct",
       "pricing": {
         "input": 1.5,
         "output": 2.0
       },
-      "limits": {
-        "context_window": 16385.0
-      }
+      "limits": {}
     },
     "gpt-4": {
-      "provider": "openai",
-      "name": "gpt 4",
-      "description": "GPT-4 is the latest and most advanced model in the GPT series, demonstrating sophisticated capabilities in complex reasoning, theory of mind, and narrative understanding.",
+      "provider": "openrouter",
+      "name": "GPT-4",
       "pricing": {
         "input": 30.0,
         "output": 60.0
       },
-      "limits": {
-        "context_window": 8192.0
-      }
+      "limits": {}
     },
     "gpt-4-32k": {
       "provider": "openai",
@@ -5505,16 +4480,13 @@
       }
     },
     "gpt-4-turbo": {
-      "provider": "openai",
-      "name": "gpt 4 turbo",
-      "description": "GPT-4 Turbo offers a balance between cost and performance.",
+      "provider": "openrouter",
+      "name": "GPT-4 Turbo",
       "pricing": {
         "input": 10.0,
         "output": 30.0
       },
-      "limits": {
-        "context_window": 128000.0
-      }
+      "limits": {}
     },
     "gpt-4-vision-preview": {
       "provider": "openai",
@@ -5529,48 +4501,38 @@
       }
     },
     "gpt-4.1": {
-      "provider": "openai",
-      "name": "gpt 4.1",
-      "description": "GPT-4.1 is OpenAI's latest flagship model, offering major improvements in coding, instruction following, and long context understanding with up to 1 million tokens of context.",
+      "provider": "openrouter",
+      "name": "GPT-4.1",
       "pricing": {
         "input": 2.0,
         "output": 8.0,
         "cache_read": 0.5
       },
-      "limits": {
-        "context_window": 1000000.0
-      }
+      "limits": {}
     },
     "gpt-4.1-mini": {
-      "provider": "openai",
-      "name": "gpt 4.1 mini",
-      "description": "GPT-4.1 Mini is a significant leap in small model performance, matching or exceeding GPT-4o in many benchmarks while reducing latency by nearly half and cost by 83%.",
+      "provider": "openrouter",
+      "name": "GPT-4.1 Mini",
       "pricing": {
         "input": 0.4,
         "output": 1.6,
         "cache_read": 0.1
       },
-      "limits": {
-        "context_window": 1000000.0
-      }
+      "limits": {}
     },
     "gpt-4.1-nano": {
-      "provider": "openai",
-      "name": "gpt 4.1 nano",
-      "description": "GPT-4.1 Nano is OpenAI's fastest and cheapest model, delivering exceptional performance for its size with a 1 million token context window, ideal for classification and autocompletion tasks.",
+      "provider": "openrouter",
+      "name": "GPT-4.1 Nano",
       "pricing": {
         "input": 0.1,
         "output": 0.4,
         "cache_read": 0.025
       },
-      "limits": {
-        "context_window": 1000000.0
-      }
+      "limits": {}
     },
     "gpt-4.5-preview": {
-      "provider": "openai",
+      "provider": "openrouter",
       "name": "GPT-4.5 (Preview)",
-      "description": "GPT-4.5 (Preview) is a research preview of OpenAI's latest language model, designed to advance capabilities in reasoning, creativity, and multi-turn conversation. It builds on previous iterations with improvements in world knowledge, contextual coherence, and the ability to follow user intent more effectively.",
       "pricing": {
         "input": 75.0,
         "output": 150.0,
@@ -5579,17 +4541,14 @@
       "limits": {}
     },
     "gpt-4o": {
-      "provider": "openai",
-      "name": "gpt 4o",
-      "description": "GPT-4 Optimized (GPT-4o) is designed for high performance in reasoning, creativity, and technical tasks while maintaining consistent output quality.",
+      "provider": "openrouter",
+      "name": "GPT-4o",
       "pricing": {
         "input": 2.5,
         "output": 10.0,
         "cache_read": 1.25
       },
-      "limits": {
-        "context_window": 128000.0
-      }
+      "limits": {}
     },
     "gpt-4o-audio-preview": {
       "provider": "openai",
@@ -5604,17 +4563,14 @@
       }
     },
     "gpt-4o-mini": {
-      "provider": "openai",
-      "name": "gpt 4o mini",
-      "description": "GPT-4o Mini is a cost-optimized variant of GPT-4o, designed for high-efficiency processing while maintaining strong performance. It excels in rapid inference and resource-efficient operations, making it ideal for production deployments requiring a balance of cost and capability.",
+      "provider": "openrouter",
+      "name": "GPT-4o-mini",
       "pricing": {
         "input": 0.15,
         "output": 0.6,
         "cache_read": 0.075
       },
-      "limits": {
-        "context_window": 128000.0
-      }
+      "limits": {}
     },
     "gpt-4o-mini-2024-07-18.ft-": {
       "provider": "openai",
@@ -5670,9 +4626,8 @@
       "limits": {}
     },
     "gpt-4o-search-preview": {
-      "provider": "openai",
+      "provider": "openrouter",
       "name": "GPT-4o Search Preview",
-      "description": "GPT-4o Search Previewis a specialized model for web search in Chat Completions. It is trained to understand and execute web search queries.",
       "pricing": {
         "input": 2.5,
         "output": 10.0
@@ -5688,9 +4643,8 @@
       "limits": {}
     },
     "gpt-4o:extended": {
-      "provider": "openai",
+      "provider": "openrouter",
       "name": "GPT-4o (extended)",
-      "description": "GPT-4o (\"o\" for \"omni\") is OpenAI's latest AI model, supporting both text and image inputs with text outputs. It maintains the intelligence level of GPT-4 Turbo while being twice as fast and 50% more cost-effective. GPT-4o also offers improved performance in processing non-English languages and enhanced visual capabilities.",
       "pricing": {
         "input": 6.0,
         "output": 18.0
@@ -5939,36 +4893,9 @@
       "pricing": {},
       "limits": {}
     },
-    "o1": {
-      "provider": "openai",
-      "name": "o1",
-      "description": "O1 is a model that offers a balance between cost and performance.",
-      "pricing": {
-        "input": 15.0,
-        "output": 60.0,
-        "cache_read": 7.5
-      },
-      "limits": {
-        "context_window": 128000.0
-      }
-    },
-    "o1-mini": {
-      "provider": "openai",
-      "name": "o1 mini",
-      "description": "O1 Mini is a model that offers a balance between cost and performance.",
-      "pricing": {
-        "input": 1.1,
-        "output": 4.4,
-        "cache_read": 0.55
-      },
-      "limits": {
-        "context_window": 128000.0
-      }
-    },
     "o1-pro": {
-      "provider": "openai",
+      "provider": "openrouter",
       "name": "o1-pro",
-      "description": "The o1 series of models are trained with reinforcement learning to think before they answer and perform complex reasoning. The o1-pro model uses more compute to think harder and provide consistently better answers.",
       "pricing": {
         "input": 150.0,
         "output": 600.0
@@ -5976,9 +4903,8 @@
       "limits": {}
     },
     "o3": {
-      "provider": "openai",
+      "provider": "openrouter",
       "name": "o3",
-      "description": "o3 is a well-rounded and powerful model across domains. It sets a new standard for math, science, coding, and visual reasoning tasks. It also excels at technical writing and instruction-following. Use it to think through multi-step problems that involve analysis across text, code, and images. Note that BYOK is required for this model. Set up here: https://openrouter.ai/settings/integrations",
       "pricing": {
         "input": 2.0,
         "output": 8.0,
@@ -5995,35 +4921,12 @@
       },
       "limits": {}
     },
-    "o3-mini": {
-      "provider": "openai",
-      "name": "o3 Mini",
-      "description": "OpenAI o3-mini is a cost-efficient language model optimized for STEM reasoning tasks, particularly excelling in science, mathematics, and coding.",
-      "pricing": {
-        "input": 1.1,
-        "output": 4.4,
-        "cache_read": 0.55
-      },
-      "limits": {}
-    },
     "o3-pro": {
-      "provider": "openai",
+      "provider": "openrouter",
       "name": "o3 Pro",
-      "description": "The o-series of models are trained with reinforcement learning to think before they answer and perform complex reasoning. The o3-pro model uses more compute to think harder and provide consistently better answers.",
       "pricing": {
         "input": 20.0,
         "output": 80.0
-      },
-      "limits": {}
-    },
-    "o4-mini": {
-      "provider": "openai",
-      "name": "o4 Mini High",
-      "description": "OpenAI o4-mini-high is the same model as o4-mini with reasoning_effort set to high.",
-      "pricing": {
-        "input": 1.1,
-        "output": 4.4,
-        "cache_read": 0.275
       },
       "limits": {}
     },
@@ -6051,28 +4954,6 @@
         "output": 20.0
       },
       "limits": {}
-    },
-    "text-embedding-3-large": {
-      "provider": "openai",
-      "name": "text embedding 3",
-      "description": "Text Embedding 3 is a model that offers a balance between cost and performance.",
-      "pricing": {
-        "input": 0.13
-      },
-      "limits": {
-        "context_window": 8192.0
-      }
-    },
-    "text-embedding-3-small": {
-      "provider": "openai",
-      "name": "text embedding 3",
-      "description": "Text Embedding 3 is a model that offers a balance between cost and performance.",
-      "pricing": {
-        "input": 0.02
-      },
-      "limits": {
-        "context_window": 8192.0
-      }
     },
     "text-embedding-ada-002": {
       "provider": "openai",
@@ -6447,57 +5328,6 @@
       },
       "limits": {}
     },
-    "chatgpt-4o-latest": {
-      "provider": "openrouter",
-      "name": "ChatGPT-4o",
-      "pricing": {
-        "input": 5.0,
-        "output": 15.0
-      },
-      "limits": {}
-    },
-    "claude-2": {
-      "provider": "openrouter",
-      "name": "Claude v2",
-      "pricing": {
-        "input": 8.0,
-        "output": 24.0
-      },
-      "limits": {}
-    },
-    "claude-3-haiku": {
-      "provider": "openrouter",
-      "name": "Claude 3 Haiku",
-      "pricing": {
-        "input": 0.25,
-        "output": 1.25,
-        "cache_read": 0.03,
-        "cache_write": 0.3
-      },
-      "limits": {}
-    },
-    "claude-3-opus": {
-      "provider": "openrouter",
-      "name": "Claude 3 Opus",
-      "pricing": {
-        "input": 15.0,
-        "output": 75.0,
-        "cache_read": 1.5,
-        "cache_write": 18.75
-      },
-      "limits": {}
-    },
-    "claude-3-sonnet": {
-      "provider": "openrouter",
-      "name": "Claude 3 Sonnet",
-      "pricing": {
-        "input": 3.0,
-        "output": 15.0,
-        "cache_read": 0.3,
-        "cache_write": 3.75
-      },
-      "limits": {}
-    },
     "claude-3.5-haiku": {
       "provider": "openrouter",
       "name": "Claude 3.5 Haiku",
@@ -6580,24 +5410,6 @@
       },
       "limits": {}
     },
-    "codex-mini": {
-      "provider": "openrouter",
-      "name": "Codex Mini",
-      "pricing": {
-        "input": 1.5,
-        "output": 6.0,
-        "cache_read": 0.375
-      },
-      "limits": {}
-    },
-    "cognitivecomputations/dolphin-mixtral-8x22b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.9,
-        "output": 0.9
-      },
-      "limits": {}
-    },
     "cognitivecomputations/dolphin-mixtral-8x7b": {
       "provider": "openrouter",
       "pricing": {
@@ -6672,48 +5484,12 @@
       },
       "limits": {}
     },
-    "command": {
-      "provider": "openrouter",
-      "name": "Command",
-      "pricing": {
-        "input": 1.0,
-        "output": 2.0
-      },
-      "limits": {}
-    },
-    "command-a": {
-      "provider": "openrouter",
-      "name": "Command A",
-      "pricing": {
-        "input": 2.5,
-        "output": 10.0
-      },
-      "limits": {}
-    },
-    "command-r": {
-      "provider": "openrouter",
-      "name": "Command R",
-      "pricing": {
-        "input": 0.5,
-        "output": 1.5
-      },
-      "limits": {}
-    },
     "command-r-08-2024": {
       "provider": "openrouter",
       "name": "Command R (08-2024)",
       "pricing": {
         "input": 0.15,
         "output": 0.6
-      },
-      "limits": {}
-    },
-    "command-r-plus": {
-      "provider": "openrouter",
-      "name": "Command R+",
-      "pricing": {
-        "input": 3.0,
-        "output": 15.0
       },
       "limits": {}
     },
@@ -6745,15 +5521,6 @@
       "provider": "openrouter",
       "name": "DeepHermes 3 Llama 3 8B Preview (free)",
       "pricing": {},
-      "limits": {}
-    },
-    "deepseek-chat": {
-      "provider": "openrouter",
-      "name": "DeepSeek V3",
-      "pricing": {
-        "input": 0.38,
-        "output": 0.89
-      },
       "limits": {}
     },
     "deepseek-chat-v3-0324": {
@@ -6795,15 +5562,6 @@
       },
       "limits": {}
     },
-    "deepseek-r1-0528": {
-      "provider": "openrouter",
-      "name": "R1 0528",
-      "pricing": {
-        "input": 0.5,
-        "output": 2.15
-      },
-      "limits": {}
-    },
     "deepseek-r1-0528-qwen3-8b": {
       "provider": "openrouter",
       "name": "Deepseek R1 0528 Qwen3 8B",
@@ -6823,15 +5581,6 @@
       "provider": "openrouter",
       "name": "R1 0528 (free)",
       "pricing": {},
-      "limits": {}
-    },
-    "deepseek-r1-distill-llama-70b": {
-      "provider": "openrouter",
-      "name": "R1 Distill Llama 70B",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.4
-      },
       "limits": {}
     },
     "deepseek-r1-distill-llama-70b:free": {
@@ -6963,33 +5712,9 @@
       "pricing": {},
       "limits": {}
     },
-    "deepseek/deepseek-r1": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.5,
-        "output": 3.0
-      },
-      "limits": {}
-    },
-    "deepseek/deepseek-r1-distill-llama-70b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.4
-      },
-      "limits": {}
-    },
     "deepseek/deepseek-r1-distill-llama-70b:free": {
       "provider": "openrouter",
       "pricing": {},
-      "limits": {}
-    },
-    "deepseek/deepseek-r1-distill-llama-8b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.04,
-        "output": 0.04
-      },
       "limits": {}
     },
     "deepseek/deepseek-r1-distill-qwen-1.5b": {
@@ -7000,25 +5725,9 @@
       },
       "limits": {}
     },
-    "deepseek/deepseek-r1-distill-qwen-14b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.15,
-        "output": 0.15
-      },
-      "limits": {}
-    },
     "deepseek/deepseek-r1-distill-qwen-14b:free": {
       "provider": "openrouter",
       "pricing": {},
-      "limits": {}
-    },
-    "deepseek/deepseek-r1-distill-qwen-32b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.12,
-        "output": 0.18
-      },
       "limits": {}
     },
     "deepseek/deepseek-r1-distill-qwen-32b:free": {
@@ -7062,21 +5771,6 @@
       },
       "limits": {}
     },
-    "devstral-small": {
-      "provider": "openrouter",
-      "name": "Devstral Small",
-      "pricing": {
-        "input": 0.06,
-        "output": 0.12
-      },
-      "limits": {}
-    },
-    "devstral-small:free": {
-      "provider": "openrouter",
-      "name": "Devstral Small (free)",
-      "pricing": {},
-      "limits": {}
-    },
     "dobby-mini-unhinged-plus-llama-3.1-8b": {
       "provider": "openrouter",
       "name": "Dobby Mini Plus Llama 3.1 8B",
@@ -7088,7 +5782,7 @@
     },
     "dolphin-mixtral-8x22b": {
       "provider": "openrouter",
-      "name": "Dolphin 2.9.2 Mixtral 8x22B 🐬",
+      "name": "Dolphin 2.9.2 Mixtral 8x22B \ud83d\udc2c",
       "pricing": {
         "input": 0.9,
         "output": 0.9
@@ -7206,34 +5900,12 @@
       },
       "limits": {}
     },
-    "gemini-2.5-flash": {
-      "provider": "openrouter",
-      "name": "Gemini 2.5 Flash",
-      "pricing": {
-        "input": 0.3,
-        "output": 2.5,
-        "cache_read": 0.075,
-        "cache_write": 0.3833
-      },
-      "limits": {}
-    },
     "gemini-2.5-flash-lite-preview-06-17": {
       "provider": "openrouter",
       "name": "Gemini 2.5 Flash Lite Preview 06-17",
       "pricing": {
         "input": 0.1,
         "output": 0.4
-      },
-      "limits": {}
-    },
-    "gemini-2.5-flash-preview": {
-      "provider": "openrouter",
-      "name": "Gemini 2.5 Flash Preview 04-17",
-      "pricing": {
-        "input": 0.15,
-        "output": 0.6,
-        "cache_read": 0.0375,
-        "cache_write": 0.2333
       },
       "limits": {}
     },
@@ -7259,52 +5931,10 @@
       },
       "limits": {}
     },
-    "gemini-2.5-pro": {
-      "provider": "openrouter",
-      "name": "Gemini 2.5 Pro",
-      "pricing": {
-        "input": 1.25,
-        "output": 10.0,
-        "cache_read": 0.31,
-        "cache_write": 1.625
-      },
-      "limits": {}
-    },
     "gemini-2.5-pro-exp-03-25": {
       "provider": "openrouter",
       "name": "Gemini 2.5 Pro Experimental",
       "pricing": {},
-      "limits": {}
-    },
-    "gemini-flash-1.5": {
-      "provider": "openrouter",
-      "name": "Gemini 1.5 Flash",
-      "pricing": {
-        "input": 0.075,
-        "output": 0.3,
-        "cache_read": 0.01875,
-        "cache_write": 0.1583
-      },
-      "limits": {}
-    },
-    "gemini-flash-1.5-8b": {
-      "provider": "openrouter",
-      "name": "Gemini 1.5 Flash 8B",
-      "pricing": {
-        "input": 0.0375,
-        "output": 0.15,
-        "cache_read": 0.01,
-        "cache_write": 0.0583
-      },
-      "limits": {}
-    },
-    "gemini-pro-1.5": {
-      "provider": "openrouter",
-      "name": "Gemini 1.5 Pro",
-      "pricing": {
-        "input": 1.25,
-        "output": 5.0
-      },
       "limits": {}
     },
     "gemma-2-27b-it": {
@@ -7344,15 +5974,6 @@
       "provider": "openrouter",
       "name": "Gemma 3 12B (free)",
       "pricing": {},
-      "limits": {}
-    },
-    "gemma-3-27b-it": {
-      "provider": "openrouter",
-      "name": "Gemma 3 27B",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.2
-      },
       "limits": {}
     },
     "gemma-3-27b-it:free": {
@@ -7575,14 +6196,6 @@
       },
       "limits": {}
     },
-    "google/gemma-2-9b-it": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.07,
-        "output": 0.07
-      },
-      "limits": {}
-    },
     "google/gemma-2-9b-it:free": {
       "provider": "openrouter",
       "pricing": {},
@@ -7604,14 +6217,6 @@
     "google/gemma-3-1b-it:free": {
       "provider": "openrouter",
       "pricing": {},
-      "limits": {}
-    },
-    "google/gemma-3-27b-it": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.2
-      },
       "limits": {}
     },
     "google/gemma-3-27b-it:free": {
@@ -7653,125 +6258,12 @@
       },
       "limits": {}
     },
-    "gpt-3.5-turbo": {
-      "provider": "openrouter",
-      "name": "GPT-3.5 Turbo",
-      "pricing": {
-        "input": 0.5,
-        "output": 1.5
-      },
-      "limits": {}
-    },
-    "gpt-3.5-turbo-0613": {
-      "provider": "openrouter",
-      "name": "GPT-3.5 Turbo (older v0613)",
-      "pricing": {
-        "input": 1.0,
-        "output": 2.0
-      },
-      "limits": {}
-    },
-    "gpt-3.5-turbo-1106": {
-      "provider": "openrouter",
-      "name": "GPT-3.5 Turbo 16k (older v1106)",
-      "pricing": {
-        "input": 1.0,
-        "output": 2.0
-      },
-      "limits": {}
-    },
-    "gpt-3.5-turbo-16k": {
-      "provider": "openrouter",
-      "name": "GPT-3.5 Turbo 16k",
-      "pricing": {
-        "input": 3.0,
-        "output": 4.0
-      },
-      "limits": {}
-    },
-    "gpt-3.5-turbo-instruct": {
-      "provider": "openrouter",
-      "name": "GPT-3.5 Turbo Instruct",
-      "pricing": {
-        "input": 1.5,
-        "output": 2.0
-      },
-      "limits": {}
-    },
-    "gpt-4": {
-      "provider": "openrouter",
-      "name": "GPT-4",
-      "pricing": {
-        "input": 30.0,
-        "output": 60.0
-      },
-      "limits": {}
-    },
     "gpt-4-1106-preview": {
       "provider": "openrouter",
       "name": "GPT-4 Turbo (older v1106)",
       "pricing": {
         "input": 10.0,
         "output": 30.0
-      },
-      "limits": {}
-    },
-    "gpt-4-turbo": {
-      "provider": "openrouter",
-      "name": "GPT-4 Turbo",
-      "pricing": {
-        "input": 10.0,
-        "output": 30.0
-      },
-      "limits": {}
-    },
-    "gpt-4.1": {
-      "provider": "openrouter",
-      "name": "GPT-4.1",
-      "pricing": {
-        "input": 2.0,
-        "output": 8.0,
-        "cache_read": 0.5
-      },
-      "limits": {}
-    },
-    "gpt-4.1-mini": {
-      "provider": "openrouter",
-      "name": "GPT-4.1 Mini",
-      "pricing": {
-        "input": 0.4,
-        "output": 1.6,
-        "cache_read": 0.1
-      },
-      "limits": {}
-    },
-    "gpt-4.1-nano": {
-      "provider": "openrouter",
-      "name": "GPT-4.1 Nano",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.4,
-        "cache_read": 0.025
-      },
-      "limits": {}
-    },
-    "gpt-4.5-preview": {
-      "provider": "openrouter",
-      "name": "GPT-4.5 (Preview)",
-      "pricing": {
-        "input": 75.0,
-        "output": 150.0,
-        "cache_read": 37.5
-      },
-      "limits": {}
-    },
-    "gpt-4o": {
-      "provider": "openrouter",
-      "name": "GPT-4o",
-      "pricing": {
-        "input": 2.5,
-        "output": 10.0,
-        "cache_read": 1.25
       },
       "limits": {}
     },
@@ -7784,16 +6276,6 @@
       },
       "limits": {}
     },
-    "gpt-4o-mini": {
-      "provider": "openrouter",
-      "name": "GPT-4o-mini",
-      "pricing": {
-        "input": 0.15,
-        "output": 0.6,
-        "cache_read": 0.075
-      },
-      "limits": {}
-    },
     "gpt-4o-mini-search-preview": {
       "provider": "openrouter",
       "name": "GPT-4o-mini Search Preview",
@@ -7803,61 +6285,56 @@
       },
       "limits": {}
     },
-    "gpt-4o-search-preview": {
-      "provider": "openrouter",
-      "name": "GPT-4o Search Preview",
-      "pricing": {
-        "input": 2.5,
-        "output": 10.0
-      },
-      "limits": {}
-    },
-    "gpt-4o:extended": {
-      "provider": "openrouter",
-      "name": "GPT-4o (extended)",
-      "pricing": {
-        "input": 6.0,
-        "output": 18.0
-      },
-      "limits": {}
-    },
     "grok-2-1212": {
-      "provider": "openrouter",
+      "provider": "x-ai",
       "name": "Grok 2 1212",
+      "description": "(deprecated) Grok 2 1212 introduces significant enhancements to accuracy, instruction adherence, and multilingual support, making it a powerful and flexible choice for developers seeking a highly steerable, intelligent model.",
       "pricing": {
         "input": 2.0,
         "output": 10.0
       },
-      "limits": {}
+      "limits": {
+        "context_window": 32768.0
+      },
+      "deprecated": true
     },
     "grok-2-vision-1212": {
-      "provider": "openrouter",
+      "provider": "x-ai",
       "name": "Grok 2 Vision 1212",
+      "description": "Our multimodal model that processes documents, diagrams, charts, screenshots, and photographs.",
       "pricing": {
         "input": 2.0,
         "output": 10.0
       },
-      "limits": {}
+      "limits": {
+        "context_window": 32768.0
+      }
     },
     "grok-3": {
-      "provider": "openrouter",
+      "provider": "x-ai",
       "name": "Grok 3",
+      "description": "Flagship model that excels at enterprise use cases like data extraction, coding, and text summarization. Possesses deep domain knowledge in finance, healthcare, law, and science.",
       "pricing": {
         "input": 3.0,
         "output": 15.0,
         "cache_read": 0.75
       },
-      "limits": {}
+      "limits": {
+        "context_window": 131072.0
+      }
     },
     "grok-3-mini": {
-      "provider": "openrouter",
+      "provider": "x-ai",
       "name": "Grok 3 Mini",
+      "description": "A lightweight model that thinks before responding. Fast, smart, and great for logic-based tasks that do not require deep domain knowledge. The raw thinking traces are accessible.",
       "pricing": {
         "input": 0.3,
         "output": 0.5,
         "cache_read": 0.075
       },
-      "limits": {}
+      "limits": {
+        "context_window": 131072.0
+      }
     },
     "grok-beta": {
       "provider": "openrouter",
@@ -7874,14 +6351,6 @@
       "pricing": {
         "input": 5.0,
         "output": 15.0
-      },
-      "limits": {}
-    },
-    "gryphe/mythomax-l2-13b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.065,
-        "output": 0.065
       },
       "limits": {}
     },
@@ -7986,14 +6455,6 @@
       "pricing": {
         "input": 0.2,
         "output": 0.4
-      },
-      "limits": {}
-    },
-    "jondurbin/airoboros-l2-70b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.5,
-        "output": 0.5
       },
       "limits": {}
     },
@@ -8225,8 +6686,9 @@
       "limits": {}
     },
     "llama-3.1-sonar-large-128k-online": {
-      "provider": "openrouter",
+      "provider": "perplexity",
       "name": "Llama 3.1 Sonar 70B Online",
+      "description": "Llama 3.1 Sonar is Perplexity's latest model family. It surpasses their earlier Sonar models in cost-efficiency, speed, and performance.",
       "pricing": {
         "input": 1.0,
         "output": 1.0
@@ -8234,8 +6696,9 @@
       "limits": {}
     },
     "llama-3.1-sonar-small-128k-online": {
-      "provider": "openrouter",
+      "provider": "perplexity",
       "name": "Llama 3.1 Sonar 8B Online",
+      "description": "Llama 3.1 Sonar is Perplexity's latest model family. It surpasses their earlier Sonar models in cost-efficiency, speed, and performance.",
       "pricing": {
         "input": 0.2,
         "output": 0.2
@@ -8371,15 +6834,6 @@
       },
       "limits": {}
     },
-    "llama-guard-3-8b": {
-      "provider": "openrouter",
-      "name": "Llama Guard 3 8B",
-      "pricing": {
-        "input": 0.02,
-        "output": 0.06
-      },
-      "limits": {}
-    },
     "llama-guard-4-12b": {
       "provider": "openrouter",
       "name": "Llama Guard 4 12B",
@@ -8461,12 +6915,6 @@
       },
       "limits": {}
     },
-    "mai-ds-r1:free": {
-      "provider": "openrouter",
-      "name": "MAI DS R1 (free)",
-      "pricing": {},
-      "limits": {}
-    },
     "mancer/weaver": {
       "provider": "openrouter",
       "pricing": {
@@ -8500,22 +6948,6 @@
       },
       "limits": {}
     },
-    "meta-llama/llama-3-70b-instruct": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.3,
-        "output": 0.4
-      },
-      "limits": {}
-    },
-    "meta-llama/llama-3-8b-instruct": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.03,
-        "output": 0.06
-      },
-      "limits": {}
-    },
     "meta-llama/llama-3.1-405b": {
       "provider": "openrouter",
       "pricing": {
@@ -8537,33 +6969,9 @@
       "pricing": {},
       "limits": {}
     },
-    "meta-llama/llama-3.1-70b-instruct": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.119,
-        "output": 0.39
-      },
-      "limits": {}
-    },
-    "meta-llama/llama-3.1-8b-instruct": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.02,
-        "output": 0.03
-      },
-      "limits": {}
-    },
     "meta-llama/llama-3.1-8b-instruct:free": {
       "provider": "openrouter",
       "pricing": {},
-      "limits": {}
-    },
-    "meta-llama/llama-3.2-11b-vision-instruct": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.049,
-        "output": 0.049
-      },
       "limits": {}
     },
     "meta-llama/llama-3.2-11b-vision-instruct:free": {
@@ -8571,25 +6979,9 @@
       "pricing": {},
       "limits": {}
     },
-    "meta-llama/llama-3.2-1b-instruct": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.01,
-        "output": 0.01
-      },
-      "limits": {}
-    },
     "meta-llama/llama-3.2-1b-instruct:free": {
       "provider": "openrouter",
       "pricing": {},
-      "limits": {}
-    },
-    "meta-llama/llama-3.2-3b-instruct": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.015,
-        "output": 0.025
-      },
       "limits": {}
     },
     "meta-llama/llama-3.2-3b-instruct:free": {
@@ -8602,14 +6994,6 @@
       "pricing": {
         "input": 0.9,
         "output": 0.9
-      },
-      "limits": {}
-    },
-    "meta-llama/llama-3.3-70b-instruct": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.25
       },
       "limits": {}
     },
@@ -8708,14 +7092,6 @@
       },
       "limits": {}
     },
-    "microsoft/wizardlm-2-8x22b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.5,
-        "output": 0.5
-      },
-      "limits": {}
-    },
     "midnight-rose-70b": {
       "provider": "openrouter",
       "name": "Midnight Rose 70B",
@@ -8760,24 +7136,6 @@
       },
       "limits": {}
     },
-    "ministral-3b": {
-      "provider": "openrouter",
-      "name": "Ministral 3B",
-      "pricing": {
-        "input": 0.04,
-        "output": 0.04
-      },
-      "limits": {}
-    },
-    "ministral-8b": {
-      "provider": "openrouter",
-      "name": "Ministral 8B",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.1
-      },
-      "limits": {}
-    },
     "mistral-7b-instruct": {
       "provider": "openrouter",
       "name": "Mistral 7B Instruct",
@@ -8811,54 +7169,12 @@
       "pricing": {},
       "limits": {}
     },
-    "mistral-large": {
-      "provider": "openrouter",
-      "name": "Mistral Large",
-      "pricing": {
-        "input": 2.0,
-        "output": 6.0
-      },
-      "limits": {}
-    },
     "mistral-medium": {
       "provider": "openrouter",
       "name": "Mistral Medium",
       "pricing": {
         "input": 2.75,
         "output": 8.1
-      },
-      "limits": {}
-    },
-    "mistral-medium-3": {
-      "provider": "openrouter",
-      "name": "Mistral Medium 3",
-      "pricing": {
-        "input": 0.4,
-        "output": 2.0
-      },
-      "limits": {}
-    },
-    "mistral-nemo": {
-      "provider": "openrouter",
-      "name": "Mistral Nemo",
-      "pricing": {
-        "input": 0.01,
-        "output": 0.019
-      },
-      "limits": {}
-    },
-    "mistral-nemo:free": {
-      "provider": "openrouter",
-      "name": "Mistral Nemo (free)",
-      "pricing": {},
-      "limits": {}
-    },
-    "mistral-saba": {
-      "provider": "openrouter",
-      "name": "Saba",
-      "pricing": {
-        "input": 0.2,
-        "output": 0.6
       },
       "limits": {}
     },
@@ -8869,21 +7185,6 @@
         "input": 0.2,
         "output": 0.6
       },
-      "limits": {}
-    },
-    "mistral-small-24b-instruct-2501": {
-      "provider": "openrouter",
-      "name": "Mistral Small 3",
-      "pricing": {
-        "input": 0.05,
-        "output": 0.09
-      },
-      "limits": {}
-    },
-    "mistral-small-24b-instruct-2501:free": {
-      "provider": "openrouter",
-      "name": "Mistral Small 3 (free)",
-      "pricing": {},
       "limits": {}
     },
     "mistral-small-3.1-24b-instruct": {
@@ -8905,15 +7206,6 @@
       "provider": "openrouter",
       "name": "Mistral Small 3.2 24B (free)",
       "pricing": {},
-      "limits": {}
-    },
-    "mistral-tiny": {
-      "provider": "openrouter",
-      "name": "Mistral Tiny",
-      "pricing": {
-        "input": 0.25,
-        "output": 0.25
-      },
       "limits": {}
     },
     "mistral/ministral-8b": {
@@ -8956,14 +7248,6 @@
       },
       "limits": {}
     },
-    "mistralai/mistral-7b-instruct": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.029,
-        "output": 0.059
-      },
-      "limits": {}
-    },
     "mistralai/mistral-7b-instruct-v0.1": {
       "provider": "openrouter",
       "pricing": {
@@ -8998,14 +7282,6 @@
       "pricing": {
         "input": 2.75,
         "output": 8.1
-      },
-      "limits": {}
-    },
-    "mistralai/mistral-nemo": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.035,
-        "output": 0.08
       },
       "limits": {}
     },
@@ -9093,15 +7369,6 @@
       "pricing": {
         "input": 2.0,
         "output": 6.0
-      },
-      "limits": {}
-    },
-    "mixtral-8x22b-instruct": {
-      "provider": "openrouter",
-      "name": "Mixtral 8x22B Instruct",
-      "pricing": {
-        "input": 0.9,
-        "output": 0.9
       },
       "limits": {}
     },
@@ -9249,14 +7516,6 @@
       "pricing": {},
       "limits": {}
     },
-    "nousresearch/hermes-2-pro-llama-3-8b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.025,
-        "output": 0.04
-      },
-      "limits": {}
-    },
     "nousresearch/hermes-3-llama-3.1-405b": {
       "provider": "openrouter",
       "pricing": {
@@ -9278,14 +7537,6 @@
       "pricing": {
         "input": 0.6,
         "output": 0.6
-      },
-      "limits": {}
-    },
-    "nousresearch/nous-hermes-llama2-13b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.18,
-        "output": 0.18
       },
       "limits": {}
     },
@@ -9342,74 +7593,6 @@
     "nvidia/llama-3.3-nemotron-super-49b-v1:free": {
       "provider": "openrouter",
       "pricing": {},
-      "limits": {}
-    },
-    "o1": {
-      "provider": "openrouter",
-      "name": "o1",
-      "pricing": {
-        "input": 15.0,
-        "output": 60.0,
-        "cache_read": 7.5
-      },
-      "limits": {}
-    },
-    "o1-mini": {
-      "provider": "openrouter",
-      "name": "o1-mini",
-      "pricing": {
-        "input": 1.1,
-        "output": 4.4,
-        "cache_read": 0.55
-      },
-      "limits": {}
-    },
-    "o1-pro": {
-      "provider": "openrouter",
-      "name": "o1-pro",
-      "pricing": {
-        "input": 150.0,
-        "output": 600.0
-      },
-      "limits": {}
-    },
-    "o3": {
-      "provider": "openrouter",
-      "name": "o3",
-      "pricing": {
-        "input": 2.0,
-        "output": 8.0,
-        "cache_read": 0.5
-      },
-      "limits": {}
-    },
-    "o3-mini": {
-      "provider": "openrouter",
-      "name": "o3 Mini",
-      "pricing": {
-        "input": 1.1,
-        "output": 4.4,
-        "cache_read": 0.55
-      },
-      "limits": {}
-    },
-    "o3-pro": {
-      "provider": "openrouter",
-      "name": "o3 Pro",
-      "pricing": {
-        "input": 20.0,
-        "output": 80.0
-      },
-      "limits": {}
-    },
-    "o4-mini": {
-      "provider": "openrouter",
-      "name": "o4 Mini",
-      "pricing": {
-        "input": 1.1,
-        "output": 4.4,
-        "cache_read": 0.275
-      },
       "limits": {}
     },
     "open-r1/olympiccoder-32b:free": {
@@ -9637,22 +7820,6 @@
       },
       "limits": {}
     },
-    "openai/gpt-oss-120b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.04,
-        "output": 0.2
-      },
-      "limits": {}
-    },
-    "openai/gpt-oss-20b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.03,
-        "output": 0.14
-      },
-      "limits": {}
-    },
     "openai/gpt-oss-20b:free": {
       "provider": "openrouter",
       "pricing": {},
@@ -9741,14 +7908,6 @@
       },
       "limits": {}
     },
-    "openchat/openchat-7b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.07,
-        "output": 0.07
-      },
-      "limits": {}
-    },
     "openhands-lm-32b-v0.1": {
       "provider": "openrouter",
       "name": "OpenHands LM 32B V0.1",
@@ -9819,81 +7978,6 @@
       "pricing": {
         "input": 2.0,
         "output": 8.0
-      },
-      "limits": {}
-    },
-    "phi-3-medium-128k-instruct": {
-      "provider": "openrouter",
-      "name": "Phi-3 Medium 128K Instruct",
-      "pricing": {
-        "input": 1.0,
-        "output": 1.0
-      },
-      "limits": {}
-    },
-    "phi-3-mini-128k-instruct": {
-      "provider": "openrouter",
-      "name": "Phi-3 Mini 128K Instruct",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.1
-      },
-      "limits": {}
-    },
-    "phi-3.5-mini-128k-instruct": {
-      "provider": "openrouter",
-      "name": "Phi-3.5 Mini 128K Instruct",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.1
-      },
-      "limits": {}
-    },
-    "phi-4": {
-      "provider": "openrouter",
-      "name": "Phi 4",
-      "pricing": {
-        "input": 0.07,
-        "output": 0.14
-      },
-      "limits": {}
-    },
-    "phi-4-multimodal-instruct": {
-      "provider": "openrouter",
-      "name": "Phi 4 Multimodal Instruct",
-      "pricing": {
-        "input": 0.05,
-        "output": 0.1
-      },
-      "limits": {}
-    },
-    "phi-4-reasoning-plus": {
-      "provider": "openrouter",
-      "name": "Phi 4 Reasoning Plus",
-      "pricing": {
-        "input": 0.07,
-        "output": 0.35
-      },
-      "limits": {}
-    },
-    "phi-4-reasoning-plus:free": {
-      "provider": "openrouter",
-      "name": "Phi 4 Reasoning Plus (free)",
-      "pricing": {},
-      "limits": {}
-    },
-    "phi-4-reasoning:free": {
-      "provider": "openrouter",
-      "name": "Phi 4 Reasoning (free)",
-      "pricing": {},
-      "limits": {}
-    },
-    "pixtral-12b": {
-      "provider": "openrouter",
-      "name": "Pixtral 12B",
-      "pricing": {
-        "input": 0.1,
-        "output": 0.1
       },
       "limits": {}
     },
@@ -10024,14 +8108,6 @@
       "pricing": {
         "input": 0.9,
         "output": 0.9
-      },
-      "limits": {}
-    },
-    "qwen/qwen-2.5-72b-instruct": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.12,
-        "output": 0.39
       },
       "limits": {}
     },
@@ -10246,15 +8322,6 @@
       "pricing": {},
       "limits": {}
     },
-    "qwen3-235b-a22b": {
-      "provider": "openrouter",
-      "name": "Qwen3 235B A22B",
-      "pricing": {
-        "input": 0.13,
-        "output": 0.6
-      },
-      "limits": {}
-    },
     "qwen3-235b-a22b:free": {
       "provider": "openrouter",
       "name": "Qwen3 235B A22B (free)",
@@ -10352,8 +8419,9 @@
       "limits": {}
     },
     "r1-1776": {
-      "provider": "openrouter",
+      "provider": "perplexity",
       "name": "R1 1776",
+      "description": "R1 1776 is a version of DeepSeek-R1 that has been post-trained to remove censorship constraints related to topics restricted by the Chinese government. The model retains its original reasoning capabilities while providing direct responses to a wider range of queries. R1 1776 is an offline chat model that does not use the perplexity search subsystem.",
       "pricing": {
         "input": 2.0,
         "output": 8.0
@@ -10480,8 +8548,9 @@
       "limits": {}
     },
     "sonar": {
-      "provider": "openrouter",
+      "provider": "perplexity",
       "name": "Sonar",
+      "description": "Sonar is lightweight, affordable, fast, and simple to use \u2014 now featuring citations and the ability to customize sources. It is designed for companies seeking to integrate lightweight question-and-answer features optimized for speed.",
       "pricing": {
         "input": 1.0,
         "output": 1.0
@@ -10489,8 +8558,9 @@
       "limits": {}
     },
     "sonar-deep-research": {
-      "provider": "openrouter",
+      "provider": "perplexity",
       "name": "Sonar Deep Research",
+      "description": "Sonar Deep Research is a research-focused model designed for multi-step retrieval, synthesis, and reasoning across complex topics. It autonomously searches, reads, and evaluates sources, refining its approach as it gathers information. This enables comprehensive report generation across domains like finance, technology, health, and current events.",
       "pricing": {
         "input": 2.0,
         "output": 8.0
@@ -10498,8 +8568,9 @@
       "limits": {}
     },
     "sonar-pro": {
-      "provider": "openrouter",
+      "provider": "perplexity",
       "name": "Sonar Pro",
+      "description": "Note: Sonar Pro pricing includes Perplexity search pricing. See details here",
       "pricing": {
         "input": 3.0,
         "output": 15.0
@@ -10507,8 +8578,9 @@
       "limits": {}
     },
     "sonar-reasoning": {
-      "provider": "openrouter",
+      "provider": "perplexity",
       "name": "Sonar Reasoning",
+      "description": "Sonar Reasoning is a reasoning model provided by Perplexity based on DeepSeek R1.",
       "pricing": {
         "input": 1.0,
         "output": 5.0
@@ -10516,19 +8588,12 @@
       "limits": {}
     },
     "sonar-reasoning-pro": {
-      "provider": "openrouter",
+      "provider": "perplexity",
       "name": "Sonar Reasoning Pro",
+      "description": "Sonar Pro pricing includes Perplexity search pricing.",
       "pricing": {
         "input": 2.0,
         "output": 8.0
-      },
-      "limits": {}
-    },
-    "sophosympatheia/midnight-rose-70b": {
-      "provider": "openrouter",
-      "pricing": {
-        "input": 0.8,
-        "output": 0.8
       },
       "limits": {}
     },
@@ -10672,15 +8737,6 @@
       "pricing": {
         "input": 1.5,
         "output": 1.5
-      },
-      "limits": {}
-    },
-    "wizardlm-2-8x22b": {
-      "provider": "openrouter",
-      "name": "WizardLM-2 8x22B",
-      "pricing": {
-        "input": 0.48,
-        "output": 0.48
       },
       "limits": {}
     },
@@ -10937,108 +8993,6 @@
       "limits": {
         "context_window": 8192.0
       }
-    },
-    "gpt-oss-120b": {
-      "provider": "ovhcloud",
-      "name": "gpt-oss-120b",
-      "pricing": {
-        "input": 0.09,
-        "output": 0.47
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "gpt-oss-20b": {
-      "provider": "ovhcloud",
-      "name": "gpt-oss-20b",
-      "pricing": {
-        "input": 0.05,
-        "output": 0.18
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "llama-3.1-sonar-large-128k-online": {
-      "provider": "perplexity",
-      "name": "Llama 3.1 Sonar 70B Online",
-      "description": "Llama 3.1 Sonar is Perplexity's latest model family. It surpasses their earlier Sonar models in cost-efficiency, speed, and performance.",
-      "pricing": {
-        "input": 1.0,
-        "output": 1.0
-      },
-      "limits": {}
-    },
-    "llama-3.1-sonar-small-128k-online": {
-      "provider": "perplexity",
-      "name": "Llama 3.1 Sonar 8B Online",
-      "description": "Llama 3.1 Sonar is Perplexity's latest model family. It surpasses their earlier Sonar models in cost-efficiency, speed, and performance.",
-      "pricing": {
-        "input": 0.2,
-        "output": 0.2
-      },
-      "limits": {}
-    },
-    "r1-1776": {
-      "provider": "perplexity",
-      "name": "R1 1776",
-      "description": "R1 1776 is a version of DeepSeek-R1 that has been post-trained to remove censorship constraints related to topics restricted by the Chinese government. The model retains its original reasoning capabilities while providing direct responses to a wider range of queries. R1 1776 is an offline chat model that does not use the perplexity search subsystem.",
-      "pricing": {
-        "input": 2.0,
-        "output": 8.0
-      },
-      "limits": {}
-    },
-    "sonar": {
-      "provider": "perplexity",
-      "name": "Sonar",
-      "description": "Sonar is lightweight, affordable, fast, and simple to use — now featuring citations and the ability to customize sources. It is designed for companies seeking to integrate lightweight question-and-answer features optimized for speed.",
-      "pricing": {
-        "input": 1.0,
-        "output": 1.0
-      },
-      "limits": {}
-    },
-    "sonar-deep-research": {
-      "provider": "perplexity",
-      "name": "Sonar Deep Research",
-      "description": "Sonar Deep Research is a research-focused model designed for multi-step retrieval, synthesis, and reasoning across complex topics. It autonomously searches, reads, and evaluates sources, refining its approach as it gathers information. This enables comprehensive report generation across domains like finance, technology, health, and current events.",
-      "pricing": {
-        "input": 2.0,
-        "output": 8.0
-      },
-      "limits": {}
-    },
-    "sonar-pro": {
-      "provider": "perplexity",
-      "name": "Sonar Pro",
-      "description": "Note: Sonar Pro pricing includes Perplexity search pricing. See details here",
-      "pricing": {
-        "input": 3.0,
-        "output": 15.0
-      },
-      "limits": {}
-    },
-    "sonar-reasoning": {
-      "provider": "perplexity",
-      "name": "Sonar Reasoning",
-      "description": "Sonar Reasoning is a reasoning model provided by Perplexity based on DeepSeek R1.",
-      "pricing": {
-        "input": 1.0,
-        "output": 5.0
-      },
-      "limits": {}
-    },
-    "sonar-reasoning-pro": {
-      "provider": "perplexity",
-      "name": "Sonar Reasoning Pro",
-      "description": "Sonar Pro pricing includes Perplexity search pricing.",
-      "pricing": {
-        "input": 2.0,
-        "output": 8.0
-      },
-      "limits": {}
     },
     "Austism/chronos-hermes-13b": {
       "provider": "together",
@@ -11328,22 +9282,6 @@
       },
       "limits": {}
     },
-    "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8": {
-      "provider": "together",
-      "pricing": {
-        "input": 0.27,
-        "output": 0.85
-      },
-      "limits": {}
-    },
-    "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
-      "provider": "together",
-      "pricing": {
-        "input": 0.18,
-        "output": 0.59
-      },
-      "limits": {}
-    },
     "meta-llama/Meta-Llama-3-70B-Instruct-Lite": {
       "provider": "together",
       "pricing": {
@@ -11616,44 +9554,6 @@
       },
       "limits": {}
     },
-    "grok-2-1212": {
-      "provider": "x-ai",
-      "name": "Grok 2 1212",
-      "description": "(deprecated) Grok 2 1212 introduces significant enhancements to accuracy, instruction adherence, and multilingual support, making it a powerful and flexible choice for developers seeking a highly steerable, intelligent model.",
-      "pricing": {
-        "input": 2.0,
-        "output": 10.0
-      },
-      "limits": {
-        "context_window": 32768.0
-      },
-      "deprecated": true
-    },
-    "grok-2-vision-1212": {
-      "provider": "x-ai",
-      "name": "Grok 2 Vision 1212",
-      "description": "Our multimodal model that processes documents, diagrams, charts, screenshots, and photographs.",
-      "pricing": {
-        "input": 2.0,
-        "output": 10.0
-      },
-      "limits": {
-        "context_window": 32768.0
-      }
-    },
-    "grok-3": {
-      "provider": "x-ai",
-      "name": "Grok 3",
-      "description": "Flagship model that excels at enterprise use cases like data extraction, coding, and text summarization. Possesses deep domain knowledge in finance, healthcare, law, and science.",
-      "pricing": {
-        "input": 3.0,
-        "output": 15.0,
-        "cache_read": 0.75
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
     "grok-3-fast": {
       "provider": "x-ai",
       "name": "Grok 3 Fast",
@@ -11662,19 +9562,6 @@
         "input": 5.0,
         "output": 25.0,
         "cache_read": 1.25
-      },
-      "limits": {
-        "context_window": 131072.0
-      }
-    },
-    "grok-3-mini": {
-      "provider": "x-ai",
-      "name": "Grok 3 Mini",
-      "description": "A lightweight model that thinks before responding. Fast, smart, and great for logic-based tasks that do not require deep domain knowledge. The raw thinking traces are accessible.",
-      "pricing": {
-        "input": 0.3,
-        "output": 0.5,
-        "cache_read": 0.075
       },
       "limits": {
         "context_window": 131072.0
@@ -11796,6 +9683,244 @@
         "max_output": 8191.0
       },
       "mode": "chat"
+    },
+    "regional.amazon.nova-2-lite-v1:0": {
+      "provider": "aws",
+      "name": "Nova 2 Lite",
+      "description": "Amazon Nova 2 Lite is an advanced multimodal reasoning model that intelligently balances performance and efficiency by dynamically adjusting reasoning depth based on task complexity. With flexible controls for developers to adjust the reasoning process, Nova 2 Lite delivers superior results for agentic workflows across software development, consumer experiences and enterprise application.",
+      "pricing": {
+        "input": 0.33,
+        "output": 2.75,
+        "cache_read": 0.0825
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-fable-5-v1:0": {
+      "provider": "aws",
+      "pricing": {
+        "input": 11.0,
+        "output": 55.0,
+        "cache_read": 1.1,
+        "cache_write": 13.75
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-opus-5": {
+      "provider": "aws",
+      "pricing": {
+        "input": 5.5,
+        "output": 27.5,
+        "cache_read": 0.55,
+        "cache_write": 6.875
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-sonnet-5-v1:0": {
+      "provider": "aws",
+      "pricing": {
+        "input": 3.3,
+        "output": 16.5,
+        "cache_read": 0.33,
+        "cache_write": 4.125
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-3-5-haiku-20241022": {
+      "provider": "aws",
+      "pricing": {
+        "input": 0.8,
+        "output": 4.0,
+        "cache_read": 0.08,
+        "cache_write": 1.0
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-3-5-sonnet-20240620": {
+      "provider": "aws",
+      "pricing": {
+        "input": 3.0,
+        "output": 15.0,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-3-5-sonnet-20241022": {
+      "provider": "aws",
+      "pricing": {
+        "input": 3.0,
+        "output": 15.0,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-3-7-sonnet-20250219": {
+      "provider": "aws",
+      "pricing": {
+        "input": 3.0,
+        "output": 15.0,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-3-haiku-20240307": {
+      "provider": "aws",
+      "pricing": {
+        "input": 0.25,
+        "output": 1.25
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-3-opus-20240229": {
+      "provider": "aws",
+      "pricing": {
+        "input": 15.0,
+        "output": 75.0
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-3-sonnet-20240229": {
+      "provider": "aws",
+      "pricing": {
+        "input": 3.0,
+        "output": 15.0,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-haiku-4-5-20251001": {
+      "provider": "aws",
+      "pricing": {
+        "input": 1.1,
+        "output": 5.5,
+        "cache_read": 0.11,
+        "cache_write": 1.375
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-opus-4-1-20250805": {
+      "provider": "aws",
+      "pricing": {
+        "input": 15.0,
+        "output": 75.0,
+        "cache_read": 1.5,
+        "cache_write": 18.75
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-opus-4-20250514": {
+      "provider": "aws",
+      "pricing": {
+        "input": 15.0,
+        "output": 75.0,
+        "cache_read": 1.5,
+        "cache_write": 18.75
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-opus-4-5": {
+      "provider": "aws",
+      "pricing": {
+        "input": 5.5,
+        "output": 27.5,
+        "cache_read": 0.55,
+        "cache_write": 6.875
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-opus-4-6": {
+      "provider": "aws",
+      "pricing": {
+        "input": 5.5,
+        "output": 27.5,
+        "cache_read": 0.55,
+        "cache_write": 6.875
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-opus-4-7": {
+      "provider": "aws",
+      "pricing": {
+        "input": 5.5,
+        "output": 27.5,
+        "cache_read": 0.55,
+        "cache_write": 6.875
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-opus-4-8": {
+      "provider": "aws",
+      "pricing": {
+        "input": 5.5,
+        "output": 27.5,
+        "cache_read": 0.55,
+        "cache_write": 6.875
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-sonnet-4-20250514": {
+      "provider": "aws",
+      "pricing": {
+        "input": 3.0,
+        "output": 15.0,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-sonnet-4-5-20250929": {
+      "provider": "aws",
+      "pricing": {
+        "input": 3.3,
+        "output": 16.5,
+        "cache_read": 0.33,
+        "cache_write": 4.125
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-sonnet-4-6": {
+      "provider": "aws",
+      "pricing": {
+        "input": 3.3,
+        "output": 16.5,
+        "cache_read": 0.33,
+        "cache_write": 4.125
+      },
+      "limits": {}
+    },
+    "regional.amazon.nova-2-lite": {
+      "provider": "aws",
+      "name": "Nova 2 Lite",
+      "description": "Amazon Nova 2 Lite is an advanced multimodal reasoning model that intelligently balances performance and efficiency by dynamically adjusting reasoning depth based on task complexity. With flexible controls for developers to adjust the reasoning process, Nova 2 Lite delivers superior results for agentic workflows across software development, consumer experiences and enterprise application.",
+      "pricing": {
+        "input": 0.33,
+        "output": 2.75,
+        "cache_read": 0.0825
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-fable-5": {
+      "provider": "aws",
+      "pricing": {
+        "input": 11.0,
+        "output": 55.0,
+        "cache_read": 1.1,
+        "cache_write": 13.75
+      },
+      "limits": {}
+    },
+    "regional.anthropic.claude-sonnet-5": {
+      "provider": "aws",
+      "pricing": {
+        "input": 3.3,
+        "output": 16.5,
+        "cache_read": 0.33,
+        "cache_write": 4.125
+      },
+      "limits": {}
     }
   },
   "model_aliases": {},

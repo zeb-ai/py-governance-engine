@@ -7,6 +7,7 @@ import {
 } from "@mariozechner/pi-coding-agent";
 
 grc.init(process.env.API_KEY);
+grc.enableLogging(grc.LOG_DEBUG, join(process.cwd(), "grc.log"));
 
 export async function callPiMono(userPrompt, options = {}) {
   const {

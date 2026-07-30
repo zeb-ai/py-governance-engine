@@ -1,6 +1,7 @@
 /* global setImmediate */
 "use strict";
 
+const fs = require("fs");
 const tls = require("tls");
 const http2 = require("http2");
 const zlib = require("zlib");
@@ -45,6 +46,45 @@ class Util {
     if (!model) return url;
     return url.replace(/\/model\/[^/]+\//, `/model/${prefix}${model}/`);
   }
+}
+
+class FileLogger {
+  constructor(level, path) {
+    this.level = level;
+    this.fd = fs.openSync(path, "a");
+  }
+
+  write(levelStr, msg) {
+    const ts = new Date().toISOString().replace("T", " ").replace("Z", "");
+    fs.writeSync(this.fd, `[${ts}] [JS] [${levelStr}] ${msg}\n`);
+  }
+
+  debug(msg) {
+    if (this.level <= 0) this.write("DEBUG", msg);
+  }
+  info(msg) {
+    if (this.level <= 1) this.write("INFO", msg);
+  }
+  warn(msg) {
+    if (this.level <= 2) this.write("WARN", msg);
+  }
+  error(msg) {
+    if (this.level <= 3) this.write("ERROR", msg);
+  }
+
+  close() {
+    try {
+      fs.closeSync(this.fd);
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+let jsLogger = null;
+
+function jlog() {
+  return jsLogger;
 }
 
 class ArnResolver {
@@ -98,12 +138,16 @@ class ArnResolver {
   }
 
   async _resolve(url, arn) {
+    jlog()?.debug(`arn.resolve arn=${arn}`);
     try {
       const fromModule = this._usable(await resolveAwsArn(url), arn);
-      // console.log(fromModule, ">>>>>>>")
-      if (fromModule) return fromModule;
+      if (fromModule) {
+        jlog()?.info(`arn.resolve resolved=${fromModule}`);
+        return fromModule;
+      }
     } catch (err) {
       this.bridge.logErr("arn.resolveAwsArn", err);
+      jlog()?.error(`arn.resolveAwsArn ${err.message}`);
     }
     return this._resolveFromArn(arn);
   }
@@ -392,12 +436,15 @@ class Http2StreamTap {
 
       const body = Buffer.concat(this.reqChunks).toString("utf-8");
       if (body.trim()) {
+        jlog()?.debug(`h2.request url=${this.url} body_len=${body.length}`);
         const result = this.ctx.bridge.interceptRequest(this.url, body);
         if (this.ctx.config.enforceQuota && result && result.allowed === 0) {
+          jlog()?.warn(`h2.request quota_exceeded url=${this.url}`);
           this._reject(result); // block: do not send
           return this.stream;
         }
         this.allowed = true;
+        jlog()?.info(`h2.request allowed url=${this.url}`);
       }
 
       return origEnd(chunk, encoding, callback);
@@ -443,12 +490,17 @@ class Http2StreamTap {
 
         if (this.isEventStream) {
           const metadata = EventStreamParser.parseMetadata(body);
+          jlog()?.debug(
+            `h2.response event_stream url=${url} has_metadata=${!!metadata}`,
+          );
           if (metadata) this.ctx.bridge.interceptResponse(url, metadata);
         } else {
+          jlog()?.debug(`h2.response url=${url} body_len=${body.length}`);
           this.ctx.bridge.interceptResponse(url, body.toString("utf-8"));
         }
       } catch (err) {
         this.ctx.bridge.logErr("h2.finalizeResponse", err);
+        jlog()?.error(`h2.finalizeResponse ${err.message}`);
       }
     });
   }
@@ -582,12 +634,15 @@ class Http1SocketTap {
 
     this.sendBuf = Buffer.alloc(0);
 
+    jlog()?.debug(`h1.request url=${this.url} body_len=${body.length}`);
     const result = bridge.interceptRequest(this.url, body);
     if (config.enforceQuota && result && result.allowed === 0) {
+      jlog()?.warn(`h1.request quota_exceeded url=${this.url}`);
       this._reject(result);
       return;
     }
     this.allowed = true;
+    jlog()?.info(`h1.request allowed url=${this.url}`);
   }
 
   // --- response side ---
@@ -631,6 +686,7 @@ class Http1SocketTap {
     rawBody = Util.decompress(rawBody, encoding);
     const url = Util.mapModelUrl(this.url, this.model, config.arnModelPrefix);
 
+    jlog()?.debug(`h1.response url=${url} body_len=${rawBody.length}`);
     bridge.interceptResponse(url, rawBody.toString("utf-8"));
     this._resetRequest(); // ready for keep-alive reuse
   }
@@ -673,6 +729,7 @@ class Interceptor {
     if (this._originals) return this;
 
     this._originals = { tlsConnect: tls.connect, h2Connect: http2.connect };
+    jlog()?.info("interceptor activated: patching tls.connect + http2.connect");
 
     tls.connect = (...args) => {
       const socket = this._originals.tlsConnect(...args);
@@ -680,16 +737,19 @@ class Interceptor {
         new Http1SocketTap(socket, this._ctx).attach();
       } catch (err) {
         this.bridge.logErr("patch.tls", err);
+        jlog()?.error(`patch.tls ${err.message}`);
       }
       return socket;
     };
 
     http2.connect = (...args) => {
       const session = this._originals.h2Connect(...args);
+      jlog()?.debug(`h2.connect origin=${args[0]}`);
       try {
         this._instrumentSession(session, args[0]);
       } catch (err) {
         this.bridge.logErr("patch.http2", err);
+        jlog()?.error(`patch.http2 ${err.message}`);
       }
       return session;
     };
@@ -704,6 +764,7 @@ class Interceptor {
       http2.connect = this._originals.h2Connect;
       this._originals = null;
     }
+    jlog()?.info("interceptor deactivated");
     this.bridge.clear();
     return this;
   }
@@ -732,4 +793,8 @@ module.exports = {
   activate: (native) => defaultInterceptor.activate(native),
   deactivate: () => defaultInterceptor.deactivate(),
   config: defaultInterceptor.config,
+  setLogger: (logger) => {
+    jsLogger = logger;
+  },
+  FileLogger,
 };

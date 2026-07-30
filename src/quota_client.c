@@ -73,6 +73,8 @@ Quota quota_client_get(QuotaClient *client) {
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+  curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, 2000L);
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 3000L);
 
   CURLcode res = curl_easy_perform(curl);
 
@@ -136,6 +138,8 @@ Quota quota_client_post(QuotaClient *client, int tokens_used, double cost) {
   curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+  curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT_MS, 2000L);
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 3000L);
 
   CURLcode res = curl_easy_perform(curl);
 

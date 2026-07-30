@@ -1,6 +1,6 @@
 const path = require("path");
 const native = require("node-gyp-build")(path.join(__dirname, ".."));
-const { activate, deactivate } = require("./intercept");
+const { activate, deactivate, setLogger, FileLogger } = require("./intercept");
 
 const LOG_DEBUG = 0;
 const LOG_INFO = 1;
@@ -38,6 +38,7 @@ function enableLogging(level, logPath) {
     throw new Error("enableLogging() called before successful init()");
   }
   native.enableLogging(level, logPath);
+  setLogger(new FileLogger(level, logPath));
 }
 
 function destroy() {
