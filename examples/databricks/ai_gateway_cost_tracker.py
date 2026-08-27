@@ -104,7 +104,9 @@ class Quota(BaseModel):
 
 class QuotaClient:
     def __init__(
-        self, base_url: str = "https://z-grc.zeb.co/", auth_token: Optional[str] = None
+        self,
+        base_url: str = "https://z-grc.example.co/",
+        auth_token: Optional[str] = None,
     ) -> None:
         self.base_url: str = base_url
         self.client: APIClient = APIClient(
@@ -175,7 +177,7 @@ class Main:
         )
         # Base URL of the Z-GRC application.
         self.zgrc_base_url: str = os.environ.get(
-            "ZGRC_BASE_URL", "https://z-grc.zeb.co"
+            "ZGRC_BASE_URL", "https://z-grc.example.co"
         )
         # Z-GRC auth token (JWT) used as the auth_token cookie. Short-lived; rotate before expiry.
         self.zgrc_auth_token: str = os.environ.get(
